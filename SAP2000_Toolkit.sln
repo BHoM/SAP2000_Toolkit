@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 14 for Windows Desktop
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAP2000_Adapter", "SAP2000_Adapter\SAP2000_Adapter.csproj", "{04E7E3BC-BD2F-47A4-B4F0-A9675F702CED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAP2000_Engine", "SAP2000_Engine\SAP2000_Engine.csproj", "{4BB31AE9-B7CE-42C8-80A4-484389D23DE2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAP2000_Test", "SAP2000_Test\SAP2000_Test.csproj", "{C4FC7380-5299-4B56-8A0E-8E5CBF825464}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{4BB31AE9-B7CE-42C8-80A4-484389D23DE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4BB31AE9-B7CE-42C8-80A4-484389D23DE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4BB31AE9-B7CE-42C8-80A4-484389D23DE2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4FC7380-5299-4B56-8A0E-8E5CBF825464}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4FC7380-5299-4B56-8A0E-8E5CBF825464}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4FC7380-5299-4B56-8A0E-8E5CBF825464}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4FC7380-5299-4B56-8A0E-8E5CBF825464}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

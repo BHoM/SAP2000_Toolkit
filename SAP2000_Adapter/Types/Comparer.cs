@@ -44,7 +44,7 @@ namespace BH.Adapter.SAP2000
             {typeof(ISectionProperty), new BHoMObjectNameOrToStringComparer() },
             {typeof(Material), new BHoMObjectNameComparer() },
             {typeof(LinkConstraint), new BHoMObjectNameComparer() },
-            {typeof(Property2D), new BHoMObjectNameComparer() },
+            //{typeof(Property2D), new BHoMObjectNameComparer() },
         };
 
 

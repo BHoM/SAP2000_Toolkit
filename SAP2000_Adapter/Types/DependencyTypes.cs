@@ -47,9 +47,9 @@ namespace BH.Adapter.SAP2000
             {typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node) } },
             {typeof(ISectionProperty), new List<Type> { typeof(Material) } },
             {typeof(RigidLink), new List<Type> { typeof(LinkConstraint), typeof(Node) } },
-            {typeof(MeshFace), new List<Type> { typeof(Property2D), typeof(Node) } },
-            {typeof(Property2D), new List<Type> { typeof(Material) } },
-            {typeof(PanelPlanar), new List<Type> { typeof(Property2D) } }
+            //{typeof(MeshFace), new List<Type> { typeof(Property2D), typeof(Node) } },
+            //{typeof(Property2D), new List<Type> { typeof(Material) } },
+            //{typeof(PanelPlanar), new List<Type> { typeof(Property2D) } }
         };
 
 
