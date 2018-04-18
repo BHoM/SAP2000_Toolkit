@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 using BH.Adapter;
 using BH.Engine.SAP2000;
 using SAP2000v19;
@@ -12,13 +13,12 @@ namespace BH.Adapter.SAP2000
     public partial class SAP2000Adapter : BHoMAdapter
     {
         public const string ID = "SAP2000_id";
-        private cOAPI app;
-        private cSapModel model;
+
         /***************************************************/
         /**** Constructors                              ****/
         /***************************************************/
 
-        public SAP2000Adapter(string filePath = "")
+        public SAP2000Adapter()
         {
             AdapterId = ID;
 
@@ -27,34 +27,68 @@ namespace BH.Adapter.SAP2000
             Config.ProcessInMemory = false;
             Config.CloneBeforePush = true;
 
-            string pathToSAP = System.IO.Path.Combine(Environment.GetEnvironmentVariable("PROGRAMFILES"), "Computers and Structures", "SAP2000 19", "SAP2000.exe");
-            cHelper helper = new Helper();
+            string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 19\SAP2000.exe";
+            SAP2000v19.cOAPI m_SAPObject;
+            SAP2000v19.cHelper m_helper;
+            SAP2000v19.cSapModel m_SAPModel;
 
-            object runningInstance = null;
-            runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.SAP2000.API.SapObject");
-            if (runningInstance != null)
+            if (IsApplicationRunning())
             {
-                app = (cOAPI)runningInstance;
-                model = app.SapModel;
-                if (System.IO.File.Exists(filePath))
-                    model.File.OpenFile(filePath);
-                model.SetPresentUnits(eUnits.kN_m_C);
+                //attach to a running instance of SAP2000
+                try
+                {
+                    //get the active SAP2000 object
+                    m_SAPObject = (cOAPI)GetRunningInstance();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("No running instance of the program found or failed to attach.");
+                    return;
+                }
             }
             else
             {
-                //open SAP if not running - NOTE: this behaviour is different from other adapters
-                app = helper.CreateObject(pathToSAP);
-                model = app.SapModel;
-                model.InitializeNewModel(eUnits.kN_m_C);
-                if (System.IO.File.Exists(filePath))
-                    model.File.OpenFile(filePath);
-                else
-                    model.File.NewBlank();
+                //create a new instance of SAP2000
+                try
+                {
+                    //Create OAPI Helper object
+                    m_helper = new SAP2000v19.Helper();
+
+                    //Get SAP2000 object
+                    m_SAPObject = m_helper.CreateObject(pathToSAP);                    
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Cannot Start a new instance of the program");
+                    return;
+                }
+
+                //Start SAP2000 application
+                m_SAPObject.ApplicationStart();
             }
 
+            //Create SAPModel object
+            m_SAPModel = m_SAPObject.SapModel;
+
+            int ret;
+            ret = m_SAPModel.InitializeNewModel((eUnits.kN_m_C));
+            ret = m_SAPModel.File.NewBlank();
         }
 
+        /***************************************************/
+        /**** Public  Methods                           ****/
+        /***************************************************/
 
+        public static bool IsApplicationRunning()
+        {
+            return false;
+            //return System.Diagnostics.Process.GetProcessesByName("SAP2000").Length > 0;
+        }
+
+        public static object GetRunningInstance()
+        {
+            return (System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.SAP2000.API.SapObject"));
+        }
 
 
         /***************************************************/
