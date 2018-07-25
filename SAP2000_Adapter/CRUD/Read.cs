@@ -5,7 +5,10 @@ using System.Linq;
 using BH.oM.Base;
 using BH.oM.Structural.Elements;
 using BH.oM.Structural.Properties;
+using BH.oM.Structural.Loads;
 using BH.oM.Common.Materials;
+using BH.oM.Geometry;
+using BH.Engine.Geometry;
 using SAP2000v19;
 
 namespace BH.Adapter.SAP2000
@@ -17,7 +20,6 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
         protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
         {
-            //Choose what to pull out depending on the type. Also see example methods below for pulling out bars and dependencies
             if (type == typeof(Node))
                 return ReadNodes(ids as dynamic);
             else if (type == typeof(Bar))
@@ -26,8 +28,21 @@ namespace BH.Adapter.SAP2000
                 return ReadSectionProperties(ids as dynamic);
             else if (type == typeof(Material))
                 return ReadMaterials(ids as dynamic);
+            else if (type == typeof(PanelPlanar))
+                return ReadPanel(ids as dynamic);
+            else if (type == typeof(IProperty2D))
+                return ReadProperty2d(ids as dynamic);
+            else if (type == typeof(LoadCombination))
+                return ReadLoadCombination(ids as dynamic);
+            else if (type == typeof(Loadcase))
+                return ReadLoadcase(ids as dynamic);
+            else if (type == typeof(ILoad) || type.GetInterfaces().Contains(typeof(ILoad)))
+                return ReadLoad(type, ids as dynamic);
+            else if (type == typeof(RigidLink))
+                return ReadRigidLink(ids as dynamic);
 
-            return null;
+
+            return null;//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
         }
 
         /***************************************************/
@@ -222,7 +237,7 @@ namespace BH.Adapter.SAP2000
                     hasModifiers = true;
                 
                 ConstantThickness panelConstant = new ConstantThickness();
-                panelConstant.CustomData[AdapterId] = id;
+                panelConstant.Name = id;
                 panelConstant.Material = ReadMaterials(new List<string>() { material })[0];
                 panelConstant.Thickness = thickness;
                 panelConstant.CustomData.Add("MaterialAngle", matAng);
@@ -250,235 +265,244 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        //private List<PanelPlanar> ReadPanel(List<string> ids = null)
-        //{
-        //    List<PanelPlanar> panelList = new List<PanelPlanar>();
-        //    int nameCount = 0;
-        //    string[] nameArr = { };
+        private List<PanelPlanar> ReadPanel(List<string> ids = null)
+        {
+            List<PanelPlanar> panelList = new List<PanelPlanar>();
+            int nameCount = 0;
+            string[] nameArr = { };
 
-        //    if (ids == null)
-        //    {
-        //        model.AreaObj.GetNameList(ref nameCount, ref nameArr);
-        //        ids = nameArr.ToList();
-        //    }
+            if (ids == null)
+            {
+                model.AreaObj.GetNameList(ref nameCount, ref nameArr);
+                ids = nameArr.ToList();
+            }
 
-        //    //get openings, if any
-        //    model.AreaObj.GetNameList(ref nameCount, ref nameArr);
-        //    bool isOpening = false;
-        //    Dictionary<string, Polyline> openingDict = new Dictionary<string, Polyline>();
-        //    foreach (string name in nameArr)
-        //    {
-        //        model.AreaObj.GetOpening(name, ref isOpening);
-        //        if (isOpening)
-        //        {
-        //            openingDict.Add(name, Helper.GetPanelPerimeter(model, name));
-        //        }
-        //    }
+            //get openings, if any
+            model.AreaObj.GetNameList(ref nameCount, ref nameArr);
+            bool isOpening = false;
+            Dictionary<string, Polyline> openingDict = new Dictionary<string, Polyline>();
+            foreach (string name in nameArr)
+            {
+                model.AreaObj.GetOpening(name, ref isOpening);
+                if (isOpening)
+                {
+                    openingDict.Add(name, Helper.GetPanelPerimeter(model, name));
+                }
+            }
 
-        //    foreach (string id in ids)
-        //    {
-        //        if (openingDict.ContainsKey(id))
-        //            continue;
+            foreach (string id in ids)
+            {
+                if (openingDict.ContainsKey(id))
+                    continue;
 
-        //        string propertyName = "";
+                string propertyName = "";
 
-        //        model.AreaObj.GetProperty(id, ref propertyName);
-        //        IProperty2D panelProperty = ReadProperty2d(new List<string>() { propertyName })[0];
+                model.AreaObj.GetProperty(id, ref propertyName);
+                IProperty2D panelProperty = ReadProperty2d(new List<string>() { propertyName })[0];
 
-        //        PanelPlanar panel = new PanelPlanar();
-        //        panel.CustomData[AdapterId] = id;
+                PanelPlanar panel = new PanelPlanar();
+                panel.CustomData[AdapterId] = id;
 
-        //        Polyline pl = Helper.GetPanelPerimeter(model, id);
+                Polyline pl = Helper.GetPanelPerimeter(model, id);
 
-        //        Edge edge = new Edge();
-        //        edge.Curve = pl;
-        //        //edge.Constraint = new Constraint4DOF();// <---- cannot see anyway to set this via API and for some reason constraints are not being set in old version of etabs toolkit TODO
+                Edge edge = new Edge();
+                edge.Curve = pl;
+                //edge.Constraint = new Constraint4DOF();// <---- cannot see anyway to set this via API and for some reason constraints are not being set in old version of etabs toolkit TODO
 
-        //        panel.ExternalEdges = new List<Edge>() { edge };
-        //        foreach (KeyValuePair<string, Polyline> kvp in openingDict)
-        //        {
-        //            if (pl.IsContaining(kvp.Value.ControlPoints))
-        //            {
-        //                Opening opening = new Opening();
-        //                opening.Edges = new List<Edge>() { new Edge() { Curve = kvp.Value } };
-        //                panel.Openings.Add(opening);
-        //            }
-        //        }
+                panel.ExternalEdges = new List<Edge>() { edge };
+                foreach (KeyValuePair<string, Polyline> kvp in openingDict)
+                {
+                    if (pl.IsContaining(kvp.Value.ControlPoints))
+                    {
+                        Opening opening = new Opening();
+                        opening.Edges = new List<Edge>() { new Edge() { Curve = kvp.Value } };
+                        panel.Openings.Add(opening);
+                    }
+                }
 
-        //        panel.Property = panelProperty;
+                panel.Property = panelProperty;
 
-        //        panelList.Add(panel);
-        //    }
+                panelList.Add(panel);
+            }
 
-        //    return panelList;
-        //}
-
-        ///***************************************************/
-
-        //private List<LoadCombination> ReadLoadCombination(List<string> ids = null)
-        //{
-        //    List<LoadCombination> combinations = new List<LoadCombination>();
-
-        //    //get all load cases before combinations
-        //    int number = 0;
-        //    string[] names = null;
-        //    model.LoadPatterns.GetNameList(ref number, ref names);
-        //    Dictionary<string, ICase> caseDict = new Dictionary<string, ICase>();
-
-        //    //ensure id can be split into name and number
-        //    names = Helper.EnsureNameWithNum(names.ToList()).ToArray();
-
-        //    foreach (string name in names)
-        //        caseDict.Add(name, Helper.GetLoadcase(model, name));
-
-        //    int nameCount = 0;
-        //    string[] nameArr = { };
-
-        //    if (ids == null)
-        //    {
-        //        model.RespCombo.GetNameList(ref nameCount, ref nameArr);
-        //        ids = nameArr.ToList();
-        //    }
-
-        //    //ensure id can be split into name and number
-        //    ids = Helper.EnsureNameWithNum(ids);
-
-        //    foreach (string id in ids)
-        //    {
-        //        combinations.Add(Helper.GetLoadCombination(model, caseDict, id));
-        //    }
-
-        //    return combinations;
-        //}
+            return panelList;
+        }
 
         ///***************************************************/
 
-        //private List<Loadcase> ReadLoadcase(List<string> ids = null)
-        //{
-        //    int nameCount = 0;
-        //    string[] nameArr = { };
+        private List<LoadCombination> ReadLoadCombination(List<string> ids = null)
+        {
+            // not implemented!
+            throw new NotImplementedException();
 
-        //    List<Loadcase> loadcaseList = new List<Loadcase>();
+            //    List<LoadCombination> combinations = new List<LoadCombination>();
 
-        //    if (ids == null)
-        //    {
-        //        model.LoadPatterns.GetNameList(ref nameCount, ref nameArr);
-        //        ids = nameArr.ToList();
-        //    }
+            //    //get all load cases before combinations
+            //    int number = 0;
+            //    string[] names = null;
+            //    model.LoadPatterns.GetNameList(ref number, ref names);
+            //    Dictionary<string, ICase> caseDict = new Dictionary<string, ICase>();
 
-        //    //ensure id can be split into name and number
-        //    ids = Helper.EnsureNameWithNum(ids);
+            //    //ensure id can be split into name and number
+            //    names = Helper.EnsureNameWithNum(names.ToList()).ToArray();
 
-        //    foreach (string id in ids)
-        //    {
-        //        loadcaseList.Add(Helper.GetLoadcase(model, id));
-        //    }
+            //    foreach (string name in names)
+            //        caseDict.Add(name, Helper.GetLoadcase(model, name));
 
-        //    return loadcaseList;
-        //}
-        
-        ///***************************************************/
-        
-        //private List<ILoad> ReadLoad(Type type, List<string> ids = null)
-        //{
-        //    List<ILoad> loadList = new List<ILoad>();
+            //    int nameCount = 0;
+            //    string[] nameArr = { };
 
-        //    //get loadcases first
-        //    List<Loadcase> loadcaseList = ReadLoadcase();
+            //    if (ids == null)
+            //    {
+            //        model.RespCombo.GetNameList(ref nameCount, ref nameArr);
+            //        ids = nameArr.ToList();
+            //    }
 
-        //    loadList = Helper.GetLoads(model, loadcaseList);
+            //    //ensure id can be split into name and number
+            //    ids = Helper.EnsureNameWithNum(ids);
 
-        //    //filter the list to return only the right type - No, this is not a clever way of doing it !
-        //    loadList = loadList.Where(x => x.GetType() == type).ToList();
+            //    foreach (string id in ids)
+            //    {
+            //        combinations.Add(Helper.GetLoadCombination(model, caseDict, id));
+            //    }
 
-        //    return loadList;
-        //}
+            //    return combinations;
+        }
 
         ///***************************************************/
 
-        //private List<RigidLink> ReadRigidLink(List<string> ids = null)
-        //{
-        //    List<RigidLink> linkList = new List<RigidLink>();
+        private List<Loadcase> ReadLoadcase(List<string> ids = null)
+        {
+            // not implemented!
+            throw new NotImplementedException();
 
-        //    int nameCount = 0;
-        //    string[] names = { };
+            //int nameCount = 0;
+            //string[] nameArr = { };
 
-        //    if (ids == null)
-        //    {
-        //        model.LinkObj.GetNameList(ref nameCount, ref names);
-        //        ids = names.ToList();
-        //    }
+            //List<Loadcase> loadcaseList = new List<Loadcase>();
 
-        //    //read master-multiSlave nodes if these were initially created from (non-etabs)BHoM side
-        //    Dictionary<string, List<string>> idDict = new Dictionary<string, List<string>>();
-        //    string[] masterSlaveId;
+            //if (ids == null)
+            //{
+            //    model.LoadPatterns.GetNameList(ref nameCount, ref nameArr);
+            //    ids = nameArr.ToList();
+            //}
 
-        //    foreach (string id in ids)
-        //    {
-        //        masterSlaveId = id.Split(new[] { ":::" }, StringSplitOptions.None);
-        //        if (masterSlaveId.Count() > 1)
-        //        {
-        //            //has multi slaves
-        //            if (idDict.ContainsKey(masterSlaveId[0]))
-        //                idDict[masterSlaveId[0]].Add(masterSlaveId[1]);
-        //            else
-        //                idDict.Add(masterSlaveId[0], new List<string>() { masterSlaveId[1] });
-        //        }
-        //        else
-        //        {
-        //            //normal single link
-        //            idDict.Add(id, null);
-        //        }
-        //    }
+            ////ensure id can be split into name and number
+            //ids = Helper.EnsureNameWithNum(ids);
+
+            //foreach (string id in ids)
+            //{
+            //    loadcaseList.Add(Helper.GetLoadcase(model, id));
+            //}
+
+            //return loadcaseList;
+        }
+
+        ///***************************************************/
+
+        private List<ILoad> ReadLoad(Type type, List<string> ids = null)
+        {
+            // not implemented!
+            throw new NotImplementedException();
+
+            //List<ILoad> loadList = new List<ILoad>();
+
+            ////get loadcases first
+            //List<Loadcase> loadcaseList = ReadLoadcase();
+
+            //loadList = Helper.GetLoads(model, loadcaseList);
+
+            ////filter the list to return only the right type - No, this is not a clever way of doing it !
+            //loadList = loadList.Where(x => x.GetType() == type).ToList();
+
+            //return loadList;
+        }
+
+        ///***************************************************/
+
+        private List<RigidLink> ReadRigidLink(List<string> ids = null)
+        {
+            List<RigidLink> linkList = new List<RigidLink>();
+
+            int nameCount = 0;
+            string[] names = { };
+
+            if (ids == null)
+            {
+                model.LinkObj.GetNameList(ref nameCount, ref names);
+                ids = names.ToList();
+            }
+
+            //read master-multiSlave nodes if these were initially created from (non-etabs)BHoM side
+            Dictionary<string, List<string>> idDict = new Dictionary<string, List<string>>();
+            string[] masterSlaveId;
+
+            foreach (string id in ids)
+            {
+                masterSlaveId = id.Split(new[] { ":::" }, StringSplitOptions.None);
+                if (masterSlaveId.Count() > 1)
+                {
+                    //has multi slaves
+                    if (idDict.ContainsKey(masterSlaveId[0]))
+                        idDict[masterSlaveId[0]].Add(masterSlaveId[1]);
+                    else
+                        idDict.Add(masterSlaveId[0], new List<string>() { masterSlaveId[1] });
+                }
+                else
+                {
+                    //normal single link
+                    idDict.Add(id, null);
+                }
+            }
 
 
-        //    foreach (KeyValuePair<string, List<string>> kvp in idDict)
-        //    {
-        //        RigidLink bhLink = new RigidLink();
+            foreach (KeyValuePair<string, List<string>> kvp in idDict)
+            {
+                RigidLink bhLink = new RigidLink();
 
-        //        if (kvp.Value == null)
-        //        {
-        //            bhLink.CustomData.Add(AdapterId, kvp.Key);
-        //            string startId = "";
-        //            string endId = "";
-        //            model.LinkObj.GetPoints(kvp.Key, ref startId, ref endId);
+                if (kvp.Value == null)
+                {
+                    bhLink.CustomData.Add(AdapterId, kvp.Key);
+                    string startId = "";
+                    string endId = "";
+                    model.LinkObj.GetPoints(kvp.Key, ref startId, ref endId);
 
-        //            List<Node> endNodes = ReadNodes(new List<string> { startId, endId });
-        //            bhLink.MasterNode = endNodes[0];
-        //            bhLink.SlaveNodes = new List<Node>() { endNodes[1] };
+                    List<Node> endNodes = ReadNodes(new List<string> { startId, endId });
+                    bhLink.MasterNode = endNodes[0];
+                    bhLink.SlaveNodes = new List<Node>() { endNodes[1] };
 
-        //            linkList.Add(bhLink);
-        //        }
-        //        else
-        //        {
+                    linkList.Add(bhLink);
+                }
+                else
+                {
 
-        //            bhLink.CustomData.Add(AdapterId, kvp.Key);
-        //            string startId = "";
-        //            string endId = "";
-        //            string multiLinkId = kvp.Key + ":::0";
-        //            List<string> nodeIdsToRead = new List<string>();
+                    bhLink.CustomData.Add(AdapterId, kvp.Key);
+                    string startId = "";
+                    string endId = "";
+                    string multiLinkId = kvp.Key + ":::0";
+                    List<string> nodeIdsToRead = new List<string>();
 
-        //            model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
-        //            nodeIdsToRead.Add(startId);
+                    model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
+                    nodeIdsToRead.Add(startId);
 
-        //            for (int i = 1; i < kvp.Value.Count(); i++)
-        //            {
-        //                multiLinkId = kvp.Key + ":::" + i;
-        //                model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
-        //                nodeIdsToRead.Add(endId);
-        //            }
+                    for (int i = 1; i < kvp.Value.Count(); i++)
+                    {
+                        multiLinkId = kvp.Key + ":::" + i;
+                        model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
+                        nodeIdsToRead.Add(endId);
+                    }
 
-        //            List<Node> endNodes = ReadNodes(nodeIdsToRead);
-        //            bhLink.MasterNode = endNodes[0];
-        //            endNodes.RemoveAt(0);
-        //            bhLink.SlaveNodes = endNodes;
+                    List<Node> endNodes = ReadNodes(nodeIdsToRead);
+                    bhLink.MasterNode = endNodes[0];
+                    endNodes.RemoveAt(0);
+                    bhLink.SlaveNodes = endNodes;
 
-        //            linkList.Add(bhLink);
-        //        }
-        //    }
+                    linkList.Add(bhLink);
+                }
+            }
 
-        //    return linkList;
-        //}
+            return linkList;
+        }
 
         /***************************************************/
 

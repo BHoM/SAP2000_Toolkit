@@ -24,6 +24,8 @@ namespace SAP2000_Test
 
             TestPullSections(app);
 
+            TestPullPanels(app);
+
             Console.WriteLine("Press any key to continue");
             Console.ReadKey();
             Console.WriteLine("");
@@ -95,5 +97,28 @@ namespace SAP2000_Test
             Console.WriteLine("Pulled all Sections");
         }
 
+        private static void TestPullPanels(SAP2000Adapter app)
+        {
+            Console.WriteLine("Test Pull Panels");
+            FilterQuery panelQuery = new FilterQuery { Type = typeof(PanelPlanar) };
+
+            IEnumerable<object> panelObjects = app.Pull(panelQuery);
+
+            Console.WriteLine("I found " + panelObjects.Count() + " panels");
+
+
+            foreach (object bObject in panelObjects)
+            {
+                PanelPlanar panel = bObject as PanelPlanar;
+                string panelId = panel.CustomData[SAP2000Adapter.ID].ToString();
+                string panelSection = panel.Property.Name.ToString();
+
+                string info = "Panel with ID: " + panelId + " and Section Property: " + panelSection;
+                Console.WriteLine(info);
+            }
+
+            Console.WriteLine("Pulled all panels");
+
+        }
     }
 }
