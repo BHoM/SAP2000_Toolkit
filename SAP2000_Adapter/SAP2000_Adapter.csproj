@@ -44,6 +44,9 @@
     <Reference Include="Common_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Common_Engine.dll</HintPath>
     </Reference>
+    <Reference Include="Geometry_Engine">
+      <HintPath>..\..\BHoM_Engine\Build\Geometry_Engine.dll</HintPath>
+    </Reference>
     <Reference Include="Reflection_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Reflection_Engine.dll</HintPath>
     </Reference>
@@ -71,6 +74,7 @@
     <Compile Include="CRUD\Read.cs" />
     <Compile Include="CRUD\UpdateObjects.cs" />
     <Compile Include="Helpers\Material.cs" />
+    <Compile Include="Helpers\Panel.cs" />
     <Compile Include="Helpers\Section.cs" />
     <Compile Include="Helpers\Constraint.cs" />
     <Compile Include="SAP2000Adapter.cs" />
