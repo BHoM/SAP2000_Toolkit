@@ -13,66 +13,58 @@ namespace BH.Adapter.SAP2000
     public partial class SAP2000Adapter : BHoMAdapter
     {
         public const string ID = "SAP2000_id";
+        private cOAPI app;
+        private cSapModel model;
 
         /***************************************************/
         /**** Constructors                              ****/
         /***************************************************/
 
-        public SAP2000Adapter()
+        public SAP2000Adapter(string filePath = "", bool Active = false)
         {
-            AdapterId = ID;
-
-            Config.SeparateProperties = true;
-            Config.MergeWithComparer = true;
-            Config.ProcessInMemory = false;
-            Config.CloneBeforePush = true;
-
-            string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 19\SAP2000.exe";
-            SAP2000v19.cOAPI m_SAPObject;
-            SAP2000v19.cHelper m_helper;
-            SAP2000v19.cSapModel m_SAPModel;
-
-            if (IsApplicationRunning())
+            if (Active)
             {
-                //attach to a running instance of SAP2000
-                try
+                AdapterId = ID;
+
+                Config.SeparateProperties = true;
+                Config.MergeWithComparer = true;
+                Config.ProcessInMemory = false;
+                Config.CloneBeforePush = true;
+
+                string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 19\SAP2000.exe";
+                cHelper helper = new SAP2000v19.Helper();
+
+                object runningInstance = null;
+                if (IsApplicationRunning())
                 {
-                    //get the active SAP2000 object
-                    m_SAPObject = (cOAPI)GetRunningInstance();
+                    runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.SAP2000.API.SAPObject");
+
+                    app = (cOAPI)runningInstance;
+                    model = app.SapModel;
+                    if (System.IO.File.Exists(filePath))
+                        model.File.OpenFile(filePath);
+                    model.SetPresentUnits(eUnits.N_m_C);
                 }
-                catch (Exception ex)
+                else 
                 {
-                    Console.WriteLine("No running instance of the program found or failed to attach.");
-                    return;
+                    //open ETABS if not running
+                    try
+                    {
+                        app = helper.CreateObject(pathToSAP);
+                        app.ApplicationStart();
+                        model = app.SapModel;
+                        model.InitializeNewModel(eUnits.N_m_C);
+                        if (System.IO.File.Exists(filePath))
+                            model.File.OpenFile(filePath);
+                        else
+                            model.File.NewBlank();
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Cannot load SAP2000, check that SAP2000 is installed and a license is available");
+                    }
                 }
             }
-            else
-            {
-                //create a new instance of SAP2000
-                try
-                {
-                    //Create OAPI Helper object
-                    m_helper = new SAP2000v19.Helper();
-
-                    //Get SAP2000 object
-                    m_SAPObject = m_helper.CreateObject(pathToSAP);                    
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Cannot Start a new instance of the program");
-                    return;
-                }
-
-                //Start SAP2000 application
-                m_SAPObject.ApplicationStart();
-            }
-
-            //Create SAPModel object
-            m_SAPModel = m_SAPObject.SapModel;
-
-            int ret;
-            ret = m_SAPModel.InitializeNewModel((eUnits.kN_m_C));
-            ret = m_SAPModel.File.NewBlank();
         }
 
         /***************************************************/
@@ -81,15 +73,8 @@ namespace BH.Adapter.SAP2000
 
         public static bool IsApplicationRunning()
         {
-            return false;
-            //return System.Diagnostics.Process.GetProcessesByName("SAP2000").Length > 0;
+            return (System.Diagnostics.Process.GetProcessesByName("SAP2000").Length > 0) ? true : false;
         }
-
-        public static object GetRunningInstance()
-        {
-            return (System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.SAP2000.API.SapObject"));
-        }
-
 
         /***************************************************/
         /**** Private  Fields                           ****/
