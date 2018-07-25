@@ -34,6 +34,16 @@
       <HintPath>..\..\BHoM\Build\BHoM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="BHoM_Engine">
+      <HintPath>..\..\BHoM_Engine\Build\BHoM_Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Common_Engine">
+      <HintPath>..\..\BHoM_Engine\Build\Common_Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="SAP2000v19, Version=19.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Program Files\Computers and Structures\SAP2000 19\SAP2000v19.dll</HintPath>
+    </Reference>
     <Reference Include="Structure_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Structure_Engine.dll</HintPath>
       <Private>False</Private>
@@ -48,11 +58,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdapterId.cs" />
     <Compile Include="Convert\AdapterId.cs" />
+    <Compile Include="Convert\PrivateHelpers\Constraint.cs" />
+    <Compile Include="Convert\PrivateHelpers\Material.cs" />
+    <Compile Include="Convert\PrivateHelpers\Section.cs" />
     <Compile Include="Convert\ToBHoM.cs" />
     <Compile Include="Convert\ToSAP2000.cs" />
+    <Compile Include="ModelData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
