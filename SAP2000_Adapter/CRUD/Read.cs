@@ -246,6 +246,7 @@ namespace BH.Adapter.SAP2000
                 panelConstant.CustomData.Add("Notes", notes);
                 panelConstant.CustomData.Add("GUID", guid);
                 if (hasModifiers)
+                {
                     panelConstant.CustomData.Add("MembraneF11Modifier", modifiers[0]);
                     panelConstant.CustomData.Add("MembraneF22Modifier", modifiers[1]);
                     panelConstant.CustomData.Add("MembraneF12Modifier", modifiers[2]);
@@ -256,6 +257,8 @@ namespace BH.Adapter.SAP2000
                     panelConstant.CustomData.Add("ShearV23Modifier", modifiers[7]);
                     panelConstant.CustomData.Add("MassModifier", modifiers[8]);
                     panelConstant.CustomData.Add("WeightModifier", modifiers[9]);
+                }
+
 
                 propertyList.Add(panelConstant);
             }
