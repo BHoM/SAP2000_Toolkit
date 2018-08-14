@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BH.Adapter.SAP2000;
 using BH.oM.Geometry;
 using BH.oM.Common.Materials;
-using BH.Engine.Common;
-using BH.Engine.Geometry;
 using BH.oM.Structural.Properties;
 using BH.oM.Structural.Elements;
 using BH.oM.DataManipulation.Queries;
+using BH.Adapter.SAP2000;
 
 namespace SAP2000_Test
 {
@@ -191,8 +189,10 @@ namespace SAP2000_Test
 
             List<PanelPlanar> panels = new List<PanelPlanar>();
 
-            Polyline outline = new Polyline();
-            outline.ControlPoints = new List<Point>() { p01, p02, p03, p04, p01 };
+            Polyline outline = new Polyline()
+            {
+                ControlPoints = new List<Point>() { p01, p02, p03, p04, p01 }
+            };
             List<Opening> openings = null;
 
             PanelPlanar panelA = BH.Engine.Structure.Create.PanelPlanar(outline, openings);
