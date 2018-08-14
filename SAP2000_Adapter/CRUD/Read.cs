@@ -83,10 +83,11 @@ namespace BH.Adapter.SAP2000
                     double[] springEnd = new double[6];
 
                     model.FrameObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
-                    bhBar.Release = new BarRelease();
-                    bhBar.Release.StartRelease = Helper.GetConstraint6DOF(restraintStart, springStart);
-                    bhBar.Release.EndRelease = Helper.GetConstraint6DOF(restraintEnd, springEnd);
-
+                    bhBar.Release = new BarRelease()
+                    {
+                        StartRelease = Helper.GetConstraint6DOF(restraintStart, springStart),
+                        EndRelease = Helper.GetConstraint6DOF(restraintEnd, springEnd)
+                    };
                     eFramePropType propertyType = eFramePropType.General;
                     string propertyName = "";
                     string sAuto = "";
@@ -235,11 +236,13 @@ namespace BH.Adapter.SAP2000
                 model.PropArea.GetShell_1(id, ref shellType, ref includeDrillingDOF, ref material, ref matAng, ref thickness, ref bending, ref color, ref notes, ref guid);
                 if (model.PropArea.GetModifiers(id, ref modifiers) == 0)
                     hasModifiers = true;
-                
-                ConstantThickness panelConstant = new ConstantThickness();
-                panelConstant.Name = id;
-                panelConstant.Material = ReadMaterials(new List<string>() { material })[0];
-                panelConstant.Thickness = thickness;
+
+                ConstantThickness panelConstant = new ConstantThickness()
+                {
+                    Name = id,
+                    Material = ReadMaterials(new List<string>() { material })[0],
+                    Thickness = thickness
+                };
                 panelConstant.CustomData.Add("MaterialAngle", matAng);
                 panelConstant.CustomData.Add("BendingThickness", bending);
                 panelConstant.CustomData.Add("Color", color);
@@ -308,8 +311,10 @@ namespace BH.Adapter.SAP2000
 
                 Polyline pl = Helper.GetPanelPerimeter(model, id);
 
-                Edge edge = new Edge();
-                edge.Curve = pl;
+                Edge edge = new Edge()
+                {
+                    Curve = pl
+                };
                 //edge.Constraint = new Constraint4DOF();// <---- cannot see anyway to set this via API and for some reason constraints are not being set in old version of etabs toolkit TODO
 
                 panel.ExternalEdges = new List<Edge>() { edge };
@@ -317,8 +322,10 @@ namespace BH.Adapter.SAP2000
                 {
                     if (pl.IsContaining(kvp.Value.ControlPoints))
                     {
-                        Opening opening = new Opening();
-                        opening.Edges = new List<Edge>() { new Edge() { Curve = kvp.Value } };
+                        Opening opening = new Opening()
+                        {
+                            Edges = new List<Edge>() { new Edge() { Curve = kvp.Value } }
+                        };
                         panel.Openings.Add(opening);
                     }
                 }

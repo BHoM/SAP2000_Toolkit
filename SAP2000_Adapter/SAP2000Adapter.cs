@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using BH.Adapter;
-using BH.Engine.SAP2000;
 using SAP2000v19;
 
 namespace BH.Adapter.SAP2000

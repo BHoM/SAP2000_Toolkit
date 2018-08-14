@@ -283,7 +283,6 @@ namespace BH.Adapter.SAP2000
 
         private bool CreateObject(RigidLink bhLink)
         {
-            bool success = true;
             int retA = 0;
             int retB = 0;
 
@@ -314,7 +313,14 @@ namespace BH.Adapter.SAP2000
 
             }
 
-            return success;
+            if(retA+retB == 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }
