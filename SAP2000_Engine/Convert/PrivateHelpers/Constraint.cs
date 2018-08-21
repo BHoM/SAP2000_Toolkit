@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Structural.Properties;
+using BH.oM.Structure.Properties;
 
 namespace BH.Engine.SAP2000
 {
