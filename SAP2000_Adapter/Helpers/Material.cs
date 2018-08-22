@@ -79,17 +79,13 @@ namespace BH.Adapter.SAP2000
             int colour = 0;
             string guid = "";
             string notes = "";
-            string name = material.CustomData[AdapterId].ToString();
 
             if (model.PropMaterial.GetMaterial(material.Name, ref matType, ref colour, ref notes, ref guid) != 0)
             {
-                model.PropMaterial.AddMaterial(ref name, GetMaterialType(material.Type), "", "", "");
-                model.PropMaterial.ChangeName(name, material.Name);
+                model.PropMaterial.SetMaterial(material.Name, GetMaterialType(material.Type));
                 model.PropMaterial.SetMPIsotropic(material.Name, material.YoungsModulus, material.PoissonsRatio, material.CoeffThermalExpansion);
                 model.PropMaterial.SetWeightAndMass(material.Name, 0, material.Density);
-                //modelData.materialDict.Add(material.Name, material);
-            }
-
+            }                
         }
 
         private static MaterialType GetMaterialType(eMatType materialType)
@@ -127,15 +123,15 @@ namespace BH.Adapter.SAP2000
                     return eMatType.Steel;
                 case MaterialType.Concrete:
                     return eMatType.Concrete;
-                case MaterialType.Timber://no material of this type in ETABS !!! 
+                case MaterialType.Timber://no material of this type in SAP!!! 
                     return eMatType.Steel;
                 case MaterialType.Rebar:
                     return eMatType.Rebar;
                 case MaterialType.Tendon:
                     return eMatType.Tendon;
-                case MaterialType.Glass://no material of this type in ETABS !!!
+                case MaterialType.Glass://no material of this type in SAP!!!
                     return eMatType.Steel;
-                case MaterialType.Cable://no material of this type in ETABS !!!
+                case MaterialType.Cable://no material of this type in SAP!!!
                     return eMatType.Steel;
                 default:
                     return eMatType.Steel;

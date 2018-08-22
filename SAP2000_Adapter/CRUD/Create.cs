@@ -86,17 +86,12 @@ namespace BH.Adapter.SAP2000
             int retC = 0;
 
             string name = "";
-            string bhId = bhBar.CustomData[AdapterId].ToString();
-            name = bhId;
+            name = bhBar.CustomData[AdapterId].ToString();
 
             retA = model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
-            //if (bhId != name)
-            //    success = false;
 
-            //model.FrameObj.SetGUID(name, bhNode.TaggedName());// see comment on node convert
-            // make sure section property exists in SAP first?
             retB = model.FrameObj.SetSection(name, bhBar.SectionProperty.Name);
-
+            
             BarRelease barRelease = bhBar.Release;
             if (barRelease != null)
             {
@@ -122,7 +117,7 @@ namespace BH.Adapter.SAP2000
         {
             bool success = true;
 
-            Helper.SetSectionProperty(model, bhSection);//TODO: this is only halfway done - should be moved away from engine to adapter as much as possible
+            Helper.SetSectionProperty(model, bhSection);
 
             return success;
         }
@@ -131,7 +126,7 @@ namespace BH.Adapter.SAP2000
         {
             bool success = true;
 
-            Helper.SetMaterial(model, material); //TODO: this is only halfway done - should be moved away from engine to adapter as much as possible
+            Helper.SetMaterial(model, material);
 
             return success;
         }
