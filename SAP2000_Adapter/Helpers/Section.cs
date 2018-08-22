@@ -25,6 +25,8 @@ namespace BH.Adapter.SAP2000
             double tw = 0;
             double tfb = 0;
             double t2b = 0;
+            double radius = 0;
+            double angle = 0;
             int colour = 0;
             string notes = "";
             string guid = "";
@@ -98,6 +100,8 @@ namespace BH.Adapter.SAP2000
                 case eFramePropType.Cold_2C:
                     break;
                 case eFramePropType.Cold_Z:
+                    model.PropFrame.GetColdZ(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tw, ref radius, ref tfb, ref angle, ref colour, ref notes, ref guid);
+                    dimensions = Create.ZSectionProfile(t3, t2, tw, tw, radius, 0);                    
                     break;
                 case eFramePropType.Cold_L:
                     break;
@@ -142,10 +146,10 @@ namespace BH.Adapter.SAP2000
                 case eFramePropType.SteelRod:
                     break;
                 default:
-                    throw new NotImplementedException("Section convertion for the type: " + propertyType.ToString() + " is not implemented in ETABS adapter");
+                    throw new NotImplementedException("Section convertion for the type: " + propertyType.ToString() + " is not implemented in SAP adapter");
             }
             if (dimensions == null)
-                throw new NotImplementedException("Section convertion for the type: " + propertyType.ToString() + " is not implemented in ETABS adapter");
+                throw new NotImplementedException("Section convertion for the type: " + propertyType.ToString() + " is not implemented in SAP adapter");
             #endregion
 
 
@@ -178,26 +182,21 @@ namespace BH.Adapter.SAP2000
                     }
                     break;
                 case "explicit":
-                    ExplicitSection eSection = new ExplicitSection();
-                    eSection.Area = Area;
-                    eSection.Asy = As2;
-                    eSection.Asz = As3;
-                    //eSection.CentreY = ;
-                    //eSection.CentreZ = ;
-                    //eSection.Iw = 0;//warping
-                    eSection.Iy = I22;
-                    eSection.Iz = I33;
-                    eSection.J = Torsion;
-                    eSection.Rgy = R22;
-                    eSection.Rgz = R33;
-                    eSection.Wply = S22;//capacity - plastic (wply)
-                    eSection.Wplz = S33;
-                    //eSection.Vpy = 0;
-                    //eSection.Vpz = 0;
-                    //eSection.Vy = 0;
-                    //eSection.Vz = 0;
-                    eSection.Wely = Z22;//capacity elastic
-                    eSection.Welz = Z33;
+                    ExplicitSection eSection = new ExplicitSection()
+                    {
+                        Area = Area,
+                        Asy = As2,
+                        Asz = As3,
+                        Iy = I22,
+                        Iz = I33,
+                        J = Torsion,
+                        Rgy = R22,
+                        Rgz = R33,
+                        Wply = S22,
+                        Wplz = S33,
+                        Wely = Z22,
+                        Welz = Z33
+                    };
                     break;
                 default:
                     break;
@@ -213,30 +212,7 @@ namespace BH.Adapter.SAP2000
 
         public static void SetSectionProperty(cSapModel model, ISectionProperty bhSection)
         {
-            //without modelData and the adapter there is no reason to devide this into SetSpecificSection and SetSectionProperty... right?
             SetSpecificSection(bhSection as dynamic, model);
-
-            //string materialName = "";
-
-            //if (modelData.sectionDict.ContainsKey(bhSection.Name))
-            //{
-            //    // nothing ?
-            //}
-            //else
-            //{
-            //    if (bhSection.Material == null)
-            //    {
-            //        //assign some default and/or throw error? TODO
-            //    }
-            //    else
-            //    {
-            //        SetMaterial(modelData, bhSection.Material);
-            //    }
-
-            //    SetSpecificSection(bhSection as dynamic, modelData.model);
-            //    modelData.sectionDict.Add(bhSection.Name, bhSection);
-            //}
-
         }
 
         private static void SetSpecificSection(SteelSection section, cSapModel model)
@@ -286,13 +262,13 @@ namespace BH.Adapter.SAP2000
         private static void SetSpecificDimensions(FabricatedBoxProfile dimensions, string sectionName, string materialName, cSapModel model)
         {
             if (dimensions.TopFlangeThickness != dimensions.BotFlangeThickness)
-                throw new NotImplementedException("different thickness of top and bottom flange is not supported in ETABS");
+                throw new NotImplementedException("different thickness of top and bottom flange is not supported in SAP2000");
             model.PropFrame.SetTube(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.TopFlangeThickness, dimensions.WebThickness);
         }
 
         private static void SetSpecificDimensions(ISectionProfile dimensions, string sectionName, string materialName, cSapModel model)
         {
-            model.PropFrame.SetISection(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.Width, dimensions.FlangeThickness);
+            Int32 ret = model.PropFrame.SetISection(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.Width, dimensions.FlangeThickness);
         }
 
         private static void SetSpecificDimensions(FabricatedISectionProfile dimensions, string sectionName, string materialName, cSapModel model)
@@ -317,7 +293,9 @@ namespace BH.Adapter.SAP2000
 
         private static void SetSpecificDimensions(ZSectionProfile dimensions, string sectionName, string materialName, cSapModel model)
         {
-            throw new NotImplementedException("Zed-Section? Never heard of it!");
+            if (dimensions.FlangeThickness != dimensions.WebThickness)
+                throw new NotImplementedException("different thickness of web and flange is not supported in SAP2000");
+            model.PropFrame.SetColdZ(sectionName, materialName, dimensions.Height, dimensions.FlangeWidth, dimensions.FlangeThickness, dimensions.RootRadius, 0, 0);
         }
 
         private static void SetSpecificDimensions(RectangleProfile dimensions, string sectionName, string materialName, cSapModel model)

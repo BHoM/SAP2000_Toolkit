@@ -16,47 +16,94 @@ namespace SAP2000_Test
         {
             Console.WriteLine("SAP Should now open...");
             SAP2000Adapter app = new SAP2000Adapter("", true);
-            Console.WriteLine("If SAP is open, I worked! press any key to continue");
-            Console.ReadKey();
-            Console.WriteLine("");
+            //Console.WriteLine("If SAP is open, I worked! press any key to continue");
+            //Console.ReadKey();
+            //Console.WriteLine("");
 
-            TestPushBars(app);
+            TestPushMaterials(app);
+                
+            //TestPushSections(app);
 
-            TestPullNodes(app);
+            //TestPushBars(app);
 
-            TestPullBars(app);
+            //TestPullNodes(app);
 
-            TestPullSections(app);
+            //TestPullBars(app);
 
-            TestPullPanels(app);
+            //TestPullSections(app);
+
+            //TestPullPanels(app);
 
             Console.WriteLine("Press any key to continue");
             Console.ReadKey();
             Console.WriteLine("");
         }
 
-        private static void TestPushBars(SAP2000Adapter app)
+        private static void TestPushMaterials(SAP2000Adapter app)
         {
             // CREATE MATERIALS //
 
-            Material steel = BH.Engine.Common.Create.Material("Steel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500);
+            Material steel = BH.Engine.Common.Create.Material("mySteel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500);
+            Material concrete = BH.Engine.Common.Create.Material("myConcrete", MaterialType.Concrete, 10, 10, 10, 10);
+            
+            List<Material> materials = new List<Material>
+            {
+                steel,
+                concrete
+            };
+
+            app.Push(materials, "Materials");
+
+        }
+
+        private static void TestPushSections(SAP2000Adapter app)
+        {
+            // CREATE MATERIALS //
+
+            Material steel = BH.Engine.Common.Create.Material("mySteel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500);
             Material concrete = BH.Engine.Common.Create.Material("myConcrete", MaterialType.Concrete, 10, 10, 10, 10);
             //Material steelOther = BH.Engine.Common.Create.Material("otherSteel", MaterialType.Steel,    210000, 0.3, 0.00012, 78500);
 
             ISectionProperty sec0 = BH.Engine.Structure.Create.SteelISection(110, 10, 80, 20);
             sec0.Material = steel;
-            sec0.Name = "Section 1";
+            sec0.Name = "Steel Section";
 
             ISectionProperty sec1 = BH.Engine.Structure.Create.ConcreteRectangleSection(200, 120);
             sec1.Material = concrete;
-            sec1.Name = "Section 2a";
+            sec1.Name = "Concrete Section";
 
-            //ISectionProperty sec2b = new ExplicitSection();
-            //sec2b.Material = steelOther;
-            //sec2b.Name = "Section 2b";
+            IProperty2D panelProp = BH.Engine.Structure.Create.ConstantThickness(100, concrete);
+            panelProp.Name = "Concrete Slab";
 
-            IProperty2D panelProp = BH.Engine.Structure.Create.ConstantThickness(100, steel);
-            panelProp.Name = "panelProperty";
+            List<ISectionProperty> barProps = new List<ISectionProperty>
+            {
+
+                sec1,
+                sec0
+            };
+
+            app.Push(barProps, "BarSecs");
+
+        }
+
+        private static void TestPushBars(SAP2000Adapter app)
+        {
+            // CREATE MATERIALS //
+
+            Material steel = BH.Engine.Common.Create.Material("mySteel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500);
+            Material concrete = BH.Engine.Common.Create.Material("myConcrete", MaterialType.Concrete, 10, 10, 10, 10);
+            //Material steelOther = BH.Engine.Common.Create.Material("otherSteel", MaterialType.Steel,    210000, 0.3, 0.00012, 78500);
+
+            ISectionProperty sec0 = BH.Engine.Structure.Create.SteelISection(110, 10, 80, 20);
+            sec0.Material = steel;
+            sec0.Name = "Steel Section";
+
+            ISectionProperty sec1 = BH.Engine.Structure.Create.ConcreteRectangleSection(200, 120);
+            sec1.Material = concrete;
+            sec1.Name = "Concrete Section";
+
+            IProperty2D panelProp = BH.Engine.Structure.Create.ConstantThickness(100, concrete);
+            panelProp.Name = "Concrete Slab";
 
             // CREATE CONSTRAINTS //
 
