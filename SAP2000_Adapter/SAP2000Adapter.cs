@@ -1,23 +1,19 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Base;
-using BH.oM.Structure.Elements;
+using System.Diagnostics;
+using BH.Adapter;
 using SAP2000v19;
 
 namespace BH.Adapter.SAP2000
 {
     public partial class SAP2000Adapter : BHoMAdapter
     {
-        
-        /***************************************************/
-        /**** Public Properties                         ****/
-        /***************************************************/
-
         public const string ID = "SAP2000_id";
+        private cOAPI app;
+        private cSapModel model;
 
         /***************************************************/
         /**** Constructors                              ****/
@@ -38,29 +34,29 @@ namespace BH.Adapter.SAP2000
                 cHelper helper = new SAP2000v19.Helper();
 
                 object runningInstance = null;
-                if (System.Diagnostics.Process.GetProcessesByName("SAP2000").Length > 0)
+                if (IsApplicationRunning())
                 {
                     runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.SAP2000.API.SAPObject");
 
-                    m_app = (cOAPI)runningInstance;
-                    m_model = m_app.SapModel;
+                    app = (cOAPI)runningInstance;
+                    model = app.SapModel;
                     if (System.IO.File.Exists(filePath))
-                        m_model.File.OpenFile(filePath);
-                    m_model.SetPresentUnits(eUnits.N_m_C);
+                        model.File.OpenFile(filePath);
+                    model.SetPresentUnits(eUnits.N_m_C);
                 }
                 else 
                 {
-                    //open SAP if not running
+                    //open ETABS if not running
                     try
                     {
-                        m_app = helper.CreateObject(pathToSAP);
-                        m_app.ApplicationStart();
-                        m_model = m_app.SapModel;
-                        m_model.InitializeNewModel(eUnits.N_m_C);
+                        app = helper.CreateObject(pathToSAP);
+                        app.ApplicationStart();
+                        model = app.SapModel;
+                        model.InitializeNewModel(eUnits.N_m_C);
                         if (System.IO.File.Exists(filePath))
-                            m_model.File.OpenFile(filePath);
+                            model.File.OpenFile(filePath);
                         else
-                            m_model.File.NewBlank();
+                            model.File.NewBlank();
                     }
                     catch
                     {
@@ -71,11 +67,21 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
+        /**** Public  Methods                           ****/
+        /***************************************************/
+
+        public static bool IsApplicationRunning()
+        {
+            return (System.Diagnostics.Process.GetProcessesByName("SAP2000").Length > 0) ? true : false;
+        }
+
+        /***************************************************/
         /**** Private  Fields                           ****/
         /***************************************************/
 
-        private cOAPI m_app;
-        private cSapModel m_model;
+        //Add any comlink object as a private field here, example named:
+
+        //private SoftwareComLink m_softwareNameCom;
 
 
         /***************************************************/

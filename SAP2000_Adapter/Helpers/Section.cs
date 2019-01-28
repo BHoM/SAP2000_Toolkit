@@ -1,14 +1,9 @@
-﻿using BH.oM.Structure.Properties.Section;
-using BH.oM.Structure.Properties.Section.ShapeProfiles;
+﻿using BH.oM.Structure.Properties;
 using BH.Engine.Structure;
 using CE = BH.Engine.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Common.Materials;
 using SAP2000v19;
+using System;
+using BH.oM.Common.Materials;
 
 namespace BH.Adapter.SAP2000
 {
