@@ -2,19 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BH.oM.Base;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties.Section;
-using BH.oM.Structure.Properties.Surface;
-using BH.oM.Structure.Properties.Constraint;
+using BH.oM.Structure.Properties;
 using BH.oM.Structure.Loads;
 using BH.oM.Common.Materials;
-using SAP2000v19;
 using BH.oM.Geometry;
 using BH.Engine.Geometry;
-using BH.Engine.Reflection;
+using SAP2000v19;
 
 namespace BH.Adapter.SAP2000
 {
@@ -35,8 +30,8 @@ namespace BH.Adapter.SAP2000
                 return ReadMaterials(ids as dynamic);
             else if (type == typeof(PanelPlanar))
                 return ReadPanel(ids as dynamic);
-            else if (type == typeof(ISurfaceProperty))
-                return ReadSurfaceProperty(ids as dynamic);
+            else if (type == typeof(IProperty2D))
+                return ReadProperty2d(ids as dynamic);
             else if (type == typeof(LoadCombination))
                 return ReadLoadCombination(ids as dynamic);
             else if (type == typeof(Loadcase))
@@ -45,8 +40,6 @@ namespace BH.Adapter.SAP2000
                 return ReadLoad(type, ids as dynamic);
             else if (type == typeof(RigidLink))
                 return ReadRigidLink(ids as dynamic);
-            else if (type == typeof(LinkConstraint))
-                return ReadLinkConstraints(ids as dynamic);
 
 
             return null;//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
@@ -55,45 +48,8 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
         /**** Private specific read methods             ****/
         /***************************************************/
-        
-        private List<Node> ReadNodes(List<string> ids = null)
-        {
-            List<Node> nodeList = new List<Node>();
 
-            int nameCount = 0;
-            string[] nameArr = { };
-
-            if (ids == null)
-            {
-                m_model.PointObj.GetNameList(ref nameCount, ref nameArr);
-                ids = nameArr.ToList();
-            }
-
-            foreach (string id in ids)
-            {
-                Node bhNode = new Node();
-                double x, y, z;
-                x = y = z = 0;
-                bool[] restraint = new bool[6];
-                double[] spring = new double[6];
-
-                m_model.PointObj.GetCoordCartesian(id, ref x, ref y, ref z);
-                bhNode.Position = new oM.Geometry.Point() { X = x, Y = y, Z = z };
-                bhNode.CustomData.Add(AdapterId, id);
-
-                m_model.PointObj.GetRestraint(id, ref restraint);
-                m_model.PointObj.SetSpring(id, ref spring);
-                bhNode.Constraint = Helper.GetConstraint6DOF(restraint, spring);
-
-
-                nodeList.Add(bhNode);
-            }
-
-
-            return nodeList;
-        }
-
-        /***************************************/
+        //The List<string> in the methods below can be changed to a list of any type of identification more suitable for the toolkit
 
         private List<Bar> ReadBars(List<string> ids = null)
         {
@@ -103,12 +59,9 @@ namespace BH.Adapter.SAP2000
 
             if (ids == null)
             {
-                m_model.FrameObj.GetNameList(ref nameCount, ref names);
+                model.FrameObj.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
             }
-
-            //Storing the sectionproperties as they are being pulled out, to only pull each section once.
-            Dictionary<string, ISectionProperty> sectionProperties = new Dictionary<string, ISectionProperty>();
 
             foreach (string id in ids)
             {
@@ -118,7 +71,7 @@ namespace BH.Adapter.SAP2000
                     bhBar.CustomData.Add(AdapterId, id);
                     string startId = "";
                     string endId = "";
-                    m_model.FrameObj.GetPoints(id, ref startId, ref endId);
+                    model.FrameObj.GetPoints(id, ref startId, ref endId);
 
                     List<Node> endNodes = ReadNodes(new List<string> { startId, endId });
                     bhBar.StartNode = endNodes[0];
@@ -129,30 +82,32 @@ namespace BH.Adapter.SAP2000
                     bool[] restraintEnd = new bool[6];
                     double[] springEnd = new double[6];
 
-                    m_model.FrameObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
-                    bhBar.Release = new BarRelease();
-                    bhBar.Release.StartRelease = Helper.GetConstraint6DOF(restraintStart, springStart);
-                    bhBar.Release.EndRelease = Helper.GetConstraint6DOF(restraintEnd, springEnd);
-
+                    model.FrameObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
+                    bhBar.Release = new BarRelease()
+                    {
+                        StartRelease = Helper.GetConstraint6DOF(restraintStart, springStart),
+                        EndRelease = Helper.GetConstraint6DOF(restraintEnd, springEnd)
+                    };
                     eFramePropType propertyType = eFramePropType.General;
                     string propertyName = "";
                     string sAuto = "";
-                    m_model.FrameObj.GetSection(id, ref propertyName, ref sAuto);
+                    model.FrameObj.GetSection(id, ref propertyName, ref sAuto);
                     if (propertyName != "None")
                     {
-                        ISectionProperty property;
-
-                        //Check if section already has been pulled once
-                        if (!sectionProperties.TryGetValue(propertyName, out property))
-                        {
-                            //if not pull it and store it
-                            m_model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
-                            property = Helper.GetSectionProperty(m_model, propertyName, propertyType);
-                            sectionProperties[propertyName] = property;
-                        }
-
-                        bhBar.SectionProperty = property;
+                        model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
+                        bhBar.SectionProperty = Helper.GetSectionProperty(model, propertyName, propertyType);
                     }
+
+                    //bool autoOffset = false;
+                    //double startLength = 0;
+                    //double endLength = 0;
+                    //double rz = 0;
+                    //model.FrameObj.GetEndLengthOffset(id, ref autoOffset, ref startLength, ref endLength, ref rz);
+                    //if (!autoOffset)
+                    //{
+                    //    bhBar.Offset.Start = startLength == 0 ? null : new Vector() { X = startLength * (-1), Y = 0, Z = 0 };
+                    //    bhBar.Offset.End = endLength == 0 ? null : new Vector() { X = endLength, Y = 0, Z = 0 };
+                    //}
 
                     barList.Add(bhBar);
                 }
@@ -166,6 +121,45 @@ namespace BH.Adapter.SAP2000
 
         /***************************************/
 
+        private List<Node> ReadNodes(List<string> ids = null)
+        {
+            List<Node> nodeList = new List<Node>();
+
+            int nameCount = 0;
+            string[] nameArr = { };
+
+            if (ids == null)
+            {
+                model.PointObj.GetNameList(ref nameCount, ref nameArr);
+                ids = nameArr.ToList();
+            }
+
+            foreach (string id in ids)
+            {
+                Node bhNode = new Node();
+                double x, y, z;
+                x = y = z = 0;
+                bool[] restraint = new bool[6];
+                double[] spring = new double[6];
+
+                model.PointObj.GetCoordCartesian(id, ref x, ref y, ref z);
+                bhNode.Position = new oM.Geometry.Point() { X = x, Y = y, Z = z };
+                bhNode.CustomData.Add(AdapterId, id);
+
+                model.PointObj.GetRestraint(id, ref restraint);
+                model.PointObj.SetSpring(id, ref spring);
+                bhNode.Constraint = Helper.GetConstraint6DOF(restraint, spring);
+
+
+                nodeList.Add(bhNode);
+            }
+
+
+            return nodeList;
+        }
+
+        /***************************************/
+
         private List<ISectionProperty> ReadSectionProperties(List<string> ids = null)
         {
             List<ISectionProperty> propList = new List<ISectionProperty>();
@@ -174,7 +168,7 @@ namespace BH.Adapter.SAP2000
 
             if (ids == null)
             {
-                m_model.PropFrame.GetNameList(ref nameCount, ref names);
+                model.PropFrame.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
             }
 
@@ -182,41 +176,13 @@ namespace BH.Adapter.SAP2000
 
             foreach (string id in ids)
             {
-                m_model.PropFrame.GetTypeOAPI(id, ref propertyType);
-                propList.Add(Helper.GetSectionProperty(m_model, id, propertyType));
+                model.PropFrame.GetTypeOAPI(id, ref propertyType);
+                propList.Add(Helper.GetSectionProperty(model, id, propertyType));
             }
             return propList;
         }
 
         /***************************************/
-
-        private List<LinkConstraint> ReadLinkConstraints(List<string> ids = null)
-        {
-            List<LinkConstraint> propList = new List<LinkConstraint>();
-            int nameCount = 0;
-            string[] names = { };
-
-            if (ids == null)
-            {
-                m_model.PropLink.GetNameList(ref nameCount, ref names);
-                ids = names.ToList();
-            }
-
-            foreach (string id in ids)
-            {
-                eLinkPropType linkType = eLinkPropType.Linear;
-                m_model.PropLink.GetTypeOAPI(id, ref linkType);
-                LinkConstraint constr = Helper.LinkConstraint(id, linkType, m_model);
-                if (constr != null)
-                    propList.Add(constr);
-                else
-                    Engine.Reflection.Compute.RecordError("Failed to read link constraint with id :" + id);
-
-            }
-            return propList;
-        }
-
-        /***************************************************/
 
         private List<Material> ReadMaterials(List<string> ids = null)
         {
@@ -226,13 +192,13 @@ namespace BH.Adapter.SAP2000
 
             if (ids == null)
             {
-                m_model.PropMaterial.GetNameList(ref nameCount, ref names);
+                model.PropMaterial.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
             }
 
             foreach (string id in ids)
             {
-                materialList.Add(Helper.GetMaterial(m_model, id));
+                materialList.Add(Helper.GetMaterial(model, id));
             }
 
             return materialList;
@@ -240,15 +206,15 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private List<ISurfaceProperty> ReadSurfaceProperty(List<string> ids = null)
+        private List<IProperty2D> ReadProperty2d(List<string> ids = null)
         {
-            List<ISurfaceProperty> propertyList = new List<ISurfaceProperty>();
+            List<IProperty2D> propertyList = new List<IProperty2D>();
             int nameCount = 0;
             string[] nameArr = { };
 
             if (ids == null)
             {
-                m_model.PropArea.GetNameList(ref nameCount, ref nameArr);
+                model.PropArea.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
             }
 
@@ -267,8 +233,8 @@ namespace BH.Adapter.SAP2000
                 double[] modifiers = new double[] { };
                 bool hasModifiers = false;
 
-                m_model.PropArea.GetShell_1(id, ref shellType, ref includeDrillingDOF, ref material, ref matAng, ref thickness, ref bending, ref color, ref notes, ref guid);
-                if (m_model.PropArea.GetModifiers(id, ref modifiers) == 0)
+                model.PropArea.GetShell_1(id, ref shellType, ref includeDrillingDOF, ref material, ref matAng, ref thickness, ref bending, ref color, ref notes, ref guid);
+                if (model.PropArea.GetModifiers(id, ref modifiers) == 0)
                     hasModifiers = true;
 
                 ConstantThickness panelConstant = new ConstantThickness()
@@ -313,20 +279,20 @@ namespace BH.Adapter.SAP2000
 
             if (ids == null)
             {
-                m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
+                model.AreaObj.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
             }
 
             //get openings, if any
-            m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
+            model.AreaObj.GetNameList(ref nameCount, ref nameArr);
             bool isOpening = false;
             Dictionary<string, Polyline> openingDict = new Dictionary<string, Polyline>();
             foreach (string name in nameArr)
             {
-                m_model.AreaObj.GetOpening(name, ref isOpening);
+                model.AreaObj.GetOpening(name, ref isOpening);
                 if (isOpening)
                 {
-                    openingDict.Add(name, Helper.GetPanelPerimeter(m_model, name));
+                    openingDict.Add(name, Helper.GetPanelPerimeter(model, name));
                 }
             }
 
@@ -337,16 +303,18 @@ namespace BH.Adapter.SAP2000
 
                 string propertyName = "";
 
-                m_model.AreaObj.GetProperty(id, ref propertyName);
-                ISurfaceProperty panelProperty = ReadSurfaceProperty(new List<string>() { propertyName })[0];
+                model.AreaObj.GetProperty(id, ref propertyName);
+                IProperty2D panelProperty = ReadProperty2d(new List<string>() { propertyName })[0];
 
                 PanelPlanar panel = new PanelPlanar();
                 panel.CustomData[AdapterId] = id;
 
-                Polyline pl = Helper.GetPanelPerimeter(m_model, id);
+                Polyline pl = Helper.GetPanelPerimeter(model, id);
 
-                Edge edge = new Edge();
-                edge.Curve = pl;
+                Edge edge = new Edge()
+                {
+                    Curve = pl
+                };
                 //edge.Constraint = new Constraint4DOF();// <---- cannot see anyway to set this via API and for some reason constraints are not being set in old version of etabs toolkit TODO
 
                 panel.ExternalEdges = new List<Edge>() { edge };
@@ -354,8 +322,10 @@ namespace BH.Adapter.SAP2000
                 {
                     if (pl.IsContaining(kvp.Value.ControlPoints))
                     {
-                        Opening opening = new Opening();
-                        opening.Edges = new List<Edge>() { new Edge() { Curve = kvp.Value } };
+                        Opening opening = new Opening()
+                        {
+                            Edges = new List<Edge>() { new Edge() { Curve = kvp.Value } }
+                        };
                         panel.Openings.Add(opening);
                     }
                 }
@@ -469,7 +439,7 @@ namespace BH.Adapter.SAP2000
 
             if (ids == null)
             {
-                m_model.LinkObj.GetNameList(ref nameCount, ref names);
+                model.LinkObj.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
             }
 
@@ -505,7 +475,7 @@ namespace BH.Adapter.SAP2000
                     bhLink.CustomData.Add(AdapterId, kvp.Key);
                     string startId = "";
                     string endId = "";
-                    m_model.LinkObj.GetPoints(kvp.Key, ref startId, ref endId);
+                    model.LinkObj.GetPoints(kvp.Key, ref startId, ref endId);
 
                     List<Node> endNodes = ReadNodes(new List<string> { startId, endId });
                     bhLink.MasterNode = endNodes[0];
@@ -522,13 +492,13 @@ namespace BH.Adapter.SAP2000
                     string multiLinkId = kvp.Key + ":::0";
                     List<string> nodeIdsToRead = new List<string>();
 
-                    m_model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
+                    model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
                     nodeIdsToRead.Add(startId);
 
                     for (int i = 1; i < kvp.Value.Count(); i++)
                     {
                         multiLinkId = kvp.Key + ":::" + i;
-                        m_model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
+                        model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
                         nodeIdsToRead.Add(endId);
                     }
 

@@ -1,56 +1,39 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using BH.oM.Architecture.Elements;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Properties;
-using BH.oM.Structure.Properties.Section;
-using BH.oM.Structure.Properties.Constraint;
-using BH.oM.Structure.Properties.Surface;
 using BH.oM.Structure.Loads;
 using BH.Engine.Structure;
 using BH.Engine.Geometry;
 using BH.oM.Common.Materials;
-using BH.Engine.SAP2000;
 
 namespace BH.Adapter.SAP2000
 {
     public partial class SAP2000Adapter
     {
-
-        /***************************************************/
         protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
         {
             bool success = true;
 
             if (typeof(BH.oM.Base.IBHoMObject).IsAssignableFrom(typeof(T)))
             {
-                success = CreateCollection(objects);
+                foreach (T obj in objects)
+                {
+                    success = CreateObject(obj as dynamic);
+                    //if (!success)
+                    //    break;
+                    //((BH.oM.Base.IBHoMObject)obj).ToETABS(modelData);
+                }
             }
             else
             {
                 success = false;
             }
 
-            m_model.View.RefreshView();
+            model.View.RefreshView();
             return success;
         }
-
-        /***************************************************/
-
-        private bool CreateCollection<T>(IEnumerable<T> objects) where T : BH.oM.Base.IObject
-        {
-            bool success = true;
-
-
-            foreach (T obj in objects)
-            {
-                success &= CreateObject(obj as dynamic);
-            }
-            
-            return success;
-        }
-
-        /***************************************************/
 
         private bool CreateObject(Node bhNode)
         {
@@ -63,10 +46,9 @@ namespace BH.Adapter.SAP2000
             string bhId = bhNode.CustomData[AdapterId].ToString();
             name = bhId;
 
-            retA = m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name);
-
-            if (name != bhId)
-                bhNode.CustomData[AdapterId] = name;
+            retA = model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name);
+            //if (name != bhId)
+            //    success = false; //this is not necessary if you can guarantee that it is impossible that this bhId does not match any existing name in ETABS !!!
 
             if (bhNode.Constraint != null)
             {
@@ -86,8 +68,8 @@ namespace BH.Adapter.SAP2000
                 spring[4] = bhNode.Constraint.RotationalStiffnessY;
                 spring[5] = bhNode.Constraint.RotationalStiffnessZ;
 
-                retB = m_model.PointObj.SetRestraint(name, ref restraint);
-                retC = m_model.PointObj.SetSpring(name, ref spring);
+                retB = model.PointObj.SetRestraint(name, ref restraint);
+                retC = model.PointObj.SetSpring(name, ref spring);
             }
 
             if (retA != 0 || retB != 0 || retC != 0)
@@ -96,49 +78,20 @@ namespace BH.Adapter.SAP2000
             return success;
         }
 
-        /***************************************************/
-
         private bool CreateObject(Bar bhBar)
         {
-            int ret = 0;
+            bool success = true;
+            int retA = 0;
+            int retB = 0;
+            int retC = 0;
 
             string name = "";
-            string bhId = bhBar.CustomData[AdapterId].ToString();
-            name = bhId;
+            name = bhBar.CustomData[AdapterId].ToString();
 
-            ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
+            retA = model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
 
-            if (ret != 0)
-            {
-                CreateElementError("Bar", name);
-                return false;
-            }
-
-            if (m_model.FrameObj.SetSection(name, bhBar.SectionProperty.Name) != 0)
-            {
-                CreatePropertyWarning("SectionProperty", "Bar", name);
-                ret++;
-            }
-
-            if (m_model.FrameObj.SetLocalAxes(name, bhBar.OrientationAngle * 180 / System.Math.PI) != 0)
-            {
-                CreatePropertyWarning("Orientation angle", "Bar", name);
-                ret++;
-            }
-
-            Offset offset = bhBar.Offset;
-
-            double[] offset1 = new double[3];
-            double[] offset2 = new double[3];
-
-            if (offset != null)
-            {
-                offset1[1] = offset.Start.Z;
-                offset1[2] = offset.Start.Y;
-                offset2[1] = offset.End.Z;
-                offset2[2] = offset.End.Y;
-            }
-
+            retB = model.FrameObj.SetSection(name, bhBar.SectionProperty.Name);
+            
             BarRelease barRelease = bhBar.Release;
             if (barRelease != null)
             {
@@ -147,97 +100,99 @@ namespace BH.Adapter.SAP2000
                 bool[] restraintEnd = barRelease.EndRelease.Fixities();// Helper.GetRestraint6DOF(barRelease.EndRelease);
                 double[] springEnd = barRelease.EndRelease.ElasticValues();// Helper.GetSprings6DOF(barRelease.EndRelease);
 
-                if (m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd) != 0)
-                {
-                    CreatePropertyWarning("Release", "Bar", name);
-                    ret++;
-                }
+                model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
             }
 
-            else if (bhBar.Offset != null)
-            {
-                if (m_model.FrameObj.SetEndLengthOffset(name, false, -1 * (bhBar.Offset.Start.X), bhBar.Offset.End.X, 1) != 0)
-                {
-                    CreatePropertyWarning("Length offset", "Bar", name);
-                    ret++;
-                }
-            }
+            Offset offset = bhBar.Offset;
+            if (offset != null)
+                model.FrameObj.SetEndLengthOffset(name, false, -1 * (offset.Start.X), offset.End.X, 1);
 
-            return ret == 0;
+            if (retA != 0 || retB != 0 || retC != 0)
+                success = false;
+
+            return success;
         }
-
-        /***************************************************/
 
         private bool CreateObject(ISectionProperty bhSection)
         {
             bool success = true;
 
-            Helper.SetSectionProperty(m_model, bhSection);
+            Helper.SetSectionProperty(model, bhSection);
 
             return success;
         }
-
-        /***************************************************/
 
         private bool CreateObject(Material material)
         {
             bool success = true;
 
-            Helper.SetMaterial(m_model, material);
+            Helper.SetMaterial(model, material);
 
             return success;
         }
 
-        /***************************************************/
-
-        private bool CreateObject(ISurfaceProperty surfaceProperty)
+        private bool CreateObject(IProperty2D property2d)
         {
-            int ret = 0;
+            // not implemented!
+            throw new NotImplementedException();
 
-            string propertyName = surfaceProperty.Name;// surfaceProperty.CustomData[AdapterId].ToString();
-            
-            if (surfaceProperty.GetType() == typeof(Waffle))
-            {
-                // not implemented!
-                CreatePropertyError("Waffle Not Implemented!", "PanelPlanar", propertyName);
-            }
-            else if (surfaceProperty.GetType() == typeof(Ribbed))
-            {
-                // not implemented!
-                CreatePropertyError("Ribbed Not Implemented!", "PanelPlanar", propertyName);
-            }
-            else if (surfaceProperty.GetType() == typeof(LoadingPanelProperty))
-            {
-                // not implemented!
-                CreatePropertyError("Loading Panel Not Implemented!", "PanelPlanar", propertyName);
-            }
-            else if (surfaceProperty.GetType() == typeof(ConstantThickness))
-            {
-                ConstantThickness constantThickness = (ConstantThickness)surfaceProperty;
-                ret = m_model.PropArea.SetShell(propertyName, 0, surfaceProperty.Material.Name, 0, constantThickness.Thickness, constantThickness.Thickness);
-            }
+            //bool success = true;
+            //int retA = 0;
 
-            if (surfaceProperty.HasModifiers())
-            {
-                double[] modifier = surfaceProperty.Modifiers();//(double[])surfaceProperty.CustomData["Modifiers"];
-                m_model.PropArea.SetModifiers(propertyName, ref modifier);
-            }
+            //string propertyName = property2d.Name;// property2d.CustomData[AdapterId].ToString();
 
-            return ret == 0;
+
+            //if (property2d.GetType() == typeof(Waffle))
+            //{
+            //    Waffle waffleProperty = (Waffle)property2d;
+            //    retA = model.PropArea.SetSlabWaffle(propertyName, waffleProperty.TotalDepthX, waffleProperty.Thickness, waffleProperty.StemWidthX, waffleProperty.StemWidthX, waffleProperty.SpacingX, waffleProperty.SpacingY);
+            //}
+
+            //if (property2d.GetType() == typeof(Ribbed))
+            //{
+            //    Ribbed ribbedProperty = (Ribbed)property2d;
+            //    retA = model.PropArea.SetSlabRibbed(propertyName, ribbedProperty.TotalDepth, ribbedProperty.Thickness, ribbedProperty.StemWidth, ribbedProperty.StemWidth, ribbedProperty.Spacing, (int)ribbedProperty.Direction);
+            //}
+
+            //if (property2d.GetType() == typeof(LoadingPanelProperty))
+            //{
+            //    retA = model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, 0);
+            //}
+
+            //if (property2d.GetType() == typeof(ConstantThickness))
+            //{
+            //    ConstantThickness constantThickness = (ConstantThickness)property2d;
+            //    if (constantThickness.PanelType == PanelType.Wall)
+            //        retA = model.PropArea.SetWall(propertyName, ETABS2016.eWallPropType.Specified, ETABS2016.eShellType.ShellThin, property2d.Material.Name, constantThickness.Thickness);
+            //    else
+            //        retA = model.PropArea.SetSlab(propertyName, ETABS2016.eSlabType.Slab, ETABS2016.eShellType.ShellThin, property2d.Material.Name, constantThickness.Thickness);
+            //}
+
+
+            //if (property2d.HasModifiers())
+            //{
+            //    double[] modifier = property2d.Modifiers();//(double[])property2d.CustomData["Modifiers"];
+            //    model.PropArea.SetModifiers(propertyName, ref modifier);
+            //}
+
+            //if (retA != 0)
+            //    success = false;
+
+            //return success;
         }
-        
-        /***************************************************/
 
         private bool CreateObject(PanelPlanar bhPanel)
         {
             bool success = true;
             int retA = 0;
 
-            double mergeTol = 1e-3; 
-
             string name = bhPanel.CustomData[AdapterId].ToString();
             string propertyName = bhPanel.Property.Name;
-            List<BH.oM.Geometry.Point> boundaryPoints = bhPanel.ControlPoints(true).CullDuplicates(mergeTol);
+            List<BH.oM.Geometry.Point> boundaryPoints = new List<oM.Geometry.Point>();
+
+            foreach (Edge edge in bhPanel.ExternalEdges)
+                boundaryPoints.AddRange(edge.Curve.IControlPoints());
+            boundaryPoints = boundaryPoints.Distinct().ToList();
 
             int segmentCount = boundaryPoints.Count();
             double[] x = new double[segmentCount];
@@ -250,8 +205,7 @@ namespace BH.Adapter.SAP2000
                 z[i] = boundaryPoints[i].Z;
             }
 
-            retA = m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, propertyName);
-
+            retA = model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, propertyName);
             if (retA != 0)
                 return false;
 
@@ -259,7 +213,10 @@ namespace BH.Adapter.SAP2000
             {
                 for (int i = 0; i < bhPanel.Openings.Count; i++)
                 {
-                    boundaryPoints = bhPanel.Openings[i].ControlPoints().CullDuplicates(mergeTol);
+                    boundaryPoints = new List<oM.Geometry.Point>();
+                    foreach (Edge edge in bhPanel.Openings[i].Edges)
+                        boundaryPoints.AddRange(edge.Curve.IControlPoints());
+                    boundaryPoints = boundaryPoints.Distinct().ToList();
 
                     segmentCount = boundaryPoints.Count();
                     x = new double[segmentCount];
@@ -274,35 +231,31 @@ namespace BH.Adapter.SAP2000
                     }
 
                     string openingName = name + "_Opening_" + i;
-                    m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName, "");//<-- setting panel property to empty string, verify that this is correct
-                    m_model.AreaObj.SetOpening(openingName, true);
+                    model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref openingName, "");//<-- setting panel property to empty string, verify that this is correct
+                    model.AreaObj.SetOpening(openingName, true);
                 }
             }
 
             return success;
         }
-        
-        /***************************************************/
 
         private bool CreateObject(Loadcase loadcase)
         {
             // not implemented!
-            CreateElementError("Loads Not Implemented!", loadcase.Name);
-            return false;
+            throw new NotImplementedException();
+
             //bool success = true;
 
             //Helper.SetLoadcase(model, loadcase);
 
             //return success;
         }
-        
-        /***************************************************/
 
         private bool CreateObject(LoadCombination loadcombination)
         {
             // not implemented!
-            CreateElementError("Loads Not Implemented!", loadcombination.Name);
-            return false;
+            throw new NotImplementedException();
+
             //bool success = true;
 
             //Helper.SetLoadCombination(model, loadcombination);
@@ -310,13 +263,11 @@ namespace BH.Adapter.SAP2000
             //return success;
         }
 
-        /***************************************************/
-
         private bool CreateObject(ILoad bhLoad)
         {
             // not implemented!
-            CreateElementError("Loads Not Implemented!", bhLoad.Name);
-            return false;
+            throw new NotImplementedException();
+
             //bool success = true;
 
             //Helper.SetLoad(model, bhLoad as dynamic);
@@ -325,11 +276,10 @@ namespace BH.Adapter.SAP2000
             //return success;
         }
 
-        /***************************************************/
-
         private bool CreateObject(RigidLink bhLink)
         {
-            int ret = 0;
+            int retA = 0;
+            int retB = 0;
 
             string name = "";
             string givenName = "";
@@ -341,44 +291,31 @@ namespace BH.Adapter.SAP2000
             List<Node> slaveNodes = bhLink.SlaveNodes;
             bool multiSlave = slaveNodes.Count() == 1 ? false : true;
 
+            //double XI = masterNode.Position.X;
+            //double YI = masterNode.Position.Y;
+            //double ZI = masterNode.Position.Z;
+
             for (int i = 0; i < slaveNodes.Count(); i++)
             {
+                //double XJ = slaveNodes[i].Position.X * 1000;//multiply by 1000 to compensate for Etabs strangeness: yes, one end is divided by 1000 the other end is not!
+                //double YJ = slaveNodes[i].Position.Y * 1000;
+                //double ZJ = slaveNodes[i].Position.Z * 1000;
+
                 name = multiSlave == true ? name + ":::" + i : name;
-                ret = m_model.LinkObj.AddByPoint(masterNode.CustomData[AdapterId].ToString(), slaveNodes[i].CustomData[AdapterId].ToString(), ref givenName, false, "Default", name);
+
+                //retA = model.LinkObj.AddByCoord(XI, YI, ZI, XJ, YJ, ZJ, ref givenName, false, "Default", name);
+                retA = model.LinkObj.AddByPoint(masterNode.CustomData[AdapterId].ToString(), slaveNodes[i].CustomData[AdapterId].ToString(), ref givenName, false, "Default", name);
+
             }
 
-            return ret == 0;
+            if(retA+retB == 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-
-        /***************************************************/
-
-        private void CreateElementError(string elemType, string elemName)
-        {
-            Engine.Reflection.Compute.RecordError("Failed to create the element of type " + elemType + ", with id: " + elemName);
-        }
-
-        /***************************************************/
-
-        private void CreatePropertyError(string failedProperty, string elemType, string elemName)
-        {
-            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Reflection.Debugging.EventType.Error);
-        }
-
-        /***************************************************/
-
-        private void CreatePropertyWarning(string failedProperty, string elemType, string elemName)
-        {
-            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Reflection.Debugging.EventType.Warning);
-        }
-
-        /***************************************************/
-
-        private void CreatePropertyEvent(string failedProperty, string elemType, string elemName, oM.Reflection.Debugging.EventType eventType)
-        {
-            Engine.Reflection.Compute.RecordEvent("Failed to set property " + failedProperty + " for the " + elemType + "with id: " + elemName, eventType);
-        }
-
-        /***************************************************/
-
     }
 }
