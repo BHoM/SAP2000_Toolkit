@@ -12,38 +12,33 @@ namespace BH.Adapter.SAP2000
         /**** Adapter overload method                   ****/
         /***************************************************/
         
-        private Dictionary<Type, string> m_indexDict = new Dictionary<Type, string>();
+        private Dictionary<Type, string> idDictionary = new Dictionary<Type, string>();
 
         protected override object NextId(Type objectType, bool refresh = false)
         {
-            string index;
-
-            if (!refresh && m_indexDict.TryGetValue(objectType, out index))
-                {
-                index = "0";
-                try
-                {
-                    index = (int.Parse(index) + 1).ToString();
-                }
-                catch
-                {
-                    index = GetNextIdOfType(objectType);
-                }
-                
-                m_indexDict[objectType] = index;
+            int index;
+            string id;
+            if (!refresh && idDictionary.TryGetValue(objectType, out id))
+            {
+                if (int.TryParse(id, out index))
+                    id = (index + 1).ToString();
+                else
+                    id = GetNextIdOfType(objectType);
+                idDictionary[objectType] = id;
             }
             else
             {
-                index = GetNextIdOfType(objectType);
-                m_indexDict[objectType] = index;
+                id = GetNextIdOfType(objectType);
+                idDictionary[objectType] = id;
             }
 
-            return index;
+            return id;
         }
 
         private string GetNextIdOfType(Type objectType)
         {
-            string nextId;
+            string lastId;
+            int lastNum;
             string typeString = objectType.Name;
             int nameCount = 0;
             string[] names = { };
@@ -51,58 +46,53 @@ namespace BH.Adapter.SAP2000
             switch (typeString)
             {
                 case "Node":
-                    model.PointObj.GetNameList(ref nameCount, ref names);
-                    nextId = nameCount == 0 ? "1" : (Array.ConvertAll(names, int.Parse).Max() + 1).ToString();
+                    m_model.PointObj.GetNameList(ref nameCount, ref names);
+                    lastNum = nameCount == 0 ? 1 : Array.ConvertAll(names, int.Parse).Max() + 1;
+                    lastId = lastNum.ToString();
                     break;
                 case "Bar":
-                    model.FrameObj.GetNameList(ref nameCount, ref names);
-                    nextId = nameCount == 0 ? "1" : (Array.ConvertAll(names, int.Parse).Max() + 1).ToString();
+                    m_model.FrameObj.GetNameList(ref nameCount, ref names);
+                    lastNum = nameCount == 0 ? 1 : Array.ConvertAll(names, int.Parse).Max() + 1;
+                    lastId = lastNum.ToString();
                     break;
                 case "PanelPlanar":
-                    model.AreaObj.GetNameList(ref nameCount, ref names);
-                    nextId = nameCount == 0 ? "1" : (Array.ConvertAll(names, int.Parse).Max() + 1).ToString();
+                    m_model.AreaObj.GetNameList(ref nameCount, ref names);
+                    lastNum = nameCount == 0 ? 1 : Array.ConvertAll(names, int.Parse).Max() + 1;
+                    lastId = lastNum.ToString();
                     break;
                 case "Material":
-                    model.PropMaterial.GetNameList(ref nameCount, ref names);
-                    nextId = (nameCount + 1).ToString();
+                    m_model.PropMaterial.GetNameList(ref nameCount, ref names);
+                    lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 case "SectionProperty":
-                    model.PropFrame.GetNameList(ref nameCount, ref names);
-                    nextId = (nameCount + 1).ToString();
+                    m_model.PropFrame.GetNameList(ref nameCount, ref names);
+                    lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 case "Property2D":
-                    model.PropArea.GetNameList(ref nameCount, ref names);
-                    nextId = (nameCount + 1).ToString();
+                    m_model.PropArea.GetNameList(ref nameCount, ref names);
+                    lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 case "Loadcase":
-                    model.LoadPatterns.GetNameList(ref nameCount, ref names);
-                    nextId = (nameCount + 1).ToString();
+                    m_model.LoadPatterns.GetNameList(ref nameCount, ref names);
+                    lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 case "LoadCombination":
-                    model.AreaObj.GetNameList(ref nameCount, ref names);
-                    nextId = (nameCount + 1).ToString();
+                    m_model.AreaObj.GetNameList(ref nameCount, ref names);
+                    lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 case "RigidLink":
-                    model.LinkObj.GetNameList(ref nameCount, ref names);
-                    nextId = (nameCount + 1).ToString();
+                    m_model.LinkObj.GetNameList(ref nameCount, ref names);
+                    lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;
                 default:
-                    nextId = "0";
+                    lastId = "0";
                     ErrorLog.Add("Could not get count of type: " + typeString);
                     break;
             }
 
-            return nextId;
+            return lastId;
 
         }
 
-        /***************************************************/
-        /**** Private Fields                            ****/
-        /***************************************************/
-
-        //Change from object to the index type used by the specific software
-
-
-        /***************************************************/
     }
 }
