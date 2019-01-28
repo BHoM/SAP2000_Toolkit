@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Geometry;
 using BH.oM.Common.Materials;
-using BH.oM.Structure.Properties;
+using BH.oM.Structure.Properties.Section;
+using BH.oM.Structure.Properties.Surface;
+using BH.oM.Structure.Properties.Constraint;
 using BH.oM.Structure.Elements;
 using BH.oM.DataManipulation.Queries;
+using BH.Adapter;
 using BH.Adapter.SAP2000;
+using BH.Engine.Structure;
+
 
 namespace SAP2000_Test
 {
@@ -22,17 +27,17 @@ namespace SAP2000_Test
 
             TestPushMaterials(app);
                 
-            //TestPushSections(app);
+            TestPushSections(app);
 
-            //TestPushBars(app);
+            TestPushBars(app);
 
-            //TestPullNodes(app);
+            TestPullNodes(app);
 
-            //TestPullBars(app);
+            TestPullBars(app);
 
-            //TestPullSections(app);
+            TestPullSections(app);
 
-            //TestPullPanels(app);
+            TestPullPanels(app);
 
             Console.WriteLine("Press any key to continue");
             Console.ReadKey();
@@ -53,7 +58,7 @@ namespace SAP2000_Test
             };
 
             app.Push(materials, "Materials");
-
+            
         }
 
         private static void TestPushSections(SAP2000Adapter app)
@@ -72,7 +77,7 @@ namespace SAP2000_Test
             sec1.Material = concrete;
             sec1.Name = "Concrete Section";
 
-            IProperty2D panelProp = BH.Engine.Structure.Create.ConstantThickness(100, concrete);
+            ISurfaceProperty panelProp = BH.Engine.Structure.Create.ConstantThickness(100, concrete);
             panelProp.Name = "Concrete Slab";
 
             List<ISectionProperty> barProps = new List<ISectionProperty>
@@ -102,7 +107,7 @@ namespace SAP2000_Test
             sec1.Material = concrete;
             sec1.Name = "Concrete Section";
 
-            IProperty2D panelProp = BH.Engine.Structure.Create.ConstantThickness(100, concrete);
+            ISurfaceProperty panelProp = BH.Engine.Structure.Create.ConstantThickness(100, concrete);
             panelProp.Name = "Concrete Slab";
 
             // CREATE CONSTRAINTS //
