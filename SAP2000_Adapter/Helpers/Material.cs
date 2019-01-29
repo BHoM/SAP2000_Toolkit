@@ -72,23 +72,8 @@ namespace BH.Adapter.SAP2000
             return null;
 
         }
-
-        public static void SetMaterial(cSapModel model, Material material)
-        {
-            eMatType matType = eMatType.NoDesign;
-            int colour = 0;
-            string guid = "";
-            string notes = "";
-
-            if (model.PropMaterial.GetMaterial(material.Name, ref matType, ref colour, ref notes, ref guid) != 0)
-            {
-                model.PropMaterial.SetMaterial(material.Name, GetMaterialType(material.Type));
-                model.PropMaterial.SetMPIsotropic(material.Name, material.YoungsModulus, material.PoissonsRatio, material.CoeffThermalExpansion);
-                model.PropMaterial.SetWeightAndMass(material.Name, 0, material.Density);
-            }                
-        }
-
-        private static MaterialType GetMaterialType(eMatType materialType)
+        
+        public static MaterialType GetMaterialType(eMatType materialType)
         {
             switch (materialType)
             {
@@ -113,7 +98,7 @@ namespace BH.Adapter.SAP2000
             }
         }
 
-        private static eMatType GetMaterialType(MaterialType materialType)
+        public static eMatType GetMaterialType(MaterialType materialType)
         {
             switch (materialType)
             {

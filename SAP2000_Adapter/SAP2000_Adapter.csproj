@@ -124,20 +124,40 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CRUD\Create.cs" />
-    <Compile Include="CRUD\Delete.cs" />
-    <Compile Include="CRUD\NextId.cs" />
-    <Compile Include="CRUD\Read.cs" />
-    <Compile Include="CRUD\UpdateObjects.cs" />
-    <Compile Include="Helpers\Class1.cs" />
+    <Compile Include="Create\Errors.cs" />
+    <Compile Include="Create\Node.cs" />
+    <Compile Include="Create\Section.cs" />
+    <Compile Include="Create\PanelPlanar.cs" />
+    <Compile Include="Create\Material.cs" />
+    <Compile Include="Create\Bar.cs" />
+    <Compile Include="Create\RigidLink.cs" />
+    <Compile Include="Create\Loads.cs" />
+    <Compile Include="Create\_Create.cs" />
+    <Compile Include="Delete\Delete.cs" />
+    <Compile Include="Adapter\NextId.cs" />
+    <Compile Include="Create\SurfaceProperty.cs" />
+    <Compile Include="Read\Bar.cs" />
+    <Compile Include="Read\Errors.cs" />
+    <Compile Include="Read\Loads.cs" />
+    <Compile Include="Read\Material.cs" />
+    <Compile Include="Read\Node.cs" />
+    <Compile Include="Read\PanelPlanar.cs" />
+    <Compile Include="Read\_Read.cs" />
+    <Compile Include="Read\RigidLink.cs" />
+    <Compile Include="Read\Section.cs" />
+    <Compile Include="Read\SurfaceProperty.cs" />
+    <Compile Include="Update\UpdateObjects.cs" />
+    <Compile Include="Helpers\LinkConstraint.cs" />
     <Compile Include="Helpers\Material.cs" />
     <Compile Include="Helpers\Panel.cs" />
     <Compile Include="Helpers\Section.cs" />
-    <Compile Include="Helpers\Constraint.cs" />
-    <Compile Include="SAP2000Adapter.cs" />
+    <Compile Include="Adapter\SAP2000Adapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\Comparer.cs" />
     <Compile Include="Types\DependencyTypes.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Execute\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
