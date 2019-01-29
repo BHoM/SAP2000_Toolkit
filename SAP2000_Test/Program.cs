@@ -29,15 +29,17 @@ namespace SAP2000_Test
                 
             TestPushSections(app);
 
-            TestPushBars(app);
+            //TestPushBars(app);
 
-            TestPullNodes(app);
+            //TestPullNodes(app);
 
-            TestPullBars(app);
+            //TestPullBars(app);
+
+            TestPullMaterials(app);
 
             TestPullSections(app);
 
-            TestPullPanels(app);
+            //TestPullPanels(app);
 
             Console.WriteLine("Press any key to continue");
             Console.ReadKey();
@@ -58,7 +60,7 @@ namespace SAP2000_Test
             };
 
             app.Push(materials, "Materials");
-            
+            Console.WriteLine("Pushed " + materials.Count + " Materials");
         }
 
         private static void TestPushSections(SAP2000Adapter app)
@@ -80,6 +82,8 @@ namespace SAP2000_Test
             ISurfaceProperty panelProp = BH.Engine.Structure.Create.ConstantThickness(100, concrete);
             panelProp.Name = "Concrete Slab";
 
+            List<ISurfaceProperty> panelProps = new List<ISurfaceProperty>
+            { panelProp };
             List<ISectionProperty> barProps = new List<ISectionProperty>
             {
 
@@ -88,6 +92,9 @@ namespace SAP2000_Test
             };
 
             app.Push(barProps, "BarSecs");
+            Console.WriteLine("Pushed " + barProps.Count + " Bar Sections");
+            app.Push(panelProps, "PanelProp");
+            Console.WriteLine("Pushed " + panelProps.Count + " Panel Sections");
 
         }
 
@@ -268,8 +275,8 @@ namespace SAP2000_Test
 
             app.Push(panels, "panels");
 
-            Console.WriteLine("All elements Pushed!");
-            Console.ReadKey();
+            int barCount = bars0.Count + bars1.Count + bars2.Count;
+            Console.WriteLine(barCount + " bars and " + panels.Count + " panels pushed!");
         }
 
         private static void TestPullNodes(SAP2000Adapter app)
@@ -279,7 +286,6 @@ namespace SAP2000_Test
 
             IEnumerable<object> nodeObjects = app.Pull(nodeQuery);
 
-            Console.WriteLine("I found " + nodeObjects.Count() + " nodes");
 
             foreach (object bObject in nodeObjects)
             {
@@ -290,7 +296,7 @@ namespace SAP2000_Test
                 Console.WriteLine(nodeInfo);
             }
 
-            Console.WriteLine("Pulled all nodes");
+            Console.WriteLine("I found " + nodeObjects.Count() + " nodes");
         }
 
         private static void TestPullBars(SAP2000Adapter app)
@@ -300,7 +306,6 @@ namespace SAP2000_Test
 
             IEnumerable<object> barObjects = app.Pull(barQuery);
 
-            Console.WriteLine("I found " + barObjects.Count() + " bars");
             
             foreach (object bObject in barObjects)
             {
@@ -313,8 +318,18 @@ namespace SAP2000_Test
                 Console.WriteLine(barInfo);
             }
 
-            Console.WriteLine("Pulled all bars");
+            Console.WriteLine("I found " + barObjects.Count() + " bars");
 
+        }
+
+        private static void TestPullMaterials(SAP2000Adapter app)
+        {
+            Console.WriteLine("Test Pull Materials");
+            FilterQuery sectionQuery = new FilterQuery { Type = typeof(Material) };
+
+            IEnumerable<object> materialObjects = app.Pull(sectionQuery);
+
+            Console.WriteLine("I found " + materialObjects.Count() + " sections");
         }
 
         private static void TestPullSections(SAP2000Adapter app)
@@ -323,9 +338,7 @@ namespace SAP2000_Test
             FilterQuery sectionQuery = new FilterQuery { Type = typeof(ISectionProperty) };
 
             IEnumerable<object> sectionObjects = app.Pull(sectionQuery);
-
-            Console.WriteLine("I found " + sectionObjects.Count() + " sections");
-
+            
             foreach (object bObject in sectionObjects)
             {
                 ISectionProperty section = bObject as ISectionProperty;
@@ -335,7 +348,7 @@ namespace SAP2000_Test
                 Console.WriteLine(sectionInfo);
             }
 
-            Console.WriteLine("Pulled all Sections");
+            Console.WriteLine("I found " + sectionObjects.Count() + " sections");
         }
 
         private static void TestPullPanels(SAP2000Adapter app)

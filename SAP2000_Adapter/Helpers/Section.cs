@@ -214,42 +214,10 @@ namespace BH.Adapter.SAP2000
 
             return bhSectionProperty;
         }
-
-        public static void SetSectionProperty(cSapModel model, ISectionProperty bhSection)
-        {
-            SetSpecificSection(bhSection as dynamic, model);
-        }
-
-        private static void SetSpecificSection(SteelSection section, cSapModel model)
-        {
-            SetSectionDimensions(section.SectionProfile, section.Name, section.Material.Name, model);
-        }
-
-        private static void SetSpecificSection(ConcreteSection section, cSapModel model)
-        {
-            SetSectionDimensions(section.SectionProfile, section.Name, section.Material.Name, model);
-        }
-
-        private static void SetSpecificSection(CableSection section, cSapModel model)
-        {
-            //no ISectionDimentions
-            throw new NotImplementedException();
-        }
-
-        private static void SetSpecificSection(CompositeSection section, cSapModel model)
-        {
-            //contains SteelSection and ConcreteScetion
-            throw new NotImplementedException();
-        }
-
-        private static void SetSpecificSection(ExplicitSection section, cSapModel model)
-        {
-            model.PropFrame.SetGeneral(section.Name, section.Material.Name, section.CentreZ * 2, section.CentreY * 2, section.Area, section.Asy, section.Asz, section.J, section.Iy, section.Iz, section.Wply, section.Wplz, section.Wely, section.Wely, section.Rgy, section.Rgz);
-        }
-
+        
         #region section dimensions
 
-        private static void SetSectionDimensions(IProfile sectionProfile, string sectionName, string materialName, cSapModel model)
+        public static void SetSectionDimensions(IProfile sectionProfile, string sectionName, string materialName, cSapModel model)
         {
             SetSpecificDimensions(sectionProfile as dynamic, sectionName, materialName, model);
         }
