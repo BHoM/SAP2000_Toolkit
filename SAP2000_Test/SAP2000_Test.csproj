@@ -50,6 +50,9 @@
     <Reference Include="DataManipulation_oM">
       <HintPath>..\..\BHoM\Build\DataManipulation_oM.dll</HintPath>
     </Reference>
+    <Reference Include="File_Adapter">
+      <HintPath>..\..\BHoM_Adapter\Build\File_Adapter.dll</HintPath>
+    </Reference>
     <Reference Include="Geometry_oM">
       <HintPath>..\..\BHoM\Build\Geometry_oM.dll</HintPath>
     </Reference>
@@ -80,6 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Test_Structure.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

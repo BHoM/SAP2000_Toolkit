@@ -40,13 +40,13 @@ namespace BH.Adapter.SAP2000
             else if (surfaceProperty.GetType() == typeof(ConstantThickness))
             {
                 ConstantThickness constantThickness = (ConstantThickness)surfaceProperty;
-                ret = m_model.PropArea.SetShell(propertyName, 0, surfaceProperty.Material.Name, 0, constantThickness.Thickness, constantThickness.Thickness);
+                ret += m_model.PropArea.SetShell(constantThickness.Name, 1, constantThickness.Material.Name, 0, constantThickness.Thickness, constantThickness.Thickness);
             }
 
             if (surfaceProperty.HasModifiers())
             {
                 double[] modifier = surfaceProperty.Modifiers();//(double[])surfaceProperty.CustomData["Modifiers"];
-                m_model.PropArea.SetModifiers(propertyName, ref modifier);
+                ret += m_model.PropArea.SetModifiers(propertyName, ref modifier);
             }
 
             return ret == 0;
