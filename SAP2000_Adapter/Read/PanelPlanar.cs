@@ -22,65 +22,78 @@ namespace BH.Adapter.SAP2000
     {
         private List<PanelPlanar> ReadPanel(List<string> ids = null)
         {
-            List<PanelPlanar> panelList = new List<PanelPlanar>();
+            List<PanelPlanar> bhomPanels = new List<PanelPlanar>();
+            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterId].ToString());
+            Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => x.Name);
+            List<Opening> allOpenings = ReadOpening();
+
             int nameCount = 0;
             string[] nameArr = { };
+            m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
 
             if (ids == null)
             {
-                m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
             }
-
-            //get openings, if any
-            m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
-            bool isOpening = false;
-            Dictionary<string, Polyline> openingDict = new Dictionary<string, Polyline>();
-            foreach (string name in nameArr)
-            {
-                m_model.AreaObj.GetOpening(name, ref isOpening);
-                if (isOpening)
-                {
-                    openingDict.Add(name, Helper.GetPanelPerimeter(m_model, name));
-                }
-            }
-
+            
             foreach (string id in ids)
             {
-                if (openingDict.ContainsKey(id))
+                bool isOpening = false;
+                m_model.AreaObj.GetOpening(id, ref isOpening);
+                if (isOpening)
                     continue;
 
-                string propertyName = "";
+                PanelPlanar bhomPanel = null;
 
-                m_model.AreaObj.GetProperty(id, ref propertyName);
-                ISurfaceProperty panelProperty = ReadSurfaceProperty(new List<string>() { propertyName })[0];
+                //Get outline of panel
+                string[] pointNames = null;
+                int pointCount = 0;
+                m_model.AreaObj.GetPoints(id, ref pointCount, ref pointNames);
 
-                PanelPlanar panel = new PanelPlanar();
-                panel.CustomData[AdapterId] = id;
+                List<Point> pts = new List<Point>();
+                foreach (string name in pointNames)
+                    pts.Add(bhomNodes[name].Position);
 
-                Polyline pl = Helper.GetPanelPerimeter(m_model, id);
+                pts.Add(pts[0]);
+                Polyline pl = new Polyline() { ControlPoints = pts };
+                ICurve outline = (ICurve)pl;
 
-                Edge edge = new Edge();
-                edge.Curve = pl;
-                //edge.Constraint = new Constraint4DOF();// <---- cannot see anyway to set this via API and for some reason constraints are not being set in old version of etabs toolkit TODO
-
-                panel.ExternalEdges = new List<Edge>() { edge };
-                foreach (KeyValuePair<string, Polyline> kvp in openingDict)
+                //Make a list of any openings which are in this panel
+                List<Opening> openings = null;
+                foreach (Opening opening in allOpenings)
                 {
-                    if (pl.IsContaining(kvp.Value.ControlPoints))
+                    List<Point> openPoints = null;
+                    foreach (Edge edge in opening.Edges)
+                        openPoints.Add(edge.Curve.IStartPoint());
+                    
+                    if (pl.IsContaining(openPoints))
                     {
-                        Opening opening = new Opening();
-                        opening.Edges = new List<Edge>() { new Edge() { Curve = kvp.Value } };
-                        panel.Openings.Add(opening);
+                        openings.Add(opening);
                     }
                 }
 
-                panel.Property = panelProperty;
+                //Try to build the panel
+                try
+                {
+                    bhomPanel = BH.Engine.Structure.Create.PanelPlanar(outline, openings);
+                }
+                catch
+                {
+                    ReadElementError("PanelPlanar", id);
+                }                    
 
-                panelList.Add(panel);
+                //Set the properties
+                string propertyName = "";
+                m_model.AreaObj.GetProperty(id, ref propertyName);
+                bhomPanel.Property = bhomProperties[propertyName];
+                bhomPanel.CustomData[AdapterId] = id;
+                
+                //Add the panel to the list
+                bhomPanels.Add(bhomPanel);
             }
 
-            return panelList;
+            return bhomPanels;
         }
+        
     }
 }

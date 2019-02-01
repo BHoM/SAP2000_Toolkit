@@ -12,6 +12,7 @@ using BH.oM.Structure.Properties.Constraint;
 using BH.oM.Structure.Loads;
 using BH.oM.Common.Materials;
 using SAP2000v19;
+using BH.Engine.SAP2000;
 using BH.oM.Geometry;
 using BH.Engine.Geometry;
 using BH.Engine.Reflection;
@@ -20,15 +21,16 @@ namespace BH.Adapter.SAP2000
 {
     public partial class SAP2000Adapter
     {
-        private List<Material> ReadMaterials(List<string> ids = null)
+        private List<Material> ReadMaterial(List<string> ids = null)
         {
+            List<Material> materialList = new List<Material>();
+
             int nameCount = 0;
             string[] names = { };
-            List<Material> materialList = new List<Material>();
+            m_model.PropMaterial.GetNameList(ref nameCount, ref names);
 
             if (ids == null)
             {
-                m_model.PropMaterial.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
             }
 
@@ -65,7 +67,7 @@ namespace BH.Adapter.SAP2000
 
                     Material m = new Material();
                     m.Name = id;
-                    m.Type = Helper.GetMaterialType(matType);
+                    m.Type = BH.Engine.SAP2000.Convert.GetMaterialType(matType);
                     m.PoissonsRatio = v;
                     m.YoungsModulus = e;
                     m.CoeffThermalExpansion = thermCo;

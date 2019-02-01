@@ -141,6 +141,7 @@
     <Compile Include="Read\Loads.cs" />
     <Compile Include="Read\Material.cs" />
     <Compile Include="Read\Node.cs" />
+    <Compile Include="Read\Opening.cs" />
     <Compile Include="Read\PanelPlanar.cs" />
     <Compile Include="Read\_Read.cs" />
     <Compile Include="Read\RigidLink.cs" />
@@ -148,8 +149,6 @@
     <Compile Include="Read\SurfaceProperty.cs" />
     <Compile Include="Update\UpdateObjects.cs" />
     <Compile Include="Helpers\LinkConstraint.cs" />
-    <Compile Include="Helpers\Material.cs" />
-    <Compile Include="Helpers\Panel.cs" />
     <Compile Include="Helpers\Section.cs" />
     <Compile Include="Adapter\SAP2000Adapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

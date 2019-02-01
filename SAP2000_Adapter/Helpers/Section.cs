@@ -12,271 +12,62 @@ using SAP2000v19;
 
 namespace BH.Adapter.SAP2000
 {
+
     public static partial class Helper
     {
-        public const string AdapterId = "SAP2000_id";
-
-        public static ISectionProperty GetSectionProperty(cSapModel model, string propertyName, eFramePropType propertyType)
-        {
-
-            ISectionProperty bhSectionProperty = null;
-            IProfile dimensions = null;
-            string materialName = "";
-
-            string fileName = "";
-            double t3 = 0;
-            double t2 = 0;
-            double tf = 0;
-            double tw = 0;
-            double tfb = 0;
-            double t2b = 0;
-            double radius = 0;
-            double angle = 0;
-            int colour = 0;
-            string notes = "";
-            string guid = "";
-
-            double Area, As2, As3, Torsion, I22, I33, S22, S33, Z22, Z33, R22, R33;
-            Area = As2 = As3 = Torsion = I22 = I33 = S22 = S33 = Z22 = Z33 = R22 = R33 = 0;
-
-            string constructSelector = "fromDimensions";
-
-
-            #region long switch on section property type
-            switch (propertyType)
-            {
-                case eFramePropType.I:
-                    model.PropFrame.GetISection(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref t2b, ref tfb, ref colour, ref notes, ref guid);
-                    if (t2 == t2b)
-                        dimensions = Create.ISectionProfile(t3, t2, tw, tf, 0, 0);
-                    else
-                        dimensions = Create.FabricatedISectionProfile(t3, t2, t2b, tw, tf, tfb, 0);
-                    break;
-                case eFramePropType.Channel:
-                    model.PropFrame.GetChannel(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
-                    dimensions = Create.ChannelProfile(t3, t2, tw, tf, 0, 0);
-                    break;
-                case eFramePropType.T:
-                    break;
-                case eFramePropType.Angle:
-                    break;
-                case eFramePropType.DblAngle:
-                    model.PropFrame.GetAngle(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
-                    dimensions = Create.AngleProfile(t3, t2, tw, tf, 0, 0);
-                    break;
-                case eFramePropType.Box:
-                    model.PropFrame.GetTube(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref colour, ref notes, ref guid);
-                    if (tf == tw)
-                        dimensions = Create.BoxProfile(t3, t2, tf, 0, 0);
-                    else
-                        dimensions = Create.FabricatedBoxProfile(t3, t2, tw, tf, tf, 0);
-                    break;
-                case eFramePropType.Pipe:
-                    model.PropFrame.GetPipe(propertyName, ref fileName, ref materialName, ref t3, ref tw, ref colour, ref notes, ref guid);
-                    dimensions = Create.TubeProfile(t3, tw);
-                    break;
-                case eFramePropType.Rectangular:
-                    model.PropFrame.GetRectangle(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref colour, ref notes, ref guid);
-                    dimensions = Create.RectangleProfile(t3, t2, 0);
-                    break;
-                case eFramePropType.Auto://not member will have this assigned but it still exists in the propertyType list
-                    dimensions = Create.CircleProfile(0.2);
-                    break;
-                case eFramePropType.Circle:
-                    model.PropFrame.GetCircle(propertyName, ref fileName, ref materialName, ref t3, ref colour, ref notes, ref guid);
-                    dimensions = Create.CircleProfile(t3);
-                    break;
-                case eFramePropType.General:
-                    constructSelector = "explicit";
-                    model.PropFrame.GetGeneral(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref Area, ref As2, ref As3, ref Torsion, ref I22, ref I33, ref S22, ref S33, ref Z22, ref Z33, ref R22, ref R33, ref colour, ref notes, ref guid);
-                    break;
-                case eFramePropType.DbChannel:
-                    break;
-                case eFramePropType.SD:
-                    break;
-                case eFramePropType.Variable:
-                    break;
-                case eFramePropType.Joist:
-                    break;
-                case eFramePropType.Bridge:
-                    break;
-                case eFramePropType.Cold_C:
-                    break;
-                case eFramePropType.Cold_2C:
-                    break;
-                case eFramePropType.Cold_Z:
-                    model.PropFrame.GetColdZ(propertyName, ref fileName, ref materialName, ref t3, ref t2, ref tw, ref radius, ref tfb, ref angle, ref colour, ref notes, ref guid);
-                    dimensions = Create.ZSectionProfile(t3, t2, tw, tw, radius, 0);                    
-                    break;
-                case eFramePropType.Cold_L:
-                    break;
-                case eFramePropType.Cold_2L:
-                    break;
-                case eFramePropType.Cold_Hat:
-                    break;
-                case eFramePropType.BuiltupICoverplate:
-                    break;
-                case eFramePropType.PCCGirderI:
-                    break;
-                case eFramePropType.PCCGirderU:
-                    break;
-                case eFramePropType.BuiltupIHybrid:
-                    break;
-                case eFramePropType.BuiltupUHybrid:
-                    break;
-                case eFramePropType.Concrete_L:
-                    break;
-                case eFramePropType.FilledTube:
-                    break;
-                case eFramePropType.FilledPipe:
-                    break;
-                case eFramePropType.EncasedRectangle:
-                    break;
-                case eFramePropType.EncasedCircle:
-                    break;
-                case eFramePropType.BucklingRestrainedBrace:
-                    break;
-                case eFramePropType.CoreBrace_BRB:
-                    break;
-                case eFramePropType.ConcreteTee:
-                    break;
-                case eFramePropType.ConcreteBox:
-                    break;
-                case eFramePropType.ConcretePipe:
-                    break;
-                case eFramePropType.ConcreteCross:
-                    break;
-                case eFramePropType.SteelPlate:
-                    break;
-                case eFramePropType.SteelRod:
-                    break;
-                default:
-                    throw new NotImplementedException("Section convertion for the type: " + propertyType.ToString() + " is not implemented in SAP adapter");
-            }
-            if (dimensions == null)
-                throw new NotImplementedException("Section convertion for the type: " + propertyType.ToString() + " is not implemented in SAP adapter");
-            #endregion
-
-
-            oM.Common.Materials.Material material;
-            if (materialName == "")
-                material = CE.Create.Material("Steel", MaterialType.Steel, 210000, 0.3, 0.00012, 78500);
-            else
-                material = GetMaterial(model, materialName);
-
-
-            switch (constructSelector)
-            {
-                case "fromDimensions":
-                    switch (material.Type)
-                    {
-                        case oM.Common.Materials.MaterialType.Aluminium:
-                        case oM.Common.Materials.MaterialType.Steel:
-                            bhSectionProperty = Create.SteelSectionFromProfile(dimensions);
-                            break;
-                        case oM.Common.Materials.MaterialType.Concrete:
-                            bhSectionProperty = Create.ConcreteSectionFromProfile(dimensions);
-                            break;
-                        case oM.Common.Materials.MaterialType.Timber:
-                        case oM.Common.Materials.MaterialType.Rebar:
-                        case oM.Common.Materials.MaterialType.Tendon:
-                        case oM.Common.Materials.MaterialType.Glass:
-                        case oM.Common.Materials.MaterialType.Cable:
-                        default:
-                            throw new NotImplementedException("no material type for " + material.Type.ToString() + " implemented");
-                    }
-                    break;
-                case "explicit":
-                    ExplicitSection eSection = new ExplicitSection()
-                    {
-                        Area = Area,
-                        Asy = As2,
-                        Asz = As3,
-                        Iy = I22,
-                        Iz = I33,
-                        J = Torsion,
-                        Rgy = R22,
-                        Rgz = R33,
-                        Wply = S22,
-                        Wplz = S33,
-                        Wely = Z22,
-                        Welz = Z33
-                    };
-                    break;
-                default:
-                    break;
-            }
-
-            bhSectionProperty.Material = material;
-            bhSectionProperty.Name = propertyName;
-            bhSectionProperty.CustomData.Add(AdapterId, propertyName);
-            //modelData.sectionDict.Add(propertyName, bhSectionProperty);
-
-            return bhSectionProperty;
-        }
-        
-        #region section dimensions
-
-        public static void SetSectionDimensions(IProfile sectionProfile, string sectionName, string materialName, cSapModel model)
-        {
-            SetSpecificDimensions(sectionProfile as dynamic, sectionName, materialName, model);
-        }
-
-        private static void SetSpecificDimensions(TubeProfile dimensions, string sectionName, string materialName, cSapModel model)
+        public static void SetSpecificDimensions(TubeProfile dimensions, string sectionName, string materialName, cSapModel model)
         {
             model.PropFrame.SetPipe(sectionName, materialName, dimensions.Diameter, dimensions.Thickness);
         }
 
-        private static void SetSpecificDimensions(BoxProfile dimensions, string sectionName, string materialName, cSapModel model)
+        public static void SetSpecificDimensions(BoxProfile dimensions, string sectionName, string materialName, cSapModel model)
         {
             model.PropFrame.SetTube(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.Thickness, dimensions.Thickness);
         }
 
-        private static void SetSpecificDimensions(FabricatedBoxProfile dimensions, string sectionName, string materialName, cSapModel model)
+        public static void SetSpecificDimensions(FabricatedBoxProfile dimensions, string sectionName, string materialName, cSapModel model)
         {
             if (dimensions.TopFlangeThickness != dimensions.BotFlangeThickness)
                 throw new NotImplementedException("different thickness of top and bottom flange is not supported in SAP2000");
             model.PropFrame.SetTube(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.TopFlangeThickness, dimensions.WebThickness);
         }
 
-        private static void SetSpecificDimensions(ISectionProfile dimensions, string sectionName, string materialName, cSapModel model)
+        public static void SetSpecificDimensions(ISectionProfile dimensions, string sectionName, string materialName, cSapModel model)
         {
             Int32 ret = model.PropFrame.SetISection(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness, dimensions.Width, dimensions.FlangeThickness);
         }
 
-        private static void SetSpecificDimensions(FabricatedISectionProfile dimensions, string sectionName, string materialName, cSapModel model)
+        public static void SetSpecificDimensions(FabricatedISectionProfile dimensions, string sectionName, string materialName, cSapModel model)
         {
             model.PropFrame.SetISection(sectionName, materialName, dimensions.Height, dimensions.TopFlangeWidth, dimensions.TopFlangeThickness, dimensions.WebThickness, dimensions.BotFlangeWidth, dimensions.BotFlangeThickness);
         }
 
-        private static void SetSpecificDimensions(ChannelProfile dimensions, string sectionName, string materialName, cSapModel model)
+        public static void SetSpecificDimensions(ChannelProfile dimensions, string sectionName, string materialName, cSapModel model)
         {
             model.PropFrame.SetChannel(sectionName, materialName, dimensions.Height, dimensions.FlangeWidth, dimensions.FlangeThickness, dimensions.WebThickness);
         }
 
-        private static void SetSpecificDimensions(AngleProfile dimensions, string sectionName, string materialName, cSapModel model)
+        public static void SetSpecificDimensions(AngleProfile dimensions, string sectionName, string materialName, cSapModel model)
         {
             model.PropFrame.SetAngle(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness);
         }
 
-        private static void SetSpecificDimensions(TSectionProfile dimensions, string sectionName, string materialName, cSapModel model)
+        public static void SetSpecificDimensions(TSectionProfile dimensions, string sectionName, string materialName, cSapModel model)
         {
             model.PropFrame.SetTee(sectionName, materialName, dimensions.Height, dimensions.Width, dimensions.FlangeThickness, dimensions.WebThickness);
         }
 
-        private static void SetSpecificDimensions(ZSectionProfile dimensions, string sectionName, string materialName, cSapModel model)
+        public static void SetSpecificDimensions(ZSectionProfile dimensions, string sectionName, string materialName, cSapModel model)
         {
             if (dimensions.FlangeThickness != dimensions.WebThickness)
                 throw new NotImplementedException("different thickness of web and flange is not supported in SAP2000");
             model.PropFrame.SetColdZ(sectionName, materialName, dimensions.Height, dimensions.FlangeWidth, dimensions.FlangeThickness, dimensions.RootRadius, 0, 0);
         }
 
-        private static void SetSpecificDimensions(RectangleProfile dimensions, string sectionName, string materialName, cSapModel model)
+        public static void SetSpecificDimensions(RectangleProfile dimensions, string sectionName, string materialName, cSapModel model)
         {
             model.PropFrame.SetRectangle(sectionName, materialName, dimensions.Height, dimensions.Width);
         }
-
-        #endregion
-
+        
     }
 }
