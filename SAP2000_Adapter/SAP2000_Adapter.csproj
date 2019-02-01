@@ -141,7 +141,6 @@
     <Compile Include="Read\Loads.cs" />
     <Compile Include="Read\Material.cs" />
     <Compile Include="Read\Node.cs" />
-    <Compile Include="Read\Opening.cs" />
     <Compile Include="Read\PanelPlanar.cs" />
     <Compile Include="Read\LinkConstraint.cs" />
     <Compile Include="Read\_Read.cs" />

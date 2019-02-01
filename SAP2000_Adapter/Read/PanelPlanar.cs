@@ -25,26 +25,17 @@ namespace BH.Adapter.SAP2000
             List<PanelPlanar> bhomPanels = new List<PanelPlanar>();
             Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterId].ToString());
             Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => x.Name);
-            List<Opening> allOpenings = ReadOpening();
-
-            int nameCount = 0;
-            string[] nameArr = { };
-            m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
-
+            
             if (ids == null)
             {
+                int nameCount = 0;
+                string[] nameArr = { };
+                m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
             }
             
             foreach (string id in ids)
             {
-                bool isOpening = false;
-                m_model.AreaObj.GetOpening(id, ref isOpening);
-                if (isOpening)
-                    continue;
-
-                PanelPlanar bhomPanel = null;
-
                 //Get outline of panel
                 string[] pointNames = null;
                 int pointCount = 0;
@@ -53,39 +44,18 @@ namespace BH.Adapter.SAP2000
                 List<Point> pts = new List<Point>();
                 foreach (string name in pointNames)
                     pts.Add(bhomNodes[name].Position);
-
                 pts.Add(pts[0]);
-                Polyline pl = new Polyline() { ControlPoints = pts };
-                ICurve outline = (ICurve)pl;
+                Polyline outline = new Polyline() { ControlPoints = pts };
 
-                //Make a list of any openings which are in this panel
-                List<Opening> openings = null;
-                foreach (Opening opening in allOpenings)
-                {
-                    List<Point> openPoints = null;
-                    foreach (Edge edge in opening.Edges)
-                        openPoints.Add(edge.Curve.IStartPoint());
-                    
-                    if (pl.IsContaining(openPoints))
-                    {
-                        openings.Add(opening);
-                    }
-                }
-
-                //Try to build the panel
-                try
-                {
-                    bhomPanel = BH.Engine.Structure.Create.PanelPlanar(outline, openings);
-                }
-                catch
-                {
-                    ReadElementError("PanelPlanar", id);
-                }                    
-
-                //Set the properties
+                //Get the section property
                 string propertyName = "";
                 m_model.AreaObj.GetProperty(id, ref propertyName);
-                bhomPanel.Property = bhomProperties[propertyName];
+                List<Opening> noOpenings = null;
+
+                //Create the panel
+                PanelPlanar bhomPanel = BH.Engine.Structure.Create.PanelPlanar(outline, noOpenings, bhomProperties[propertyName], id);
+                
+                //Set the properties
                 bhomPanel.CustomData[AdapterId] = id;
                 
                 //Add the panel to the list
