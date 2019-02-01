@@ -44,10 +44,10 @@ namespace SAP2000_Test
             int numPulled = barsPulled.Count() + panelsPulled.Count();
 
             Console.WriteLine("Pushed " + numPushed + " Objects, pulled " + numPulled + " Objects.");
-            foreach (Bar bar in barsPulled)
-            {
-                Console.WriteLine("Bar with ID " + bar.CustomData["SAP2000_id"].ToString() + " and property " + bar.SectionProperty.Name);
-            }
+            //foreach (Bar bar in barsPulled)
+            //{
+            //    Console.WriteLine("Bar with ID " + bar.CustomData["SAP2000_id"].ToString() + " and property " + bar.SectionProperty.Name);
+            //}
             Console.WriteLine("Press any key to continue");
             Console.ReadKey();
             Console.WriteLine("");
