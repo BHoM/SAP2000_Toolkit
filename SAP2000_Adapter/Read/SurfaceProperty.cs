@@ -60,7 +60,7 @@ namespace BH.Adapter.SAP2000
                     ConstantThickness panelConstant = new ConstantThickness();
                     panelConstant.CustomData[AdapterId] = id;
                     panelConstant.Name = id;
-                    panelConstant.Material = ReadMaterials(new List<string>() { material })[0];
+                    panelConstant.Material = ReadMaterial(new List<string>() { material })[0];
                     panelConstant.Thickness = thickness;
                     panelConstant.CustomData.Add("MaterialAngle", matAng);
                     panelConstant.CustomData.Add("BendingThickness", bending);

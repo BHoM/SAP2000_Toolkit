@@ -41,7 +41,6 @@ namespace BH.Adapter.SAP2000
         {
             bool success = true;
 
-
             foreach (T obj in objects)
             {
                 success &= CreateObject(obj as dynamic);

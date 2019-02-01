@@ -22,32 +22,33 @@ namespace BH.Adapter.SAP2000
     {
         private List<Bar> ReadBars(List<string> ids = null)
         {
-            List<Bar> barList = new List<Bar>();
+
+            List<Bar> bhomBars = new List<Bar>();
+            IEnumerable<Node> bhomNodesList = ReadNodes();
+            Dictionary<string, Node> bhomNodes = bhomNodesList.ToDictionary(x => x.CustomData[AdapterId].ToString());
+            Dictionary<string, ISectionProperty> bhomSections = ReadSectionProperties().ToDictionary(x => x.Name.ToString());
+
             int nameCount = 0;
             string[] names = { };
+            m_model.FrameObj.GetNameList(ref nameCount, ref names);
 
             if (ids == null)
             {
-                m_model.FrameObj.GetNameList(ref nameCount, ref names);
                 ids = names.ToList();
             }
-
-            //Storing the sectionproperties as they are being pulled out, to only pull each section once.
-            Dictionary<string, ISectionProperty> sectionProperties = new Dictionary<string, ISectionProperty>();
-
+            
             foreach (string id in ids)
             {
                 try
                 {
-                    Bar bhBar = new Bar();
-                    bhBar.CustomData.Add(AdapterId, id);
+                    Bar bhomBar = new Bar();
+                    bhomBar.CustomData.Add(AdapterId, id);
                     string startId = "";
                     string endId = "";
                     m_model.FrameObj.GetPoints(id, ref startId, ref endId);
-
-                    List<Node> endNodes = ReadNodes(new List<string> { startId, endId });
-                    bhBar.StartNode = endNodes[0];
-                    bhBar.EndNode = endNodes[1];
+                    
+                    bhomBar.StartNode = bhomNodes[startId];
+                    bhomBar.EndNode = bhomNodes[endId];
 
                     bool[] restraintStart = new bool[6];
                     double[] springStart = new double[6];
@@ -55,38 +56,23 @@ namespace BH.Adapter.SAP2000
                     double[] springEnd = new double[6];
 
                     m_model.FrameObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
-                    bhBar.Release = new BarRelease();
-                    bhBar.Release.StartRelease = Engine.SAP2000.Convert.GetConstraint6DOF(restraintStart, springStart);
-                    bhBar.Release.EndRelease = Engine.SAP2000.Convert.GetConstraint6DOF(restraintEnd, springEnd);
-
-                    eFramePropType propertyType = eFramePropType.General;
+                    bhomBar.Release = new BarRelease();
+                    bhomBar.Release.StartRelease = Engine.SAP2000.Convert.GetConstraint6DOF(restraintStart, springStart);
+                    bhomBar.Release.EndRelease = Engine.SAP2000.Convert.GetConstraint6DOF(restraintEnd, springEnd);
+                    
                     string propertyName = "";
-                    string sAuto = "";
+                    string sAuto = ""; //This is the name of the auto select list assigned to the frame object, if any.
                     m_model.FrameObj.GetSection(id, ref propertyName, ref sAuto);
-                    if (propertyName != "None")
-                    {
-                        ISectionProperty property;
-
-                        //Check if section already has been pulled once
-                        if (!sectionProperties.TryGetValue(propertyName, out property))
-                        {
-                            //if not pull it and store it
-                            m_model.PropFrame.GetTypeOAPI(propertyName, ref propertyType);
-                            property = Helper.GetSectionProperty(m_model, propertyName, propertyType);
-                            sectionProperties[propertyName] = property;
-                        }
-
-                        bhBar.SectionProperty = property;
-                    }
-
-                    barList.Add(bhBar);
+                    bhomBar.SectionProperty = bhomSections[propertyName];
+                    
+                    bhomBars.Add(bhomBar);
                 }
                 catch
                 {
                     ReadElementError("Bar", id.ToString());
                 }
             }
-            return barList;
+            return bhomBars;
         }
     }
 }

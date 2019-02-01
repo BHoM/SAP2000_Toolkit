@@ -32,7 +32,7 @@ namespace BH.Adapter.SAP2000
             else if (type == typeof(ISectionProperty) || type.GetInterfaces().Contains(typeof(ISectionProperty)))
                 return ReadSectionProperties(ids as dynamic);
             else if (type == typeof(Material))
-                return ReadMaterials(ids as dynamic);
+                return ReadMaterial(ids as dynamic);
             else if (type == typeof(PanelPlanar))
                 return ReadPanel(ids as dynamic);
             else if (type == typeof(ISurfaceProperty))

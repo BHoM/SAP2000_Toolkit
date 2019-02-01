@@ -15,6 +15,7 @@ namespace BH.Adapter.SAP2000
 {
     public static partial class Helper
     {
+        public const string AdapterId = "SAP2000_id";
 
         /***************************************************/
         /**** Public Methods                            ****/

@@ -89,7 +89,7 @@ namespace BH.Engine.SAP2000
 
         }
 
-        private static MaterialType GetMaterialType(eMatType materialType)
+        public static MaterialType GetMaterialType(eMatType materialType)
         {
             switch (materialType)
             {
@@ -114,7 +114,7 @@ namespace BH.Engine.SAP2000
             }
         }
 
-        private static eMatType GetMaterialType(MaterialType materialType)
+        public static eMatType GetMaterialType(MaterialType materialType)
         {
             switch (materialType)
             {

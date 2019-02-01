@@ -28,7 +28,7 @@ namespace BH.Adapter.SAP2000
 
             if (m_model.PropMaterial.GetMaterial(material.Name, ref matType, ref colour, ref notes, ref guid) != 0)
             {
-                ret += m_model.PropMaterial.SetMaterial(material.Name, Helper.GetMaterialType(material.Type));
+                ret += m_model.PropMaterial.SetMaterial(material.Name, BH.Engine.SAP2000.Convert.GetMaterialType(material.Type));
                 ret += m_model.PropMaterial.SetMPIsotropic(material.Name, material.YoungsModulus, material.PoissonsRatio, material.CoeffThermalExpansion);
                 ret += m_model.PropMaterial.SetWeightAndMass(material.Name, 0, material.Density);
             }

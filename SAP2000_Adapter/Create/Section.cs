@@ -19,16 +19,15 @@ namespace BH.Adapter.SAP2000
     {
         private bool CreateObject(ISectionProperty bhSection)
         {
-            
             if (bhSection.GetType() == typeof(SteelSection))
             {
-                SteelSection steelSection = (SteelSection)bhSection;
-                Helper.SetSectionDimensions(steelSection.SectionProfile, bhSection.Name, bhSection.Material.Name, m_model);
+                SteelSection thisSection = (SteelSection)bhSection;
+                Helper.SetSpecificDimensions(thisSection.SectionProfile as dynamic, thisSection.Name, thisSection.Material.Name, m_model);
             }
             else if (bhSection.GetType() == typeof(ConcreteSection))
             {
-                ConcreteSection concreteSection = (ConcreteSection)bhSection;
-                Helper.SetSectionDimensions(concreteSection.SectionProfile, bhSection.Name, bhSection.Material.Name, m_model);
+                ConcreteSection thisSection = (ConcreteSection)bhSection;
+                Helper.SetSpecificDimensions(thisSection.SectionProfile as dynamic, thisSection.Name, thisSection.Material.Name, m_model);
             }
             else
             {
