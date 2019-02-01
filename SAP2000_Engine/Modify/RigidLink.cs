@@ -7,11 +7,29 @@ using BH.oM.Structure.Elements;
 
 namespace BH.Engine.SAP2000
 {
-    public static partial class Convert
+    public static partial class Modify
     {
-        /***************************************************/
-        /**** Public Methods                            ****/
-        /***************************************************/
+        public static List<RigidLink> SplitRigidLink(RigidLink link)
+        {
+            List<RigidLink> links = null;
+
+            if (link.SlaveNodes.Count() <= 1)
+            {
+                links.Add(link);
+            }
+            else
+            {
+                int i = 0;
+                foreach (Node slave in link.SlaveNodes)
+                {
+                    RigidLink newLink = BH.Engine.Structure.Create.RigidLink(link.MasterNode, new List<Node> { slave }, link.Constraint);
+                    newLink.Name = link.Name + ":::" + i;
+                    i++;
+                }
+            }
+
+            return links;
+        }
 
         public static List<RigidLink> JoinRigidLink(List<RigidLink> linkList)
         {
@@ -48,9 +66,5 @@ namespace BH.Engine.SAP2000
 
             return joinedList;
         }
-
-        /***************************************************/
-
-
     }
 }
