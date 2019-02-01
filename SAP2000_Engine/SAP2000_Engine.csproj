@@ -117,17 +117,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterId.cs" />
-    <Compile Include="Convert\PrivateHelpers\Constraint.cs" />
-    <Compile Include="Convert\PrivateHelpers\Material.cs" />
-    <Compile Include="Convert\PrivateHelpers\Section.cs" />
-    <Compile Include="Convert\ToBHoM\ToBHoM.cs" />
-    <Compile Include="Convert\ToSAP2000\ToSAP2000.cs" />
+    <Compile Include="Convert\ToBHoM\Constraint.cs" />
+    <Compile Include="Convert\ToBHoM\Material.cs" />
+    <Compile Include="Modify\RigidLink.cs" />
+    <Compile Include="Convert\ToSAP2000\Constraint.cs" />
+    <Compile Include="Convert\ToSAP2000\Material.cs" />
     <Compile Include="ModelData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Create\" />
-    <Folder Include="Modify\" />
     <Folder Include="Query\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
