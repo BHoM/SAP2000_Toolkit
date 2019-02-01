@@ -19,24 +19,22 @@ namespace BH.Adapter.SAP2000
         private bool CreateObject(RigidLink bhLink)
         {
             int ret = 0;
+            List < RigidLink> bhomLinks = BH.Engine.SAP2000.Convert.SplitRigidLink(bhLink);
 
-            string name = "";
-            string givenName = "";
-            string bhId = bhLink.CustomData[AdapterId].ToString();
-            name = bhId;
-
-            LinkConstraint constraint = bhLink.Constraint;//not used yet
-            Node masterNode = bhLink.MasterNode;
-            List<Node> slaveNodes = bhLink.SlaveNodes;
-            bool multiSlave = slaveNodes.Count() == 1 ? false : true;
-
-            for (int i = 0; i < slaveNodes.Count(); i++)
+            foreach (RigidLink link in bhomLinks)
             {
-                name = multiSlave == true ? name + ":::" + i : name;
-                ret = m_model.LinkObj.AddByPoint(masterNode.CustomData[AdapterId].ToString(), slaveNodes[i].CustomData[AdapterId].ToString(), ref givenName, false, "Default", name);
+                string givenName = "";
+                Node masterNode = link.MasterNode;
+                Node slaveNode = link.SlaveNodes[0];
+                string bhId = link.CustomData[AdapterId].ToString();
+
+                ret = m_model.LinkObj.AddByPoint(masterNode.CustomData[AdapterId].ToString(), 
+                    slaveNode.CustomData[AdapterId].ToString(), ref givenName, false, "Default", bhId);
             }
 
             return ret == 0;
         }
+
+        
     }
 }

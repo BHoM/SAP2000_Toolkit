@@ -13,12 +13,27 @@ namespace BH.Engine.SAP2000
         /**** Public Methods                            ****/
         /***************************************************/
 
-        //Add methods for converting From BHoM to the specific software types, if possible to do without any BHoM calls
-        //Example:
-        //public static SAP2000Node ToSAP2000(this Node node)
-        //{
-        //    //Insert code for convertion
-        //}
+        public static List<RigidLink> SplitRigidLink(RigidLink link)
+        {
+            List<RigidLink> links = null;
+
+            if (link.SlaveNodes.Count() <= 1)
+            {
+                links.Add(link);
+            }
+            else
+            {
+                int i = 0;
+                foreach (Node slave in link.SlaveNodes)
+                {
+                    RigidLink newLink = BH.Engine.Structure.Create.RigidLink(link.MasterNode, new List<Node> { slave }, link.Constraint);
+                    newLink.Name = link.Name + ":::" + i;
+                    i++;
+                }
+            }
+
+            return links;
+        }
 
         /***************************************************/
     }

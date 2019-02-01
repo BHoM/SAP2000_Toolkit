@@ -46,7 +46,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private static LinkConstraint GetLinearLinkConstraint(string name, cSapModel model)
+        public static LinkConstraint GetLinearLinkConstraint(string name, cSapModel model)
         {
             bool[] dof = null;
             bool[] fix = null;
