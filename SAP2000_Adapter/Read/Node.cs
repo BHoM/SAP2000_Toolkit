@@ -42,7 +42,7 @@ namespace BH.Adapter.SAP2000
                 double[] spring = new double[6];
 
                 m_model.PointObj.GetCoordCartesian(id, ref x, ref y, ref z);
-                bhNode.Position = new oM.Geometry.Point() { X = x, Y = y, Z = z };
+                bhNode.Coordinates = new oM.Geometry.CoordinateSystem.Cartesian() { Origin = new oM.Geometry.Point() { X = x, Y = y, Z = z } };
                 bhNode.CustomData.Add(AdapterId, id);
 
                 m_model.PointObj.GetRestraint(id, ref restraint);
