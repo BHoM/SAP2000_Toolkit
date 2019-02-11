@@ -43,7 +43,7 @@ namespace BH.Adapter.SAP2000
 
                 List<Point> pts = new List<Point>();
                 foreach (string name in pointNames)
-                    pts.Add(bhomNodes[name].Position);
+                    pts.Add(bhomNodes[name].Coordinates.Origin);
                 pts.Add(pts[0]);
                 Polyline outline = new Polyline() { ControlPoints = pts };
 
