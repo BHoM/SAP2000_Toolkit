@@ -1,25 +1,15 @@
-﻿using System;
-using System.Collections;
+﻿using BH.oM.Structure.Loads;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Base;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties.Section;
-using BH.oM.Structure.Properties.Surface;
-using BH.oM.Structure.Properties.Constraint;
-using BH.oM.Structure.Loads;
-using BH.oM.Common.Materials;
-using SAP2000v19;
-using BH.oM.Geometry;
-using BH.Engine.Geometry;
-using BH.Engine.Reflection;
 
 namespace BH.Adapter.SAP2000
 {
     public partial class SAP2000Adapter
     {
+        /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
+
         private List<LoadCombination> ReadLoadCombination(List<string> ids = null)
         {
             // not implemented!
@@ -59,7 +49,7 @@ namespace BH.Adapter.SAP2000
             //    return combinations;
         }
 
-        ///***************************************************/
+        /***************************************************/
 
         private List<Loadcase> ReadLoadcase(List<string> ids = null)
         {
@@ -88,7 +78,7 @@ namespace BH.Adapter.SAP2000
             //return loadcaseList;
         }
 
-        ///***************************************************/
+        /***************************************************/
 
         private List<ILoad> ReadLoad(Type type, List<string> ids = null)
         {
@@ -107,5 +97,7 @@ namespace BH.Adapter.SAP2000
 
             //return loadList;
         }
+
+        /***************************************************/
     }
 }

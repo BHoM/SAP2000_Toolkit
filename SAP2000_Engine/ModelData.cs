@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using BH.oM.Common.Materials;
 using BH.oM.Structure.Properties.Section;
-using BH.Engine.Structure;
-using BH.oM.Common.Materials;
 using SAP2000v19;
+using System.Collections.Generic;
 
 namespace BH.Engine.SAP2000
 {
@@ -22,5 +17,8 @@ namespace BH.Engine.SAP2000
             materialDict = new Dictionary<string, Material>();
             model = data;
         }
+
+        /***************************************************/
+
     }
 }

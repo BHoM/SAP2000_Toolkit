@@ -1,20 +1,14 @@
-﻿using System;
+﻿using BH.oM.Base;
+using BH.oM.Common.Materials;
+using BH.oM.Structure.Elements;
+using BH.oM.Structure.Loads;
+using BH.oM.Structure.Properties.Constraint;
+using BH.oM.Structure.Properties.Section;
+using BH.oM.Structure.Properties.Surface;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Base;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties.Section;
-using BH.oM.Structure.Properties.Surface;
-using BH.oM.Structure.Properties.Constraint;
-using BH.oM.Structure.Loads;
-using BH.oM.Common.Materials;
-using SAP2000v19;
-using BH.oM.Geometry;
-using BH.Engine.Geometry;
-using BH.Engine.Reflection;
 
 namespace BH.Adapter.SAP2000
 {
@@ -23,6 +17,7 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
         /**** Adapter overload method                   ****/
         /***************************************************/
+
         protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
         {
             if (type == typeof(Node))
@@ -51,5 +46,7 @@ namespace BH.Adapter.SAP2000
 
             return null;//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
         }
+
+        /***************************************************/
     }
 }

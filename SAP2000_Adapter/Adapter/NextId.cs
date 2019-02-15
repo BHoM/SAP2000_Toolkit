@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BH.Adapter.SAP2000
 {
@@ -34,6 +32,8 @@ namespace BH.Adapter.SAP2000
 
             return id;
         }
+
+        /***************************************************/
 
         private string GetNextIdOfType(Type objectType)
         {
@@ -94,5 +94,6 @@ namespace BH.Adapter.SAP2000
 
         }
 
+        /***************************************************/
     }
 }

@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Base;
-using BH.oM.Structure.Elements;
-using SAP2000v19;
+﻿using SAP2000v19;
+using System;
 
 namespace BH.Adapter.SAP2000
 {
     public partial class SAP2000Adapter : BHoMAdapter
-    {
-        
+    {        
         /***************************************************/
         /**** Public Properties                         ****/
         /***************************************************/
@@ -77,9 +69,6 @@ namespace BH.Adapter.SAP2000
         private cOAPI m_app;
         private cSapModel m_model;
 
-
         /***************************************************/
-
-
     }
 }

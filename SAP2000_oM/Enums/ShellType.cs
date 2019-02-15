@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BH.oM.Adapters.SAP2000
+﻿namespace BH.oM.Adapters.SAP2000
 {
     public enum ShellType
     {

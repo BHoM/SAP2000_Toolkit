@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Structure.Properties.Constraint;
+﻿using BH.oM.Structure.Properties.Constraint;
 
 namespace BH.Engine.SAP2000
 {
     public static partial class Convert
-    {
+    {   
+        /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
+
         public static Constraint6DOF GetConstraint6DOF(bool[] restraint, double[] spring)
         {
             Constraint6DOF bhConstraint = new Constraint6DOF();
@@ -28,5 +27,8 @@ namespace BH.Engine.SAP2000
 
             return bhConstraint;
         }
+
+        /***************************************************/
+
     }
 }
