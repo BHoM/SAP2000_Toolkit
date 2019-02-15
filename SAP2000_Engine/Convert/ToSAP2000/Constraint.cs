@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Structure.Properties.Constraint;
+﻿using BH.oM.Structure.Properties.Constraint;
 
 namespace BH.Engine.SAP2000
 {
     public static partial class Convert
     {
+        /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
+
         public static void SetConstraint6DOF(Constraint6DOF bhConstraint, ref bool[] restraint, ref double[] spring)
         {
             restraint = new bool[6];
@@ -26,6 +25,9 @@ namespace BH.Engine.SAP2000
             spring[3] = bhConstraint.RotationalStiffnessX;
             spring[4] = bhConstraint.RotationalStiffnessY;
             spring[5] = bhConstraint.RotationalStiffnessZ;
-         }
+        }
+
+        /***************************************************/
+
     }
 }

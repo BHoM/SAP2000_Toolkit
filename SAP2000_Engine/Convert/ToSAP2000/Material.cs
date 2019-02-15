@@ -1,15 +1,14 @@
-﻿using SAP2000v19;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Common.Materials;
+﻿using BH.oM.Common.Materials;
+using SAP2000v19;
 
 namespace BH.Engine.SAP2000
 {
     public static partial class Convert
     {
+        /***************************************************/
+        /**** Public Methods                            ****/
+        /***************************************************/
+
         public static eMatType GetMaterialType(MaterialType materialType)
         {
             switch (materialType)
@@ -34,5 +33,8 @@ namespace BH.Engine.SAP2000
                     return eMatType.Steel;
             }
         }
+
+        /***************************************************/
+
     }
 }
