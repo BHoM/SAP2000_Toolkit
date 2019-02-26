@@ -54,7 +54,6 @@ namespace BH.Adapter.SAP2000
             {typeof(PanelPlanar), new List<Type> { typeof(ISurfaceProperty) } }
         };
 
-
         /***************************************************/
     }
 }
