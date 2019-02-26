@@ -13,5 +13,7 @@ namespace BH.Adapter.SAP2000
             return 0;
             throw new NotImplementedException();
         }
+
+        /***************************************************/
     }
 }
