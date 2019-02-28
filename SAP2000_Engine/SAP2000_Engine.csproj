@@ -122,7 +122,6 @@
     <Compile Include="Modify\RigidLink.cs" />
     <Compile Include="Convert\ToSAP2000\Constraint.cs" />
     <Compile Include="Convert\ToSAP2000\Material.cs" />
-    <Compile Include="ModelData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
