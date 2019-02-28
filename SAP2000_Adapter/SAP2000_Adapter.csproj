@@ -134,7 +134,7 @@
     <Compile Include="Create\Loads.cs" />
     <Compile Include="Create\_Create.cs" />
     <Compile Include="Delete\Delete.cs" />
-    <Compile Include="Adapter\NextId.cs" />
+    <Compile Include="Types\NextId.cs" />
     <Compile Include="Create\SurfaceProperty.cs" />
     <Compile Include="Read\Bar.cs" />
     <Compile Include="Read\Errors.cs" />
@@ -148,7 +148,7 @@
     <Compile Include="Read\Section.cs" />
     <Compile Include="Read\SurfaceProperty.cs" />
     <Compile Include="Update\UpdateObjects.cs" />
-    <Compile Include="Adapter\SAP2000Adapter.cs" />
+    <Compile Include="SAP2000Adapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Types\Comparer.cs" />
     <Compile Include="Types\DependencyTypes.cs" />
