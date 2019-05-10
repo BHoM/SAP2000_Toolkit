@@ -2,9 +2,9 @@
 using BH.oM.Common.Materials;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
-using BH.oM.Structure.Properties.Constraint;
-using BH.oM.Structure.Properties.Section;
-using BH.oM.Structure.Properties.Surface;
+using BH.oM.Structure.Constraints;
+using BH.oM.Structure.SectionProperties;
+using BH.oM.Structure.SurfaceProperties;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace BH.Adapter.SAP2000
                 return ReadSectionProperties(ids as dynamic);
             else if (type == typeof(Material))
                 return ReadMaterial(ids as dynamic);
-            else if (type == typeof(PanelPlanar))
+            else if (type == typeof(Panel))
                 return ReadPanel(ids as dynamic);
             else if (type == typeof(ISurfaceProperty))
                 return ReadSurfaceProperty(ids as dynamic);

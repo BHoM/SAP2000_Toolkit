@@ -17,7 +17,7 @@ namespace BH.Adapter.SAP2000
             string bhId = bhNode.CustomData[AdapterId].ToString();
             name = bhId;
 
-            ret += m_model.PointObj.AddCartesian(bhNode.Position().X, bhNode.Position().Y, bhNode.Position().Z, ref name);
+            ret += m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name);
 
             if (name != bhId)
                 bhNode.CustomData[AdapterId] = name;

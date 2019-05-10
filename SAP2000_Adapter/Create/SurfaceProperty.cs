@@ -1,5 +1,5 @@
 ﻿using BH.Engine.Structure;
-using BH.oM.Structure.Properties.Surface;
+using BH.oM.Structure.SurfaceProperties;
 
 namespace BH.Adapter.SAP2000
 {
@@ -17,17 +17,17 @@ namespace BH.Adapter.SAP2000
             if (surfaceProperty.GetType() == typeof(Waffle))
             {
                 // not implemented!
-                CreatePropertyError("Waffle Not Implemented!", "PanelPlanar", propertyName);
+                CreatePropertyError("Waffle Not Implemented!", "Panel", propertyName);
             }
             else if (surfaceProperty.GetType() == typeof(Ribbed))
             {
                 // not implemented!
-                CreatePropertyError("Ribbed Not Implemented!", "PanelPlanar", propertyName);
+                CreatePropertyError("Ribbed Not Implemented!", "Panel", propertyName);
             }
             else if (surfaceProperty.GetType() == typeof(LoadingPanelProperty))
             {
                 // not implemented!
-                CreatePropertyError("Loading Panel Not Implemented!", "PanelPlanar", propertyName);
+                CreatePropertyError("Loading Panel Not Implemented!", "Panel", propertyName);
             }
             else if (surfaceProperty.GetType() == typeof(ConstantThickness))
             {

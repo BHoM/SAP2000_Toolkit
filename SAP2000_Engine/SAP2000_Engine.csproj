@@ -78,6 +78,14 @@
     <Reference Include="Library_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Library_Engine.dll</HintPath>
     </Reference>
+    <Reference Include="Physical_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM_Engine\Build\Physical_Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="Physical_oM, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\BHoM_Adapter\Build\Physical_oM.dll</HintPath>
+    </Reference>
     <Reference Include="Planning_oM">
       <HintPath>..\..\BHoM\Build\Planning_oM.dll</HintPath>
     </Reference>
@@ -118,7 +126,6 @@
   <ItemGroup>
     <Compile Include="AdapterId.cs" />
     <Compile Include="Convert\ToBHoM\Constraint.cs" />
-    <Compile Include="Convert\ToBHoM\Material.cs" />
     <Compile Include="Modify\RigidLink.cs" />
     <Compile Include="Convert\ToSAP2000\Constraint.cs" />
     <Compile Include="Convert\ToSAP2000\Material.cs" />

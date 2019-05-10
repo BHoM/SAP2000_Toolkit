@@ -1,6 +1,6 @@
-﻿using BH.oM.Common.Materials;
-using BH.oM.Structure.Properties.Section;
-using BH.oM.Structure.Properties.Section.ShapeProfiles;
+﻿using BH.oM.Physical.Materials;
+using BH.oM.Structure.SectionProperties;
+using BH.oM.Geometry.ShapeProfiles;
 using System;
 
 

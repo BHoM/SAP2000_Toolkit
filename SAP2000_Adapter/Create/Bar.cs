@@ -1,7 +1,7 @@
 ﻿using BH.Engine.Structure;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties;
-using BH.oM.Structure.Properties.Constraint;
+using BH.oM.Structure.Offsets;
+using BH.oM.Structure.Constraints;
 
 namespace BH.Adapter.SAP2000
 {
@@ -17,7 +17,6 @@ namespace BH.Adapter.SAP2000
 
             string name = "";
             string bhId = bhBar.CustomData[AdapterId].ToString();
-            name = bhId;
 
             ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
 

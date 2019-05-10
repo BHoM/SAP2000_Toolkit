@@ -12,7 +12,7 @@ namespace BH.Adapter.SAP2000
         /**** Private Methods                            ****/
         /***************************************************/
 
-        private bool CreateObject(PanelPlanar bhPanel)
+        private bool CreateObject(Panel bhPanel)
         {
             int ret = 0;
 
