@@ -19,8 +19,10 @@ namespace BH.Adapter.SAP2000
 
             if (ids == null)
             {
-                m_model.PointObj.GetNameList(ref nameCount, ref nameArr);
-                ids = nameArr.ToList();
+                if (m_model.PointObj.GetNameList(ref nameCount, ref nameArr) == 0)
+                {
+                    ids = nameArr.ToList();
+                }
             }
 
             foreach (string id in ids)
@@ -32,7 +34,7 @@ namespace BH.Adapter.SAP2000
                 double[] spring = new double[6];
 
                 m_model.PointObj.GetCoordCartesian(id, ref x, ref y, ref z);
-                bhNode.Coordinates = new oM.Geometry.CoordinateSystem.Cartesian() { Origin = new oM.Geometry.Point() { X = x, Y = y, Z = z } };
+                bhNode.Position = Engine.Geometry.Create.Point(x, y, z);
                 bhNode.CustomData.Add(AdapterId, id);
 
                 m_model.PointObj.GetRestraint(id, ref restraint);

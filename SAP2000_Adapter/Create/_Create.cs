@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BH.oM.Analytical;
 
 namespace BH.Adapter.SAP2000
 {

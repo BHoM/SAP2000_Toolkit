@@ -1,6 +1,6 @@
 ﻿using BH.oM.Geometry;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties.Surface;
+using BH.oM.Structure.SurfaceProperties;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -12,9 +12,9 @@ namespace BH.Adapter.SAP2000
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private List<PanelPlanar> ReadPanel(List<string> ids = null)
+        private List<Panel> ReadPanel(List<string> ids = null)
         {
-            List<PanelPlanar> bhomPanels = new List<PanelPlanar>();
+            List<Panel> bhomPanels = new List<Panel>();
             Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterId].ToString());
             Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => x.Name);
             
@@ -35,7 +35,7 @@ namespace BH.Adapter.SAP2000
 
                 List<Point> pts = new List<Point>();
                 foreach (string name in pointNames)
-                    pts.Add(bhomNodes[name].Coordinates.Origin);
+                    pts.Add(bhomNodes[name].Position);
                 pts.Add(pts[0]);
                 Polyline outline = new Polyline() { ControlPoints = pts };
 
@@ -45,7 +45,7 @@ namespace BH.Adapter.SAP2000
                 List<Opening> noOpenings = null;
 
                 //Create the panel
-                PanelPlanar bhomPanel = BH.Engine.Structure.Create.PanelPlanar(outline, noOpenings, bhomProperties[propertyName], id);
+                Panel bhomPanel = BH.Engine.Structure.Create.Panel(outline, noOpenings, bhomProperties[propertyName], id);
                 
                 //Set the properties
                 bhomPanel.CustomData[AdapterId] = id;

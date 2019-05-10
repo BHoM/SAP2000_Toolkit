@@ -1,6 +1,6 @@
 ﻿using BH.oM.Structure.Elements;
-using BH.oM.Structure.Properties.Constraint;
-using BH.oM.Structure.Properties.Section;
+using BH.oM.Structure.Constraints;
+using BH.oM.Structure.SectionProperties;
 using System.Collections.Generic;
 using System.Linq;
 

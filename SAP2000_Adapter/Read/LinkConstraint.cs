@@ -1,4 +1,4 @@
-﻿using BH.oM.Structure.Properties.Constraint;
+﻿using BH.oM.Structure.Constraints;
 using SAP2000v19;
 using System.Collections.Generic;
 using System.Linq;
