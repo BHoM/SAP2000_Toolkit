@@ -39,7 +39,7 @@ namespace BH.Adapter.SAP2000
 
                 m_model.PointObj.GetRestraint(id, ref restraint);
                 m_model.PointObj.SetSpring(id, ref spring);
-                bhNode.Constraint = Engine.SAP2000.Convert.GetConstraint6DOF(restraint, spring);
+                bhNode.Support = Engine.SAP2000.Convert.GetConstraint6DOF(restraint, spring);
 
 
                 nodeList.Add(bhNode);

@@ -1,6 +1,7 @@
 ﻿using BH.oM.Physical.Materials;
 using BH.Engine.Physical;
 using BH.oM.Structure.MaterialFragments;
+using BH.oM.Adapters.SAP2000;
 using SAP2000v19;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +14,9 @@ namespace BH.Adapter.SAP2000
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private List<Material> ReadMaterial(List<string> ids = null)
+        private List<IMaterialFragment> ReadMaterial(List<string> ids = null)
         {
-            List<Material> materialList = new List<Material>();
+            List<IMaterialFragment> materialList = new List<IMaterialFragment>();
 
             int nameCount = 0;
             string[] names = { };
@@ -29,18 +30,42 @@ namespace BH.Adapter.SAP2000
             foreach (string materialName in ids)
             {
                 eMatType matType = eMatType.NoDesign;
+                int symType = 0;
                 int colour = 0;
                 string guid = "";
                 string notes = "";
 
                 if (m_model.PropMaterial.GetMaterial(materialName, ref matType, ref colour, ref notes, ref guid) == 0)
                 {
+                    m_model.PropMaterial.GetTypeOAPI(materialName, ref matType, ref symType);
+
                     double e = 0;
                     double v = 0;
                     double thermCo = 0;
                     double g = 0;
 
-                    m_model.PropMaterial.GetMPIsotropic(materialName, ref e, ref v, ref thermCo, ref g);
+                    double[] E = new double[3];
+                    double[] V = new double[3];
+                    double[] ThermCo = new double[3];
+                    double[] G = new double[3];
+                    
+                    if (symType == 0)// Isotropic
+                    {
+                        m_model.PropMaterial.GetMPIsotropic(materialName, ref e, ref v, ref thermCo, ref g);
+                    }
+                    else if (symType == 1) // Orthotropic
+                    {
+                        m_model.PropMaterial.GetMPOrthotropic(materialName, ref E, ref V, ref ThermCo, ref G);
+                    }
+                    else if (symType == 2) //Anisotropic
+                    {
+                        m_model.PropMaterial.GetMPAnisotropic(materialName, ref E, ref V, ref ThermCo, ref G);
+                    }
+                    else if (symType == 3) //Uniaxial
+                    {
+                        m_model.PropMaterial.GetMPUniaxial(materialName, ref e, ref thermCo);
+                    }
+
 
                     double mass = 0;
                     double weight = 0;
@@ -61,35 +86,35 @@ namespace BH.Adapter.SAP2000
                     int i1 = 0;//stress-strain hysteresis type
                     bool b0 = false;//is lightweight
 
-                    Material m = new Material();
+                    IMaterialFragment m;
 
                     switch (matType)
                     {
                         case eMatType.Steel:
                             m_model.PropMaterial.GetOSteel(materialName, ref fy, ref fu, ref efy, ref efu, ref i0, ref i1, ref strainHardening, ref strainMaxF, ref strainRupture);
-                            m = BH.Engine.Structure.Create.SteelMaterial(materialName, e, v, thermCo, mass, 0, fy, fu);
+                            m = BH.Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                             break;
                         case eMatType.Concrete:
                             m_model.PropMaterial.GetOConcrete(materialName, ref fc, ref b0, ref ft, ref i0, ref i1, ref efy, ref efu, ref strainFc, ref strainMaxF);
-                            m = BH.Engine.Structure.Create.ConcreteMaterial(materialName, e, v, thermCo, mass, 0, 0, fy);
+                            m = BH.Engine.Structure.Create.Concrete(materialName, e, v, thermCo, mass, 0, 0, fy);
                             break;
                         case eMatType.Aluminum:
-                            m = BH.Engine.Structure.Create.AluminiumMaterial(materialName, e, v, thermCo, mass, 0);
+                            m = BH.Engine.Structure.Create.Aluminium(materialName, e, v, thermCo, mass, 0);
                             break;
                         case eMatType.ColdFormed:
                             m_model.PropMaterial.GetOColdFormed(materialName, ref fy, ref fu, ref i1);
-                            m = BH.Engine.Structure.Create.SteelMaterial(materialName, e, v, thermCo, mass, 0, fy, fu);
+                            m = BH.Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                             break;
                         case eMatType.Rebar:
                             m_model.PropMaterial.GetORebar(materialName, ref fy, ref fu, ref efy, ref efu, ref i0, ref i1, ref strainHardening, ref strainMaxF, ref b0);
-                            m = BH.Engine.Structure.Create.SteelMaterial(materialName, e, v, thermCo, mass, 0, fy, fu);
+                            m = BH.Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                             break;
                         case eMatType.Tendon:
                             m_model.PropMaterial.GetOTendon(materialName, ref fy, ref fu, ref i0, ref i1);
-                            m = BH.Engine.Structure.Create.SteelMaterial(materialName, e, v, thermCo, mass, 0, fy, fu);
+                            m = BH.Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                             break;
                         default:
-                            m = Engine.Physical.Create.Material(materialName, mass);
+                            m = BH.Engine.Structure.Create.Steel(materialName, mass);
                             Engine.Reflection.Compute.RecordWarning("Could not extract structural properties for material " + materialName);
                             break;
                     }

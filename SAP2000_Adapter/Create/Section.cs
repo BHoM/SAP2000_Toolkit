@@ -1,4 +1,5 @@
 ﻿using BH.oM.Physical.Materials;
+using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Geometry.ShapeProfiles;
 using System;
@@ -60,7 +61,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetProfile(AngleProfile bhomProfile, string sectionName, Material material)
+        private bool SetProfile(AngleProfile bhomProfile, string sectionName, IMaterialFragment material)
         {
             int ret = m_model.PropFrame.SetAngle(sectionName, material.Name, bhomProfile.Height, bhomProfile.Width, bhomProfile.FlangeThickness, bhomProfile.WebThickness);
             return ret == 0;
@@ -68,7 +69,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetProfile(BoxProfile bhomProfile, string sectionName, Material material)
+        private bool SetProfile(BoxProfile bhomProfile, string sectionName, IMaterialFragment material)
         {
             int ret = m_model.PropFrame.SetTube(sectionName, material.Name, bhomProfile.Height, bhomProfile.Width, bhomProfile.Thickness, bhomProfile.Thickness);
             return ret == 0;
@@ -76,7 +77,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetProfile(ChannelProfile bhomProfile, string sectionName, Material material)
+        private bool SetProfile(ChannelProfile bhomProfile, string sectionName, IMaterialFragment material)
         {
             int ret = m_model.PropFrame.SetChannel(sectionName, material.Name, bhomProfile.Height, bhomProfile.FlangeWidth, bhomProfile.FlangeThickness, bhomProfile.WebThickness);
             return ret == 0;
@@ -84,7 +85,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetProfile(CircleProfile bhomProfile, string sectionName, Material material)
+        private bool SetProfile(CircleProfile bhomProfile, string sectionName, IMaterialFragment material)
         {
             int ret = m_model.PropFrame.SetCircle(sectionName, material.Name, bhomProfile.Diameter);
             return ret == 0;
@@ -92,7 +93,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetProfile(FabricatedBoxProfile bhomProfile, string sectionName, Material material)
+        private bool SetProfile(FabricatedBoxProfile bhomProfile, string sectionName, IMaterialFragment material)
         {
             if (bhomProfile.TopFlangeThickness != bhomProfile.BotFlangeThickness)
             {
@@ -105,7 +106,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetProfile(FabricatedISectionProfile bhomProfile, string sectionName, Material material)
+        private bool SetProfile(FabricatedISectionProfile bhomProfile, string sectionName, IMaterialFragment material)
         {
             int ret = m_model.PropFrame.SetISection(sectionName, material.Name, bhomProfile.Height, bhomProfile.TopFlangeWidth, bhomProfile.TopFlangeThickness, bhomProfile.WebThickness, bhomProfile.BotFlangeWidth, bhomProfile.BotFlangeThickness);
             return ret == 0;
@@ -113,7 +114,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetProfile(FreeFormProfile bhomProfile, string sectionName, Material material)
+        private bool SetProfile(FreeFormProfile bhomProfile, string sectionName, IMaterialFragment material)
         {
             //Not implemented
             return false;
@@ -121,7 +122,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetProfile(ISectionProfile bhomProfile, string sectionName, Material material)
+        private bool SetProfile(ISectionProfile bhomProfile, string sectionName, IMaterialFragment material)
         {
             int ret = m_model.PropFrame.SetISection(sectionName, material.Name, bhomProfile.Height, bhomProfile.Width, bhomProfile.FlangeThickness, bhomProfile.WebThickness, bhomProfile.Width, bhomProfile.FlangeThickness);
             return ret == 0;
@@ -129,7 +130,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetProfile(KiteProfile bhomProfile, string sectionName, Material material)
+        private bool SetProfile(KiteProfile bhomProfile, string sectionName, IMaterialFragment material)
         {
             //Not implemented
             return false;
@@ -137,7 +138,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetProfile(RectangleProfile bhomProfile, string sectionName, Material material)
+        private bool SetProfile(RectangleProfile bhomProfile, string sectionName, IMaterialFragment material)
         {
             int ret = m_model.PropFrame.SetRectangle(sectionName, material.Name, bhomProfile.Height, bhomProfile.Width);
             return ret == 0;
@@ -145,7 +146,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetProfile(TSectionProfile bhomProfile, string sectionName, Material material)
+        private bool SetProfile(TSectionProfile bhomProfile, string sectionName, IMaterialFragment material)
         {
             int ret = m_model.PropFrame.SetTee(sectionName, material.Name, bhomProfile.Height, bhomProfile.Width, bhomProfile.FlangeThickness, bhomProfile.WebThickness);
             return ret == 0;
@@ -153,7 +154,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetProfile(ZSectionProfile bhomProfile, string sectionName, Material material)
+        private bool SetProfile(ZSectionProfile bhomProfile, string sectionName, IMaterialFragment material)
         {
             if (bhomProfile.FlangeThickness != bhomProfile.WebThickness)
             {
@@ -166,7 +167,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetProfile(TubeProfile bhomProfile, string sectionName, Material material)
+        private bool SetProfile(TubeProfile bhomProfile, string sectionName, IMaterialFragment material)
         {
             int ret = m_model.PropFrame.SetPipe(sectionName, material.Name, bhomProfile.Diameter, bhomProfile.Thickness);
             return ret == 0;

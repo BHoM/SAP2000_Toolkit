@@ -1,4 +1,5 @@
 ﻿using BH.oM.Physical.Materials;
+using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Geometry.ShapeProfiles;
 using BH.Engine.Physical;
@@ -20,7 +21,7 @@ namespace BH.Adapter.SAP2000
         private List<ISectionProperty> ReadSectionProperties(List<string> ids = null)
         {
             List<ISectionProperty> propList = new List<ISectionProperty>();
-            Dictionary<String, Material> bhomMaterials = ReadMaterial().ToDictionary(x => x.Name);
+            Dictionary<String, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => x.Name);
 
             int nameCount = 0;
             string[] names = { };
@@ -167,7 +168,7 @@ namespace BH.Adapter.SAP2000
                         break;
                 }
 
-                Material material = bhomMaterials[materialName];
+                IMaterialFragment material = bhomMaterials[materialName];
 
                 if (propertyType == eFramePropType.General)
                 {
@@ -192,25 +193,17 @@ namespace BH.Adapter.SAP2000
                     if (bhomProfile == null)
                         ReadPropertyError(propertyType.ToString(), id);
 
-                    if (material.IsAluminium())
+                    if (material is Aluminium || material is Steel)
                     {
-                        bhomProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(bhomProfile, material, id);
+                        bhomProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(bhomProfile);
                     }
-                    else if (material.IsSteel())
+                    else if (material is Concrete)
                     {
-                        bhomProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(bhomProfile, material, id);
-                    }
-                    else if (material.IsConcrete())
-                    {
-                        bhomProperty = BH.Engine.Structure.Create.ConcreteSectionFromProfile(bhomProfile, material, id);
-                    }
-                    else if (material.IsTimber())
-                    {
-                        bhomProperty = BH.Engine.Structure.Create.ConcreteSectionFromProfile(bhomProfile, material, id);
+                        bhomProperty = BH.Engine.Structure.Create.ConcreteSectionFromProfile(bhomProfile);
                     }
                     else
                     {
-                        Engine.Reflection.Compute.RecordWarning("No structural material could be found to match " + material.Name);
+                        Engine.Reflection.Compute.RecordWarning("Reading sections of material type " + material.GetType().Name + "is not supported. Section with name " + id + " was not pulled");
                     }
                 }
 

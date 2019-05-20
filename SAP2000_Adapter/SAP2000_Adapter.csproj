@@ -168,6 +168,12 @@
   <ItemGroup>
     <Folder Include="Execute\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SAP2000_oM\SAP2000_oM.csproj">
+      <Project>{bc975b64-e35e-4155-a067-7a88505e61c2}</Project>
+      <Name>SAP2000_oM</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

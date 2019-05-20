@@ -22,12 +22,12 @@ namespace BH.Adapter.SAP2000
             if (name != bhId)
                 bhNode.CustomData[AdapterId] = name;
 
-            if (bhNode.Constraint != null)
+            if (bhNode.Support != null)
             {
                 bool[] restraint = new bool[6];
                 double[] spring = new double[6];
 
-                Engine.SAP2000.Convert.SetConstraint6DOF(bhNode.Constraint, ref restraint, ref spring);
+                Engine.SAP2000.Convert.SetConstraint6DOF(bhNode.Support, ref restraint, ref spring);
 
                 ret += m_model.PointObj.SetRestraint(name, ref restraint);
                 ret += m_model.PointObj.SetSpring(name, ref spring);
