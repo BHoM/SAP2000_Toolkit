@@ -1,4 +1,6 @@
-﻿using BH.oM.Common.Materials;
+﻿using BH.oM.Physical.Materials;
+using BH.oM.Structure.MaterialFragments;
+using BH.oM.Geometry;
 using SAP2000v19;
 
 namespace BH.Engine.SAP2000
@@ -9,29 +11,25 @@ namespace BH.Engine.SAP2000
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static eMatType GetMaterialType(MaterialType materialType)
+        public static eMatType GetMaterialType(IMaterialFragment material)
         {
-            switch (materialType)
-            {
-                case MaterialType.Aluminium:
-                    return eMatType.Aluminum;
-                case MaterialType.Steel:
-                    return eMatType.Steel;
-                case MaterialType.Concrete:
-                    return eMatType.Concrete;
-                case MaterialType.Timber://no material of this type in ETABS !!! 
-                    return eMatType.Steel;
-                case MaterialType.Rebar:
-                    return eMatType.Rebar;
-                case MaterialType.Tendon:
-                    return eMatType.Tendon;
-                case MaterialType.Glass://no material of this type in ETABS !!!
-                    return eMatType.Steel;
-                case MaterialType.Cable://no material of this type in ETABS !!!
-                    return eMatType.Steel;
-                default:
-                    return eMatType.Steel;
-            }
+            if (material is Steel)
+                return eMatType.Steel;
+            else if (material is Concrete)
+                return eMatType.Concrete;
+            else if (material is Aluminium)
+                return eMatType.Aluminum;
+            else if (material is Timber)
+                return eMatType.NoDesign;
+            else
+                return eMatType.NoDesign;
+        }
+
+        /***************************************************/
+
+        public static double[] ToDoubleArray(this Vector v)
+        {
+            return new double[] { v.X, v.Y, v.Z };
         }
 
         /***************************************************/
