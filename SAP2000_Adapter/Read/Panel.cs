@@ -1,6 +1,7 @@
 ﻿using BH.oM.Geometry;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.SurfaceProperties;
+using BH.Engine.Geometry;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -25,7 +26,7 @@ namespace BH.Adapter.SAP2000
                 m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
             }
-            
+
             foreach (string id in ids)
             {
                 //Get outline of panel
@@ -38,14 +39,15 @@ namespace BH.Adapter.SAP2000
                     pts.Add(bhomNodes[name].Position);
                 pts.Add(pts[0]);
                 Polyline outline = new Polyline() { ControlPoints = pts };
-
+                List<Edge> outEdges = new List<Edge>() { BH.Engine.Structure.Create.Edge(outline, new oM.Structure.Constraints.Constraint4DOF()) };
+                
                 //Get the section property
                 string propertyName = "";
                 m_model.AreaObj.GetProperty(id, ref propertyName);
                 List<Opening> noOpenings = null;
 
                 //Create the panel
-                Panel bhomPanel = BH.Engine.Structure.Create.Panel(outline, noOpenings, bhomProperties[propertyName], id);
+                Panel bhomPanel = BH.Engine.Structure.Create.Panel(outEdges, noOpenings, bhomProperties[propertyName], id);
                 
                 //Set the properties
                 bhomPanel.CustomData[AdapterId] = id;

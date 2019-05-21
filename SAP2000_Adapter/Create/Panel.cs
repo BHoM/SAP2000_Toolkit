@@ -31,7 +31,8 @@ namespace BH.Adapter.SAP2000
                 z[j] = boundaryPoints[j].Z;
             }
             string name = "";
-            ret += m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, bhPanel.Property.Name); 
+
+            ret += m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, bhPanel.Property.Name);
 
             return ret == 0;
         }

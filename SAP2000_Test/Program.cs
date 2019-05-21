@@ -22,29 +22,29 @@ namespace SAP2000_Test
         {
             Console.WriteLine("SAP Should now open...");
             SAP2000Adapter app = new SAP2000Adapter("", true);
-            //FileAdapter doc = new FileAdapter("C: /Users/jtaylor/GitHub/SAP2000_Toolkit/SAP2000_Test", "Test_Structure", true);
+            FileAdapter doc = new FileAdapter("C: /Users/jtaylor/GitHub/SAP2000_Toolkit/SAP2000_Test", "Test_Structure", true);
 
             FilterQuery barQuery = new FilterQuery { Type = typeof(Bar) };
             FilterQuery panelQuery = new FilterQuery { Type = typeof(Panel) };
 
-            //IEnumerable<object> bars = doc.Pull(barQuery);
-            //IEnumerable<object> panels = doc.Pull(panelQuery);
+            IEnumerable<object> bars = doc.Pull(barQuery);
+            IEnumerable<object> panels = doc.Pull(panelQuery);
 
-            //int numPushed = bars.Count() + panels.Count();
+            int numPushed = bars.Count() + panels.Count();
 
-            //IEnumerable<BH.oM.Base.BHoMObject> barObjects = (IEnumerable<BH.oM.Base.BHoMObject>)bars;
-            //IEnumerable<BH.oM.Base.BHoMObject> panelObjects = (IEnumerable<BH.oM.Base.BHoMObject>)panels;
+            IEnumerable<BH.oM.Base.BHoMObject> barObjects = (IEnumerable<BH.oM.Base.BHoMObject>)bars;
+            IEnumerable<BH.oM.Base.BHoMObject> panelObjects = (IEnumerable<BH.oM.Base.BHoMObject>)panels;
 
-            //app.Push(barObjects, "");
-            //app.Push(panelObjects, "");
+            app.Push(barObjects, "");
+            app.Push(panelObjects, "");
 
             IEnumerable<object> barsPulled = app.Pull(barQuery);
             IEnumerable<object> panelsPulled = app.Pull(panelQuery);
 
             int numPulled = barsPulled.Count() + panelsPulled.Count();
 
-            Console.WriteLine("pulled " + barsPulled.Count() + " bars and " + panelsPulled.Count() + " Panels");
-            //Console.WriteLine("Pushed " + numPushed + " Objects, pulled " + numPulled + " Objects.");
+            //Console.WriteLine("pulled " + barsPulled.Count() + " bars and " + panelsPulled.Count() + " Panels");
+            Console.WriteLine("Pushed " + numPushed + " Objects, pulled " + numPulled + " Objects.");
             //foreach (Bar bar in barsPulled)
             //{
             //    Console.WriteLine("Bar with ID " + bar.CustomData["SAP2000_id"].ToString() + " and property " + bar.SectionProperty.Name);
