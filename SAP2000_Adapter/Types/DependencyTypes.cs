@@ -1,4 +1,4 @@
-﻿using BH.oM.Common.Materials;
+﻿using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Constraints;
 using BH.oM.Structure.SectionProperties;
@@ -47,10 +47,10 @@ namespace BH.Adapter.SAP2000
         private static Dictionary<Type, List<Type>> m_DependencyTypes = new Dictionary<Type, List<Type>>
         {
             {typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node) } },
-            {typeof(ISectionProperty), new List<Type> { typeof(Material) } },
+            {typeof(ISectionProperty), new List<Type> { typeof(IMaterialFragment) } },
             {typeof(RigidLink), new List<Type> { typeof(LinkConstraint), typeof(Node) } },
             //{typeof(MeshFace), new List<Type> { typeof(Property2D), typeof(Node) } },
-            {typeof(ISurfaceProperty), new List<Type> { typeof(Material) } },
+            {typeof(ISurfaceProperty), new List<Type> { typeof(IMaterialFragment) } },
             {typeof(Panel), new List<Type> { typeof(ISurfaceProperty) } }
         };
 
