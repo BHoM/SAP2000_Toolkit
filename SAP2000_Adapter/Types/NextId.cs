@@ -60,7 +60,7 @@ namespace BH.Adapter.SAP2000
                     lastNum = nameCount == 0 ? 1 : Array.ConvertAll(names, int.Parse).Max() + 1;
                     lastId = lastNum.ToString();
                     break;
-                case "Material":
+                case "IMaterialFragment":
                     m_model.PropMaterial.GetNameList(ref nameCount, ref names);
                     lastId = typeString + "-" + (nameCount + 1).ToString();
                     break;

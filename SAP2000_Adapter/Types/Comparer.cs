@@ -1,5 +1,5 @@
 ﻿using BH.Engine.Base.Objects;
-using BH.oM.Common.Materials;
+using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Constraints;
 using BH.oM.Structure.SectionProperties;
@@ -43,7 +43,7 @@ namespace BH.Adapter.SAP2000
         {
             {typeof(Node), new BH.Engine.Structure.NodeDistanceComparer(3) },   //The 3 in here sets how many decimal places to look at for node merging. 3 decimal places gives mm precision
             {typeof(ISectionProperty), new BHoMObjectNameOrToStringComparer() },
-            {typeof(Material), new BHoMObjectNameComparer() },
+            {typeof(IMaterialFragment), new BHoMObjectNameComparer() },
             {typeof(LinkConstraint), new BHoMObjectNameComparer() },
             //{typeof(Property2D), new BHoMObjectNameComparer() },
         };
