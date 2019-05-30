@@ -29,7 +29,7 @@
 
         private void CreatePropertyEvent(string failedProperty, string elemType, string elemName, oM.Reflection.Debugging.EventType eventType)
         {
-            Engine.Reflection.Compute.RecordEvent("Failed to set property " + failedProperty + " for the " + elemType + "with id: " + elemName, eventType);
+            Engine.Reflection.Compute.RecordEvent("Failed to set property " + failedProperty + " for the " + elemType + " with id: " + elemName, eventType);
         }
 
         /***************************************************/

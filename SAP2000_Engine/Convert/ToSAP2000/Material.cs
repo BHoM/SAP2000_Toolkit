@@ -11,7 +11,7 @@ namespace BH.Engine.SAP2000
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static eMatType GetMaterialType(IMaterialFragment material)
+        public static eMatType GetMaterialType(this IMaterialFragment material)
         {
             if (material is Steel)
                 return eMatType.Steel;

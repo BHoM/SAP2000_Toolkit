@@ -29,8 +29,10 @@ namespace BH.Adapter.SAP2000
 
             if (m_model.PropMaterial.GetMaterial(material.Name, ref matType, ref colour, ref notes, ref guid) != 0)
             {
-                ret += m_model.PropMaterial.AddMaterial(ref name, BH.Engine.SAP2000.Convert.GetMaterialType(material), "", "", "", material.Name);
-                ret += m_model.PropMaterial.ChangeName(name, material.Name);
+                if (m_model.PropMaterial.AddMaterial(ref name, material.GetMaterialType(), "", "", "", material.Name) != 0)
+                {
+                    ret += m_model.PropMaterial.SetMaterial(material.Name, material.GetMaterialType());
+                }
                 if (material is IIsotropic)
                 {
                     IIsotropic isotropic = material as IIsotropic;

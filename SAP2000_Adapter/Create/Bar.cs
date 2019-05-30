@@ -2,6 +2,7 @@
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Offsets;
 using BH.oM.Structure.Constraints;
+using BH.Engine.SAP2000;
 
 namespace BH.Adapter.SAP2000
 {
@@ -26,38 +27,31 @@ namespace BH.Adapter.SAP2000
                 return false;
             }
 
-            if (m_model.FrameObj.SetSection(name, bhBar.SectionProperty.Name) != 0)
+            string barProp = bhBar.SectionProperty != null ? bhBar.SectionProperty.Name : "None";
+
+            if (m_model.FrameObj.SetSection(name, barProp) != 0)
             {
                 CreatePropertyWarning("SectionProperty", "Bar", name);
                 ret++;
             }
 
-            if (m_model.FrameObj.SetLocalAxes(name, bhBar.OrientationAngle * 180 / System.Math.PI) != 0)
+            if (bhBar.OrientationAngle != 0)
             {
-                CreatePropertyWarning("Orientation angle", "Bar", name);
-                ret++;
+                if (m_model.FrameObj.SetLocalAxes(name, bhBar.OrientationAngle * 180 / System.Math.PI) != 0)
+                {
+                    CreatePropertyWarning("Orientation angle", "Bar", name);
+                    ret++;
+                }
             }
-
-            Offset offset = bhBar.Offset;
-
-            double[] offset1 = new double[3];
-            double[] offset2 = new double[3];
-
-            if (offset != null)
+           
+            if (bhBar.Release != null)
             {
-                offset1[1] = offset.Start.Z;
-                offset1[2] = offset.Start.Y;
-                offset2[1] = offset.End.Z;
-                offset2[2] = offset.End.Y;
-            }
+                bool[] restraintStart = null;
+                double[] springStart = null;
+                bool[] restraintEnd = null;
+                double[] springEnd = null;
 
-            BarRelease barRelease = bhBar.Release;
-            if (barRelease != null)
-            {
-                bool[] restraintStart = barRelease.StartRelease.Fixities();// Helper.GetRestraint6DOF(barRelease.StartRelease);
-                double[] springStart = barRelease.StartRelease.ElasticValues();// Helper.GetSprings6DOF(barRelease.StartRelease);
-                bool[] restraintEnd = barRelease.EndRelease.Fixities();// Helper.GetRestraint6DOF(barRelease.EndRelease);
-                double[] springEnd = barRelease.EndRelease.ElasticValues();// Helper.GetSprings6DOF(barRelease.EndRelease);
+                bhBar.GetSAPBarRelease(ref restraintStart, ref springStart, ref restraintEnd, ref springEnd);
 
                 if (m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd) != 0)
                 {
