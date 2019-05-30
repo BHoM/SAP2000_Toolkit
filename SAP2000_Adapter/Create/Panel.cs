@@ -1,6 +1,7 @@
 ﻿using BH.Engine.Geometry;
 using BH.Engine.Structure;
 using BH.oM.Structure.Elements;
+using BH.oM.Geometry;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,21 +16,15 @@ namespace BH.Adapter.SAP2000
         private bool CreateObject(Panel bhPanel)
         {
             int ret = 0;
+                        
+            List<Point> boundaryPoints = bhPanel.ExternalEdgeCurves().Select( item => item.IStartPoint()).ToList();
 
-            List<BH.oM.Geometry.Point> boundaryPoints = bhPanel.ControlPoints();
+            int segmentCount = boundaryPoints.Count();
 
-            int segmentCount = boundaryPoints.Count() - 1;
+            double[] x = boundaryPoints.Select(item => item.X).ToArray();
+            double[] y = boundaryPoints.Select(item => item.Y).ToArray();
+            double[] z = boundaryPoints.Select(item => item.Z).ToArray();
 
-            double[] x = new double[segmentCount];
-            double[] y = new double[segmentCount];
-            double[] z = new double[segmentCount];
-
-            for (int j = 0; j < segmentCount; j++)
-            {
-                x[j] = boundaryPoints[j].X;
-                y[j] = boundaryPoints[j].Y;
-                z[j] = boundaryPoints[j].Z;
-            }
             string name = "";
 
             ret += m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, bhPanel.Property.Name);

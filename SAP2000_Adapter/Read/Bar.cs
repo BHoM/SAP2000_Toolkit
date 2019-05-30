@@ -48,14 +48,19 @@ namespace BH.Adapter.SAP2000
                     double[] springEnd = new double[6];
 
                     m_model.FrameObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
-                    bhomBar.Release = new BarRelease();
-                    bhomBar.Release.StartRelease = Engine.SAP2000.Convert.GetConstraint6DOF(restraintStart, springStart);
-                    bhomBar.Release.EndRelease = Engine.SAP2000.Convert.GetConstraint6DOF(restraintEnd, springEnd);
+                    bhomBar.Release = Engine.SAP2000.Convert.GetBarRelease(restraintStart, springStart, restraintEnd, springEnd);
+
+                    //bhomBar.Release.StartRelease = Engine.SAP2000.Convert.GetConstraint6DOF(restraintStart, springStart);
+                    //bhomBar.Release.EndRelease = Engine.SAP2000.Convert.GetConstraint6DOF(restraintEnd, springEnd);
                     
                     string propertyName = "";
                     string sAuto = ""; //This is the name of the auto select list assigned to the frame object, if any.
                     m_model.FrameObj.GetSection(id, ref propertyName, ref sAuto);
-                    bhomBar.SectionProperty = bhomSections[propertyName];
+
+                    if (propertyName != "None")
+                    {
+                        bhomBar.SectionProperty = bhomSections[propertyName];
+                    }
                     
                     bhomBars.Add(bhomBar);
                 }
