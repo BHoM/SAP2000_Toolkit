@@ -7,7 +7,7 @@ using BH.oM.Structure.SectionProperties;
 using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Elements;
-using BH.oM.DataManipulation.Queries;
+using BH.oM.Data.Requests;
 using BH.Adapter;
 using BH.Adapter.SAP2000;
 using BH.Engine.Structure;
@@ -24,8 +24,8 @@ namespace SAP2000_Test
             SAP2000Adapter app = new SAP2000Adapter("", true);
             FileAdapter doc = new FileAdapter("C: /Users/jtaylor/GitHub/SAP2000_Toolkit/SAP2000_Test", "Test_Structure", true);
 
-            FilterQuery barQuery = new FilterQuery { Type = typeof(Bar) };
-            FilterQuery panelQuery = new FilterQuery { Type = typeof(Panel) };
+            FilterRequest barQuery = new FilterRequest { Type = typeof(Bar) };
+            FilterRequest panelQuery = new FilterRequest { Type = typeof(Panel) };
 
             IEnumerable<object> bars = doc.Pull(barQuery);
             IEnumerable<object> panels = doc.Pull(panelQuery);
