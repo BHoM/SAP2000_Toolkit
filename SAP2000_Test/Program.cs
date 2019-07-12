@@ -22,7 +22,7 @@ namespace SAP2000_Test
         {
             Console.WriteLine("SAP Should now open...");
             SAP2000Adapter app = new SAP2000Adapter("", true);
-            FileAdapter doc = new FileAdapter("C: /Users/jtaylor/GitHub/SAP2000_Toolkit/SAP2000_Test", "Test_Structure", true);
+            FileAdapter doc = new FileAdapter("C: /Users/jtaylor/GitHub/SAP2000_Toolkit/SAP2000_Test", "Test_Structure");
 
             FilterRequest barQuery = new FilterRequest { Type = typeof(Bar) };
             FilterRequest panelQuery = new FilterRequest { Type = typeof(Panel) };
