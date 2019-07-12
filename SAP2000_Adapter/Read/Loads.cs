@@ -1,6 +1,8 @@
 ﻿using BH.oM.Structure.Loads;
 using System;
 using System.Collections.Generic;
+using SAP2000v19;
+using BH.Engine.SAP2000;
 
 namespace BH.Adapter.SAP2000
 {
@@ -10,72 +12,57 @@ namespace BH.Adapter.SAP2000
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private List<LoadCombination> ReadLoadCombination(List<string> ids = null)
+        private List<Loadcase> ReadLoadcase(List<string> ids = null)
         {
-            // not implemented!
-            throw new NotImplementedException();
+            List<Loadcase> loadCases = new List<Loadcase>();
 
-            //    List<LoadCombination> combinations = new List<LoadCombination>();
+            int count = 0;
+            string[] names = null;
 
-            //    //get all load cases before combinations
-            //    int number = 0;
-            //    string[] names = null;
-            //    model.LoadPatterns.GetNameList(ref number, ref names);
-            //    Dictionary<string, ICase> caseDict = new Dictionary<string, ICase>();
+            m_model.LoadPatterns.GetNameList(ref count, ref names);
 
-            //    //ensure id can be split into name and number
-            //    names = Helper.EnsureNameWithNum(names.ToList()).ToArray();
+            for (int i = 0; i < count; i++ )
+            {
+                eLoadPatternType patternType = eLoadPatternType.Dead;
 
-            //    foreach (string name in names)
-            //        caseDict.Add(name, Helper.GetLoadcase(model, name));
+                if (m_model.LoadPatterns.GetLoadType(names[i], ref patternType) != 0)
+                {
+                    CreateElementError("Load Pattern", names[i]);
+                }
+                else
+                {
+                    loadCases.Add(BH.Engine.Structure.Create.Loadcase(names[i], i, patternType.ToBHoM()));
+                }
+            }
 
-            //    int nameCount = 0;
-            //    string[] nameArr = { };
-
-            //    if (ids == null)
-            //    {
-            //        model.RespCombo.GetNameList(ref nameCount, ref nameArr);
-            //        ids = nameArr.ToList();
-            //    }
-
-            //    //ensure id can be split into name and number
-            //    ids = Helper.EnsureNameWithNum(ids);
-
-            //    foreach (string id in ids)
-            //    {
-            //        combinations.Add(Helper.GetLoadCombination(model, caseDict, id));
-            //    }
-
-            //    return combinations;
+            return loadCases;
         }
 
         /***************************************************/
 
-        private List<Loadcase> ReadLoadcase(List<string> ids = null)
+        private List<LoadCombination> ReadLoadCombination(List<string> ids = null)
         {
-            // not implemented!
             throw new NotImplementedException();
+            //List<LoadCombination> combinations = new List<LoadCombination>();
 
-            //int nameCount = 0;
-            //string[] nameArr = { };
+            //int number;
+            //int count = 0;
+            //string[] cName = null;
+            //double[] factors = null;
+            //int caseNum = 0;
+            //eCNameType[] nameTypes = null;
 
-            //List<Loadcase> loadcaseList = new List<Loadcase>();
-
-            //if (ids == null)
+            //foreach ( string name in ids)
             //{
-            //    model.LoadPatterns.GetNameList(ref nameCount, ref nameArr);
-            //    ids = nameArr.ToList();
+            //    if (m_model.RespCombo.GetCaseList(name, ref count, ref nameTypes, ref cName, ref factors) == 0)
+            //    {
+            //        LoadCombination combination = new LoadCombination();
+            //        combination.LoadCases = cName.ToString();
+            //    }
             //}
 
-            ////ensure id can be split into name and number
-            //ids = Helper.EnsureNameWithNum(ids);
 
-            //foreach (string id in ids)
-            //{
-            //    loadcaseList.Add(Helper.GetLoadcase(model, id));
-            //}
-
-            //return loadcaseList;
+            //return combinations;
         }
 
         /***************************************************/
