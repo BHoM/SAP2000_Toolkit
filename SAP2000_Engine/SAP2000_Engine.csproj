@@ -125,8 +125,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterId.cs" />
-    <Compile Include="Convert\ToBHoM\Loads.cs" />
+    <Compile Include="Convert\ToSAP2000\Loads.cs" />
     <Compile Include="Convert\ToBHoM\Constraint.cs" />
+    <Compile Include="Convert\ToBHoM\Loads.cs" />
     <Compile Include="Modify\RigidLink.cs" />
     <Compile Include="Convert\ToSAP2000\Constraint.cs" />
     <Compile Include="Convert\ToSAP2000\Material.cs" />

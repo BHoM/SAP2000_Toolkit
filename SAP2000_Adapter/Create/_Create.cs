@@ -1,4 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using BH.oM.Base;
+using BH.oM.Common.Materials;
+using BH.oM.Structure.Elements;
+using BH.oM.Structure.Loads;
+using BH.oM.Structure.Constraints;
+using BH.oM.Structure.SectionProperties;
+using BH.oM.Structure.SurfaceProperties;
+using BH.oM.Structure.MaterialFragments;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using BH.oM.Analytical;
 
 namespace BH.Adapter.SAP2000

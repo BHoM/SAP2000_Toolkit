@@ -36,7 +36,9 @@ namespace BH.Adapter.SAP2000
                 }
                 else
                 {
-                    loadCases.Add(BH.Engine.Structure.Create.Loadcase(names[i], i, patternType.ToBHoM()));
+                    Loadcase bhomCase = BH.Engine.Structure.Create.Loadcase(names[i], i, patternType.ToBHoM());
+                    bhomCase.CustomData[AdapterId] = names[i];
+                    loadCases.Add(bhomCase);
                 }
             }
 
@@ -74,7 +76,9 @@ namespace BH.Adapter.SAP2000
                     {
                         comboCases.Add(bhomCases[caseName]);
                     }
-                    combinations.Add(BH.Engine.Structure.Create.LoadCombination(names[i], i, comboCases, factors.ToList()));
+                    LoadCombination bhomCombo = BH.Engine.Structure.Create.LoadCombination(names[i], i, comboCases, factors.ToList());
+                    bhomCombo.CustomData[AdapterId] = names[i];
+                    combinations.Add(bhomCombo);
                 }
             }
 
@@ -99,7 +103,7 @@ namespace BH.Adapter.SAP2000
                 loads.AddRange(ReadBarLoad());
                 loads.AddRange(ReadAreaLoad());
                 return loads;
-            }         
+            }
         }
 
         /***************************************************/
