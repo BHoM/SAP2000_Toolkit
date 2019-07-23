@@ -62,8 +62,7 @@ namespace BH.Adapter.SAP2000
         {
             List<Node> nodes = bhLoad.Objects.Elements.ToList();
             string loadPat = bhLoad.Loadcase.CustomData[AdapterId].ToString();
-            if (bhLoad.Axis != LoadAxis.Global)
-                Engine.Reflection.Compute.RecordWarning("Local axis loads are not yet supported. Applying in Global Axis");
+            string cSys = bhLoad.Axis.ToCSI();
             double[] val = 
             {
                 bhLoad.Force.X,
@@ -75,7 +74,6 @@ namespace BH.Adapter.SAP2000
             };
 
             bool replace = true;
-            string cSys = "Global";
 
             foreach (Node bhNode in nodes)
             {
@@ -95,16 +93,27 @@ namespace BH.Adapter.SAP2000
             string loadPat = bhLoad.Loadcase.CustomData[AdapterId].ToString();
             double dist1 = 0;
             double dist2 = 1;
-            int[] dirs = { 4, 5, 6 };
+            int[] dirs = null;
+            double[] forceVals = null;
+            double[] momentVals = null;
+            switch (bhLoad.Axis)
+            {
+                case LoadAxis.Global:
+                    dirs = new int[] { 4, 5, 6 };
+                    forceVals = bhLoad.Force.ToDoubleArray();
+                    momentVals = bhLoad.Moment.ToDoubleArray();
+                    break;
+                case LoadAxis.Local:
+                    dirs = new int[] { 1, 2, 3 };
+                    forceVals = bhLoad.Force.BarLocalAxisToCSI().ToDoubleArray();
+                    momentVals = bhLoad.Moment.BarLocalAxisToCSI().ToDoubleArray();
+                    break;
+            }
             bool relDist = true;
-            string cSys = "Global";
-            if (bhLoad.Axis != LoadAxis.Global)
-                Engine.Reflection.Compute.RecordWarning("Local axis loads are not yet supported. Applying in Global Axis");
+            string cSys = bhLoad.Axis.ToCSI();
             eItemType type = eItemType.Objects;
             bool replace = true;
             
-            double[] forceVals = bhLoad.Force.ToDoubleArray();
-            double[] momentVals = bhLoad.Moment.ToDoubleArray();
 
             foreach (Bar bhBar in bars)
             {
@@ -132,9 +141,7 @@ namespace BH.Adapter.SAP2000
             double[] vals = bhLoad.Pressure.ToDoubleArray();
             int[] dirs = { 4, 5, 6 };
             bool replace = true;
-            string cSys = "Global";
-            if (bhLoad.Axis != LoadAxis.Global)
-                Engine.Reflection.Compute.RecordWarning("Local axis loads are not yet supported. Applying in Global Axis");
+            string cSys = bhLoad.Axis.ToCSI();
             eItemType type = eItemType.Objects;
 
             foreach (Panel panel in panels)
