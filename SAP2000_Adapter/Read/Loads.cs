@@ -137,6 +137,7 @@ namespace BH.Adapter.SAP2000
                         Force = new Vector() { X = f1[i], Y = f2[i], Z = f3[i] },
                         Moment = new Vector() { X = m1[i], Y = m2[i], Z = m3[i] },
                         Loadcase = bhomCases[caseNames[i]],
+                        Axis = cSys[i].LoadAxisToBHoM(),
                         Objects = new BHoMGroup<Node>() { Elements = { bhomNodes[nodeNames[i]] } }
                     });
                 }
@@ -182,8 +183,19 @@ namespace BH.Adapter.SAP2000
                     }
                     double val = ((val1[i] + val2[i]) / 2) * (dist2[i] - dist1[i]) / bhomBar.Length();
                     Vector force = new Vector();
+                    LoadAxis axis = cSys[i].LoadAxisToBHoM();
+
                     switch (dir[i])
                     {
+                        case 1:
+                            force.X = val;
+                            break;
+                        case 2:
+                            force.Z = val;
+                            break;
+                        case 3:
+                            force.Y = -val;
+                            break;
                         case 4:
                             force.X = val;
                             break;
@@ -207,7 +219,8 @@ namespace BH.Adapter.SAP2000
                             {
                                 Force = force,
                                 Loadcase = bhomCases[caseNames[i]],
-                                Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } }
+                                Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
+                                Axis = axis
                             });
                             break;
                         case 2:
@@ -215,7 +228,8 @@ namespace BH.Adapter.SAP2000
                             {
                                 Moment = force,
                                 Loadcase = bhomCases[caseNames[i]],
-                                Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } }
+                                Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
+                                Axis = axis
                             });
                             break;
                         default:
@@ -254,8 +268,18 @@ namespace BH.Adapter.SAP2000
                     Panel bhomPanel = bhomPanels[areaNames[i]];
                     
                     Vector force = new Vector();
+                    LoadAxis axis = cSys[i].LoadAxisToBHoM();
                     switch (dir[i])
                     {
+                        case 1:
+                            force.X = val[i];
+                            break;
+                        case 2:
+                            force.Y = val[i];
+                            break;
+                        case 3:
+                            force.Z = val[i];
+                            break;
                         case 4:
                             force.X = val[i];
                             break;
@@ -277,7 +301,8 @@ namespace BH.Adapter.SAP2000
                     {
                         Pressure = force,
                         Loadcase = bhomCases[caseNames[i]],
-                        Objects = new BHoMGroup<IAreaElement>() { Elements = { bhomPanel as IAreaElement} }
+                        Objects = new BHoMGroup<IAreaElement>() { Elements = { bhomPanel as IAreaElement} },
+                        Axis = axis
                     });
                 }
             }
