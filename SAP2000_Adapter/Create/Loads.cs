@@ -139,7 +139,16 @@ namespace BH.Adapter.SAP2000
             List<IAreaElement> panels = bhLoad.Objects.Elements.ToList();
             string loadPat = bhLoad.Loadcase.CustomData[AdapterId].ToString();
             double[] vals = bhLoad.Pressure.ToDoubleArray();
-            int[] dirs = { 4, 5, 6 };
+            int[] dirs = null;
+            switch (bhLoad.Axis)
+            {
+                case LoadAxis.Global:
+                    dirs = new int[] { 4, 5, 6 };
+                    break;
+                case LoadAxis.Local:
+                    dirs = new int[] { 1, 2, 3 };
+                    break;
+            }
             bool replace = true;
             string cSys = bhLoad.Axis.ToCSI();
             eItemType type = eItemType.Objects;
