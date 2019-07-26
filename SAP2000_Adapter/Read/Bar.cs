@@ -61,6 +61,24 @@ namespace BH.Adapter.SAP2000
                     {
                         bhomBar.SectionProperty = bhomSections[propertyName];
                     }
+
+                    double angle = 0;
+                    bool advanced = false;
+
+                    if (m_model.FrameObj.GetLocalAxes(id, ref angle, ref advanced) == 0)
+                    {
+                        if (advanced)
+                        {
+                            Engine.Reflection.Compute.RecordWarning("Advanced local axes are not yet supported by this toolkit. Bar " + id + " has been created with orientation angle = 0");
+                            angle = 0;
+                        }
+                        bhomBar.OrientationAngle = angle * System.Math.PI / 180;
+                    }
+                    else
+                    {
+                        Engine.Reflection.Compute.RecordWarning("Could not get local axes for bar " + id + ". Orientation angle is 0 by default");
+                    }
+
                     
                     bhomBars.Add(bhomBar);
                 }
