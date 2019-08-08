@@ -143,7 +143,14 @@ namespace BH.Adapter.SAP2000
             switch (bhLoad.Axis)
             {
                 case LoadAxis.Global:
-                    dirs = new int[] { 4, 5, 6 };
+                    if (bhLoad.Projected)
+                    {
+                        dirs = new int[] { 7, 8, 9 };
+                    }
+                    else
+                    {
+                        dirs = new int[] { 4, 5, 6 };
+                    }
                     break;
                 case LoadAxis.Local:
                     dirs = new int[] { 1, 2, 3 };
