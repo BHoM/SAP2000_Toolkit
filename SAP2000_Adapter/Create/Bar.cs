@@ -17,7 +17,6 @@ namespace BH.Adapter.SAP2000
             int ret = 0;
 
             string name = "";
-            string bhId = bhBar.CustomData[AdapterId].ToString();
 
             ret = m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name);
 
@@ -26,6 +25,8 @@ namespace BH.Adapter.SAP2000
                 CreateElementError("Bar", name);
                 return false;
             }
+            
+            bhBar.CustomData[AdapterId] = name;
 
             string barProp = bhBar.SectionProperty != null ? bhBar.SectionProperty.Name : "None";
 
