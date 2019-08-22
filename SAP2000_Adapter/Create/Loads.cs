@@ -19,10 +19,16 @@ namespace BH.Adapter.SAP2000
             double selfWeight = 0;
             if (loadcase.Nature == LoadNature.Dead)
                 selfWeight = 1;
-            if (m_model.LoadPatterns.Add(loadcase.Name, loadcase.Nature.ToCSI(), selfWeight, true) != 0)
+            if (m_model.LoadPatterns.Add(loadcase.Name, loadcase.Nature.ToCSI(), selfWeight, false) != 0)
                 CreateElementError("LoadCase", loadcase.Name);
             else
             {
+                string[] loadTypes   = { "Load" };
+                string[] loadNames   = { loadcase.Name };
+                double[] loadFactors = { 1 };
+                m_model.LoadCases.StaticLinear.SetCase(loadcase.Name);
+                m_model.LoadCases.StaticLinear.SetLoads(loadcase.Name, 1, ref loadTypes, ref loadNames, ref loadFactors);
+
                 loadcase.CustomData[AdapterId] = loadcase.Name;
                 loadcase.Number = m_model.LoadPatterns.Count();
             }

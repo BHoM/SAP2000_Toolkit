@@ -40,6 +40,8 @@ namespace BH.Adapter.SAP2000
 
                 m_model.PropFrame.GetTypeOAPI(id, ref propertyType);
 
+                string constructor = "standard";
+
                 string materialName = "";
                 string fileName = "";
                 double t3 = 0;
@@ -101,7 +103,7 @@ namespace BH.Adapter.SAP2000
                         break;
                     case eFramePropType.General:
                         m_model.PropFrame.GetGeneral(id, ref fileName, ref materialName, ref t3, ref t2, ref Area, ref As2, ref As3, ref Torsion, ref I22, ref I33, ref S22, ref S33, ref Z22, ref Z33, ref R22, ref R33, ref color, ref notes, ref guid);
-                        bhomProfile = null;
+                        constructor = "explicit";
                         break;
                     case eFramePropType.DbChannel:                        
                         break;
@@ -167,49 +169,63 @@ namespace BH.Adapter.SAP2000
                         break;
                 }
 
-                IMaterialFragment material = bhomMaterials[materialName];
+                IMaterialFragment material = null;
+
+                try
+                {
+                    material = bhomMaterials[materialName];
+                }
+                catch (Exception)
+                {
+                    material = bhomMaterials.FirstOrDefault().Value;
+                    Engine.Reflection.Compute.RecordWarning("Could not get material from SAP. Using a default material");
+                }
 
                 if (bhomProfile == null)
                 {
-                    propertyType = eFramePropType.General;
-                    Engine.Reflection.Compute.RecordWarning("Reading sections of type " + propertyType.ToString() + "is not supported. An empty section has been returned.");
+                    Engine.Reflection.Compute.RecordWarning("Reading sections of type " + propertyType.ToString() + " is not supported. An empty section with a default material has been returned.");
+                    constructor = "explicit";
                 }
 
-                if (propertyType == eFramePropType.General)
+                switch (constructor)
                 {
-                    ExplicitSection eSection = new ExplicitSection()
-                    {
-                        Area = Area,
-                        Asy = As2,
-                        Asz = As3,
-                        Iy = I22,
-                        Iz = I33,
-                        J = Torsion,
-                        Rgy = R22,
-                        Rgz = R33,
-                        Wply = S22,
-                        Wplz = S33,
-                        Wely = Z22,
-                        Welz = Z33
-                    };
-                }
-                else if (material is Aluminium || material is Steel)
-                {
-                    bhomProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(bhomProfile);
-                }
-                else if (material is Concrete)
-                {
-                    bhomProperty = BH.Engine.Structure.Create.ConcreteSectionFromProfile(bhomProfile);
-                }
-                else
-                {
-                    bhomProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(bhomProfile);
-                    Engine.Reflection.Compute.RecordWarning("Reading sections of material type " + material.GetType().Name + "is not supported. Section with name " + id + " will be returned as a steel section");
+                    case "explicit":
+                        bhomProperty = new ExplicitSection()
+                        {
+                            Area = Area,
+                            Asy = As2,
+                            Asz = As3,
+                            Iy = I22,
+                            Iz = I33,
+                            J = Torsion,
+                            Rgy = R22,
+                            Rgz = R33,
+                            Wply = S22,
+                            Wplz = S33,
+                            Wely = Z22,
+                            Welz = Z33
+                        };
+                        break;
+                    case "standard":
+                        if (material is Aluminium || material is Steel)
+                        {
+                            bhomProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(bhomProfile);
+                        }
+                        else if (material is Concrete)
+                        {
+                            bhomProperty = BH.Engine.Structure.Create.ConcreteSectionFromProfile(bhomProfile);
+                        }
+                        else
+                        {
+                            bhomProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(bhomProfile);
+                            Engine.Reflection.Compute.RecordWarning("Reading sections of material type " + material.GetType().Name + "is not supported. Section with name " + id + " will be returned as a steel section");
+                        }
+                        break;
                 }
 
                 bhomProperty.Material = material;
                 bhomProperty.Name = id;
-                bhomProperty.CustomData.Add(AdapterId, id);
+                bhomProperty.CustomData[AdapterId] = id;
 
                 propList.Add(bhomProperty);
             }
