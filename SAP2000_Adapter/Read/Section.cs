@@ -163,12 +163,17 @@ namespace BH.Adapter.SAP2000
                         break;
                     case eFramePropType.SteelRod:
                         break;
-                    default:
-                        ReadPropertyError(propertyType.ToString(), id);
+                    default:                        
                         break;
                 }
 
                 IMaterialFragment material = bhomMaterials[materialName];
+
+                if (bhomProfile == null)
+                {
+                    propertyType = eFramePropType.General;
+                    Engine.Reflection.Compute.RecordWarning("Reading sections of type " + propertyType.ToString() + "is not supported. An empty section has been returned.");
+                }
 
                 if (propertyType == eFramePropType.General)
                 {
@@ -188,23 +193,17 @@ namespace BH.Adapter.SAP2000
                         Welz = Z33
                     };
                 }
+                else if (material is Aluminium || material is Steel)
+                {
+                    bhomProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(bhomProfile);
+                }
+                else if (material is Concrete)
+                {
+                    bhomProperty = BH.Engine.Structure.Create.ConcreteSectionFromProfile(bhomProfile);
+                }
                 else
                 {
-                    if (bhomProfile == null)
-                        ReadPropertyError(propertyType.ToString(), id);
-
-                    if (material is Aluminium || material is Steel)
-                    {
-                        bhomProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(bhomProfile);
-                    }
-                    else if (material is Concrete)
-                    {
-                        bhomProperty = BH.Engine.Structure.Create.ConcreteSectionFromProfile(bhomProfile);
-                    }
-                    else
-                    {
-                        Engine.Reflection.Compute.RecordWarning("Reading sections of material type " + material.GetType().Name + "is not supported. Section with name " + id + " was not pulled");
-                    }
+                    Engine.Reflection.Compute.RecordWarning("Reading sections of material type " + material.GetType().Name + "is not supported. Section with name " + id + " was not pulled");
                 }
 
                 bhomProperty.Material = material;
