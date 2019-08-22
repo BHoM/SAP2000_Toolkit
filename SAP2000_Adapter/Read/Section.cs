@@ -203,7 +203,8 @@ namespace BH.Adapter.SAP2000
                 }
                 else
                 {
-                    Engine.Reflection.Compute.RecordWarning("Reading sections of material type " + material.GetType().Name + "is not supported. Section with name " + id + " was not pulled");
+                    bhomProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(bhomProfile);
+                    Engine.Reflection.Compute.RecordWarning("Reading sections of material type " + material.GetType().Name + "is not supported. Section with name " + id + " will be returned as a steel section");
                 }
 
                 bhomProperty.Material = material;
