@@ -21,6 +21,7 @@ namespace BH.Adapter.SAP2000
                 selfWeight = 1;
             if (m_model.LoadPatterns.Add(loadcase.Name, loadcase.Nature.ToCSI(), selfWeight, true) != 0)
                 CreateElementError("LoadCase", loadcase.Name);
+            loadcase.CustomData[AdapterId] = loadcase.Name;
             return true;
         }
 
