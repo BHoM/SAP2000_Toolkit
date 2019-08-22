@@ -29,6 +29,8 @@ namespace BH.Adapter.SAP2000
 
             ret += m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, bhPanel.Property.Name);
 
+            bhPanel.CustomData[AdapterId] = name;
+
             return ret == 0;
         }
 

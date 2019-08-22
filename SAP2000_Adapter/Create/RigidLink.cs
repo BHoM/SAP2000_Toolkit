@@ -13,17 +13,21 @@ namespace BH.Adapter.SAP2000
         {
             int ret = 0;
             List < RigidLink> bhomLinks = BH.Engine.SAP2000.Modify.SplitRigidLink(bhLink);
+            List<string> linkIds = null;
 
             foreach (RigidLink link in bhomLinks)
             {
-                string givenName = "";
+                string name = "";
                 Node masterNode = link.MasterNode;
                 Node slaveNode = link.SlaveNodes[0];
-                string bhId = link.CustomData[AdapterId].ToString();
 
                 ret = m_model.LinkObj.AddByPoint(masterNode.CustomData[AdapterId].ToString(), 
-                    slaveNode.CustomData[AdapterId].ToString(), ref givenName, false, "Default", bhId);
+                    slaveNode.CustomData[AdapterId].ToString(), ref name, false, "Default");
+                
+                linkIds.Add(name);
             }
+
+            bhLink.CustomData[AdapterId] = linkIds;
 
             return ret == 0;
         }
