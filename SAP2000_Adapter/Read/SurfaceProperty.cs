@@ -41,10 +41,6 @@ namespace BH.Adapter.SAP2000
                 if (m_model.PropArea.GetModifiers(id, ref modifiers) == 0)
                     hasModifiers = true;
 
-                if (thickness == 0)
-                {
-                    ReadElementError("Panel", id);
-                }
                 else
                 {
                     ConstantThickness panelConstant = new ConstantThickness();
