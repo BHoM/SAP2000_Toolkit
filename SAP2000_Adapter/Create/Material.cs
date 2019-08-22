@@ -48,6 +48,8 @@ namespace BH.Adapter.SAP2000
                     ret += m_model.PropMaterial.SetMPOrthotropic(material.Name, ref e, ref v, ref a, ref g);
                 }
                 ret += m_model.PropMaterial.SetWeightAndMass(material.Name, 0, material.Density);
+
+                material.CustomData[AdapterId] = name;
             }
 
             return ret == 0;
