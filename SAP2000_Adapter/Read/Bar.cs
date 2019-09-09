@@ -16,8 +16,7 @@ namespace BH.Adapter.SAP2000
         {
 
             List<Bar> bhomBars = new List<Bar>();
-            IEnumerable<Node> bhomNodesList = ReadNodes();
-            Dictionary<string, Node> bhomNodes = bhomNodesList.ToDictionary(x => x.CustomData[AdapterId].ToString());
+            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterId].ToString());
             Dictionary<string, ISectionProperty> bhomSections = ReadSectionProperties().ToDictionary(x => x.Name.ToString());
 
             int nameCount = 0;

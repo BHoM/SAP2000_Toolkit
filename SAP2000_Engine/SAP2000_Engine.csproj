@@ -48,18 +48,6 @@
     <Reference Include="Common_oM">
       <HintPath>..\..\BHoM\Build\Common_oM.dll</HintPath>
     </Reference>
-    <Reference Include="DataManipulation_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\DataManipulation_Engine.dll</HintPath>
-    </Reference>
-    <Reference Include="DataManipulation_oM">
-      <HintPath>..\..\BHoM\Build\DataManipulation_oM.dll</HintPath>
-    </Reference>
-    <Reference Include="DataStructure_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\DataStructure_Engine.dll</HintPath>
-    </Reference>
-    <Reference Include="DataStructure_oM">
-      <HintPath>..\..\BHoM\Build\DataStructure_oM.dll</HintPath>
-    </Reference>
     <Reference Include="Environment_oM">
       <HintPath>..\..\BHoM\Build\Environment_oM.dll</HintPath>
     </Reference>
