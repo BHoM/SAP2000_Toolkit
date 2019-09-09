@@ -17,21 +17,19 @@ namespace BH.Adapter.SAP2000
         private bool CreateObject(Loadcase loadcase)
         {
             double selfWeight = 0;
-            if (loadcase.Nature == LoadNature.Dead)
-                selfWeight = 1;
-            if (m_model.LoadPatterns.Add(loadcase.Name, loadcase.Nature.ToCSI(), selfWeight, false) != 0)
-                CreateElementError("LoadCase", loadcase.Name);
-            else
-            {
-                string[] loadTypes   = { "Load" };
-                string[] loadNames   = { loadcase.Name };
-                double[] loadFactors = { 1 };
-                m_model.LoadCases.StaticLinear.SetCase(loadcase.Name);
-                m_model.LoadCases.StaticLinear.SetLoads(loadcase.Name, 1, ref loadTypes, ref loadNames, ref loadFactors);
+            m_model.LoadPatterns.Add(loadcase.Name, loadcase.Nature.ToCSI(), selfWeight, false);
 
-                loadcase.CustomData[AdapterId] = loadcase.Name;
-                loadcase.Number = m_model.LoadPatterns.Count();
-            }
+            //Create Load Case based on Pattern:
+            string[] loadTypes   = { "Load" };
+            string[] loadNames   = { loadcase.Name };
+            double[] loadFactors = { 1 };
+
+            m_model.LoadCases.StaticLinear.SetCase(loadcase.Name);
+            m_model.LoadCases.StaticLinear.SetLoads(loadcase.Name, 1, ref loadTypes, ref loadNames, ref loadFactors);
+
+            loadcase.CustomData[AdapterId] = loadcase.Name;
+            loadcase.Number = m_model.LoadPatterns.Count();
+            
             return true;
         }
 
@@ -187,5 +185,28 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
+
+        public void SetLoad(GravityLoad gravityLoad, bool replace)
+        {
+            double selfWeightExisting = 0;
+            double selfWeightNew = -gravityLoad.GravityDirection.Z;
+
+            string caseName = gravityLoad.Loadcase.CustomData[AdapterId].ToString();
+
+            m_model.LoadPatterns.GetSelfWTMultiplier(caseName, ref selfWeightExisting);
+
+            if (selfWeightExisting != 0)
+                BH.Engine.Reflection.Compute.RecordWarning($"The self weight for loadcase {gravityLoad.Loadcase.Name} will be overwritten. Previous value: {selfWeightExisting}, new value: {selfWeightNew}");
+
+            m_model.LoadPatterns.SetSelfWTMultiplier(caseName, selfWeightNew);
+
+            if (gravityLoad.GravityDirection.X != 0 || gravityLoad.GravityDirection.Y != 0)
+                Engine.Reflection.Compute.RecordError("SAP2000 can only handle gravity loads in global z direction");
+
+            BH.Engine.Reflection.Compute.RecordNote("SAP2000 handles gravity loads via loadcases, so only one gravity load per loadcase can be used. This gravity load will be applied to all objects");
+        }
+
+        /***************************************************/
+        
     }
 }
