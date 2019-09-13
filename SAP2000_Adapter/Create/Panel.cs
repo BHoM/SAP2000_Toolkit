@@ -27,6 +27,8 @@ namespace BH.Adapter.SAP2000
 
             if (m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, "Default", name) == 0)
             {
+                if (name != bhPanel.Name)
+                    Engine.Reflection.Compute.RecordNote($"Panel {bhPanel.Name} was assigned {AdapterId} of {name}");
                 bhPanel.CustomData[AdapterId] = name;
                 if (m_model.AreaObj.SetProperty(name, bhPanel.CustomData[AdapterId].ToString()) != 0)
                     CreatePropertyError(bhPanel.CustomData[AdapterId].ToString(), "Panel", bhPanel.Name);
