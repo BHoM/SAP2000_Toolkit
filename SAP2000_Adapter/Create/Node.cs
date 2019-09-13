@@ -17,6 +17,8 @@ namespace BH.Adapter.SAP2000
 
             if (m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name, name) == 0)
             {
+                if (name != bhNode.Name)
+                    Engine.Reflection.Compute.RecordNote($"Node {bhNode.Name} was assigned {AdapterId} of {name}");
                 bhNode.CustomData[AdapterId] = name;
 
                 if (bhNode.Support != null)

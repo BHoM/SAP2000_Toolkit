@@ -20,6 +20,8 @@ namespace BH.Adapter.SAP2000
 
             if (m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name, "Default", name) == 0)
             {
+                if (name != bhBar.Name)
+                    Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} was assigned {AdapterId} of {name}");
                 bhBar.CustomData[AdapterId] = name;
 
                 string barProp = bhBar.SectionProperty != null ? bhBar.SectionProperty.Name : "None";

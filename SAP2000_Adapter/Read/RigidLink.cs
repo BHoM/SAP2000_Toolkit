@@ -1,6 +1,7 @@
 ﻿using BH.oM.Structure.Elements;
 using System.Collections.Generic;
 using System.Linq;
+using BH.oM.Structure.Constraints;
 
 namespace BH.Adapter.SAP2000
 {
@@ -25,7 +26,12 @@ namespace BH.Adapter.SAP2000
                 string masterId = "";
                 string SlaveId = "";
                 m_model.LinkObj.GetPoints(name, ref masterId, ref SlaveId);
-                RigidLink newLink = BH.Engine.Structure.Create.RigidLink(bhomNodes[masterId], new List<Node> { bhomNodes[SlaveId] });
+
+                //Assuming all constraints are fixed constraints
+                LinkConstraint constraint = Engine.Structure.Create.LinkConstraintFixed();
+                Engine.Reflection.Compute.RecordWarning("All Rigid Link constraints are being read as fully fixed. Check results carefully.");
+
+                RigidLink newLink = BH.Engine.Structure.Create.RigidLink(bhomNodes[masterId], new List<Node> { bhomNodes[SlaveId] }, constraint);
 
                 linkList.Add(newLink);
             }

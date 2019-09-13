@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BH.oM.Structure.Constraints;
 
 namespace BH.Engine.SAP2000
 {
@@ -42,6 +43,9 @@ namespace BH.Engine.SAP2000
             Dictionary<string, Node> masterDict = null;
             Dictionary<string, List<Node>> slaveDict = null;
 
+            //Use first constraint for all
+            LinkConstraint constraint = linkList.First().Constraint;
+
             foreach (RigidLink link in linkList)
             {
                 string[] nameParts = link.Name.Split(new[] { ":::" }, StringSplitOptions.None);
@@ -64,8 +68,7 @@ namespace BH.Engine.SAP2000
 
             foreach (KeyValuePair<string, Node> kvp in masterDict)
             {
-                RigidLink newLink = BH.Engine.Structure.Create.RigidLink(kvp.Value, slaveDict[kvp.Key]);
-                newLink.Name = kvp.Key;
+                RigidLink newLink = Structure.Create.RigidLink(kvp.Value, slaveDict[kvp.Key], constraint, kvp.Key);
             }           
 
             return joinedList;
