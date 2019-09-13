@@ -12,26 +12,28 @@ namespace BH.Adapter.SAP2000
 
         private bool CreateObject(Node bhNode)
         {
-            int ret = 0;
 
-            string name = "";
+            string name = bhNode.Name.ToString();
 
-            ret += m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name);
-            
-            bhNode.CustomData[AdapterId] = name;
-
-            if (bhNode.Support != null)
+            if (m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name, name) == 0)
             {
-                bool[] restraint = new bool[6];
-                double[] spring = new double[6];
+                bhNode.CustomData[AdapterId] = name;
 
-                bhNode.GetSAPConstraint(ref restraint, ref spring);
+                if (bhNode.Support != null)
+                {
+                    bool[] restraint = new bool[6];
+                    double[] spring = new double[6];
 
-                ret += m_model.PointObj.SetRestraint(name, ref restraint);
-                ret += m_model.PointObj.SetSpring(name, ref spring);
+                    bhNode.GetSAPConstraint(ref restraint, ref spring);
+
+                    if (m_model.PointObj.SetRestraint(name, ref restraint) != 0)
+                        CreatePropertyWarning("Node Restraint", "Node", name);
+                    if (m_model.PointObj.SetSpring(name, ref spring) != 0)
+                        CreatePropertyWarning("Node Spring", "Node", name);
+                }
             }
 
-            return ret == 0;
+            return true;
         }
 
         /***************************************************/
