@@ -10,8 +10,6 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
         private bool CreateObject(ISurfaceProperty surfaceProperty)
         {
-            int ret = 0;
-
             string propertyName = surfaceProperty.Name;// surfaceProperty.CustomData[AdapterId].ToString();
 
             if (surfaceProperty.GetType() == typeof(Waffle))
@@ -32,16 +30,20 @@ namespace BH.Adapter.SAP2000
             else if (surfaceProperty.GetType() == typeof(ConstantThickness))
             {
                 ConstantThickness constantThickness = (ConstantThickness)surfaceProperty;
-                ret += m_model.PropArea.SetShell(constantThickness.Name, 1, constantThickness.Material.Name, 0, constantThickness.Thickness, constantThickness.Thickness);
+                int shellType = 1;
+                bool includeDrillingDOF = true;
+                if (m_model.PropArea.SetShell_1(constantThickness.Name, shellType, includeDrillingDOF, constantThickness.Material.Name, 0, constantThickness.Thickness, constantThickness.Thickness) != 0)
+                    CreatePropertyError("ConstantThickness", "SurfaceProperty", propertyName);
             }
 
             if (surfaceProperty.HasModifiers())
             {
                 double[] modifier = surfaceProperty.Modifiers();//(double[])surfaceProperty.CustomData["Modifiers"];
-                ret += m_model.PropArea.SetModifiers(propertyName, ref modifier);
+                if (m_model.PropArea.SetModifiers(propertyName, ref modifier) != 0)
+                    CreatePropertyError("Modifiers", "SurfaceProperty", propertyName);
             }
 
-            return ret == 0;
+            return true;
         }
 
         /***************************************************/

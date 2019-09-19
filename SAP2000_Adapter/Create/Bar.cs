@@ -14,13 +14,11 @@ namespace BH.Adapter.SAP2000
 
         private bool CreateObject(Bar bhBar)
         {
-            int ret = 0;
+            string name = "";
 
-            string name = bhBar.Name.ToString();
-
-            if (m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name, "Default", name) == 0)
+            if (m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name, "Default", bhBar.Name.ToString()) == 0)
             {
-                if (name != bhBar.Name)
+                if (name != bhBar.Name & bhBar.Name != "")
                     Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} was assigned {AdapterId} of {name}");
                 bhBar.CustomData[AdapterId] = name;
 
@@ -29,7 +27,6 @@ namespace BH.Adapter.SAP2000
                 if (m_model.FrameObj.SetSection(name, barProp) != 0)
                 {
                     CreatePropertyWarning("SectionProperty", "Bar", name);
-                    ret++;
                 }
 
                 if (bhBar.OrientationAngle != 0)
@@ -37,7 +34,6 @@ namespace BH.Adapter.SAP2000
                     if (m_model.FrameObj.SetLocalAxes(name, bhBar.OrientationAngle * 180 / System.Math.PI) != 0)
                     {
                         CreatePropertyWarning("Orientation angle", "Bar", name);
-                        ret++;
                     }
                 }
 
@@ -53,7 +49,6 @@ namespace BH.Adapter.SAP2000
                     if (m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd) != 0)
                     {
                         CreatePropertyWarning("Release", "Bar", name);
-                        ret++;
                     }
                 }
 
@@ -62,7 +57,6 @@ namespace BH.Adapter.SAP2000
                     if (m_model.FrameObj.SetEndLengthOffset(name, false, -1 * (bhBar.Offset.Start.X), bhBar.Offset.End.X, 1) != 0)
                     {
                         CreatePropertyWarning("Length offset", "Bar", name);
-                        ret++;
                     }
                 }
             }

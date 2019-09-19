@@ -19,24 +19,30 @@ namespace BH.Adapter.SAP2000
 
         private bool CreateObject(IMaterialFragment material)
         {
-            int ret = 0;
-
             eMatType matType = eMatType.NoDesign;
-            int colour = 0;
+            int color = 0;
             string guid = "";
             string notes = "";
             string name = "";
 
-            if (m_model.PropMaterial.GetMaterial(material.Name, ref matType, ref colour, ref notes, ref guid) != 0)
+            if (m_model.PropMaterial.GetMaterial(material.Name, ref matType, ref color, ref notes, ref guid) == 0) //use existing material if present
             {
-                if (m_model.PropMaterial.AddMaterial(ref name, material.GetMaterialType(), "", "", "", material.Name) != 0)
-                {
-                    ret += m_model.PropMaterial.SetMaterial(material.Name, material.GetMaterialType());
-                }
+                material.CustomData[AdapterId] = material.Name;
+            }
+            else if (m_model.PropMaterial.AddMaterial(ref name, matType, "United States", material.Name, material.Name, guid) == 0) //try to get the material from a dataset
+            {
+                material.CustomData[AdapterId] = name;
+            }
+            else if (m_model.PropMaterial.SetMaterial(material.Name, matType, color, notes, guid) == 0) //create the material
+            {
+                material.CustomData[AdapterId] = name = material.Name;
+
                 if (material is IIsotropic)
                 {
                     IIsotropic isotropic = material as IIsotropic;
-                    ret += m_model.PropMaterial.SetMPIsotropic(material.Name, isotropic.YoungsModulus, isotropic.PoissonsRatio, isotropic.ThermalExpansionCoeff);
+                    if (m_model.PropMaterial.SetMPIsotropic(name, isotropic.YoungsModulus, isotropic.PoissonsRatio, isotropic.ThermalExpansionCoeff) != 0)
+                        CreatePropertyWarning("Isotropy", "Material", name);
+
                 }
                 else if (material is IOrthotropic)
                 {
@@ -45,15 +51,19 @@ namespace BH.Adapter.SAP2000
                     double[] v = orthoTropic.PoissonsRatio.ToDoubleArray();
                     double[] a = orthoTropic.ThermalExpansionCoeff.ToDoubleArray();
                     double[] g = orthoTropic.ShearModulus.ToDoubleArray();
-                    ret += m_model.PropMaterial.SetMPOrthotropic(material.Name, ref e, ref v, ref a, ref g);
+                    if (m_model.PropMaterial.SetMPOrthotropic(name, ref e, ref v, ref a, ref g) != 0)
+                        CreatePropertyWarning("Orthotropy", "Material", name);
                 }
-                ret += m_model.PropMaterial.SetWeightAndMass(material.Name, 0, material.Density);
 
-                material.CustomData[AdapterId] = name;
+                if (m_model.PropMaterial.SetWeightAndMass(name, 2, material.Density) != 0)
+                    CreatePropertyWarning("Density", "Material", name);
+            }
+            else
+            {
+                CreateElementError("Material", material.Name);
             }
 
-            return ret == 0;
-
+            return true;
         }
 
         /***************************************************/
