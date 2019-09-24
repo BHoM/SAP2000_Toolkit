@@ -112,8 +112,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="SAP2000v19, Version=19.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Program Files\Computers and Structures\SAP2000 19\SAP2000v19.dll</HintPath>
+      <HintPath>..\packages\CSI_SAP2000v19_x64.1.0.0\lib\SAP2000v19.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SAP2000_Engine, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -183,6 +182,9 @@
       <Project>{bc975b64-e35e-4155-a067-7a88505e61c2}</Project>
       <Name>SAP2000_oM</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
