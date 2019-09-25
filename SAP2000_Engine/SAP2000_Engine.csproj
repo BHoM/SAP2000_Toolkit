@@ -85,6 +85,7 @@
     </Reference>
     <Reference Include="Physical_oM">
       <HintPath>..\..\BHoM\Build\Physical_oM.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Planning_oM">
       <HintPath>..\..\BHoM\Build\Planning_oM.dll</HintPath>
