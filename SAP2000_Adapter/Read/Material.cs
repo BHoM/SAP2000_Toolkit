@@ -2,9 +2,14 @@
 using BH.Engine.Physical;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Adapters.SAP2000;
-using SAP2000v19;
 using System.Collections.Generic;
 using System.Linq;
+
+#if Debug21 || Release21
+using SAP2000v1;
+#else
+using SAP2000v19;
+#endif
 
 namespace BH.Adapter.SAP2000
 {

@@ -4,11 +4,15 @@ using BH.oM.Structure.SectionProperties;
 using BH.oM.Geometry.ShapeProfiles;
 using BH.Engine.Physical;
 using BH.Engine.Structure;
-using SAP2000v19;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
+#if Debug21 || Release21
+using SAP2000v1;
+#else
+using SAP2000v19;
+#endif
 
 namespace BH.Adapter.SAP2000
 {

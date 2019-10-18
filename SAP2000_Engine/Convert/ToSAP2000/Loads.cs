@@ -1,5 +1,10 @@
 ﻿using BH.oM.Structure.Loads;
+
+#if Debug21 || Release21
+using SAP2000v1;
+#else
 using SAP2000v19;
+#endif
 
 namespace BH.Engine.SAP2000
 {
