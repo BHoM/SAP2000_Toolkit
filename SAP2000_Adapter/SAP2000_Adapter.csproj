@@ -156,6 +156,11 @@
     <Compile Include="Create\Loads.cs" />
     <Compile Include="Create\_Create.cs" />
     <Compile Include="Delete\Delete.cs" />
+    <Compile Include="_Engine\Convert\ToBHoM\Bar.cs" />
+    <Compile Include="_Engine\Convert\ToBHoM\Loads.cs" />
+    <Compile Include="_Engine\Convert\ToSAP2000\Bar.cs" />
+    <Compile Include="_Engine\Convert\ToSAP2000\Loads.cs" />
+    <Compile Include="_Engine\Convert\ToSAP2000\Material.cs" />
     <Compile Include="Types\NextId.cs" />
     <Compile Include="Create\SurfaceProperty.cs" />
     <Compile Include="Read\Bar.cs" />

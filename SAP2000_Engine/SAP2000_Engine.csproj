@@ -103,10 +103,6 @@
       <HintPath>..\..\BHoM_Engine\Build\Results_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="SAP2000v19, Version=19.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSI_SAP2000v19_x64.1.0.0\lib\SAP2000v19.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Serialiser_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Serialiser_Engine.dll</HintPath>
       <Private>False</Private>
@@ -134,14 +130,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterId.cs" />
-    <Compile Include="Convert\ToBHoM\Bar.cs" />
-    <Compile Include="Convert\ToSAP2000\Bar.cs" />
-    <Compile Include="Convert\ToSAP2000\Loads.cs" />
     <Compile Include="Convert\ToBHoM\Constraint.cs" />
-    <Compile Include="Convert\ToBHoM\Loads.cs" />
     <Compile Include="Modify\RigidLink.cs" />
     <Compile Include="Convert\ToSAP2000\Constraint.cs" />
-    <Compile Include="Convert\ToSAP2000\Material.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
