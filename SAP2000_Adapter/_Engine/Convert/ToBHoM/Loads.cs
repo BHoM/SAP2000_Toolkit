@@ -1,9 +1,9 @@
 ﻿using BH.oM.Structure.Loads;
 
 #if Debug19 || Release19
-using SAP = SAP2000v19;
+using SAP2000v19;
 #else
-using SAP = SAP2000v1;
+using SAP2000v1;
 #endif
 
 namespace BH.Engine.SAP2000
@@ -14,49 +14,49 @@ namespace BH.Engine.SAP2000
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static LoadNature ToBHoM(this SAP.eLoadPatternType patType)
+        public static LoadNature ToBHoM(this eLoadPatternType patType)
         {
             LoadNature nature = new LoadNature();
 
             switch (patType)
             {
-                case SAP.eLoadPatternType.Dead:
+                case eLoadPatternType.Dead:
                     nature = LoadNature.Dead;
                     break;
-                case SAP.eLoadPatternType.SuperDead:
+                case eLoadPatternType.SuperDead:
                     nature = LoadNature.SuperDead;
                     break;
-                case SAP.eLoadPatternType.Live:
+                case eLoadPatternType.Live:
                     nature = LoadNature.Live;
                     break;
-                case SAP.eLoadPatternType.Quake:
+                case eLoadPatternType.Quake:
                     nature = LoadNature.Seismic;
                     break;
-                case SAP.eLoadPatternType.Wind:
+                case eLoadPatternType.Wind:
                     nature = LoadNature.Wind;
                     break;
-                case SAP.eLoadPatternType.Snow:
+                case eLoadPatternType.Snow:
                     nature = LoadNature.Snow;
                     break;
-                case SAP.eLoadPatternType.Other:
+                case eLoadPatternType.Other:
                     nature = LoadNature.Other;
                     break;
-                case SAP.eLoadPatternType.Temperature:
+                case eLoadPatternType.Temperature:
                     nature = LoadNature.Temperature;
                     break;
-                case SAP.eLoadPatternType.Rooflive:
+                case eLoadPatternType.Rooflive:
                     nature = LoadNature.Live;
                     break;
-                case SAP.eLoadPatternType.Notional:
+                case eLoadPatternType.Notional:
                     nature = LoadNature.Notional;
                     break;
-                case SAP.eLoadPatternType.PatternLive:
+                case eLoadPatternType.PatternLive:
                     nature = LoadNature.Live;
                     break;
-                case SAP.eLoadPatternType.TemperatureGradient:
+                case eLoadPatternType.TemperatureGradient:
                     nature = LoadNature.Temperature;
                     break;
-                case SAP.eLoadPatternType.Prestress:
+                case eLoadPatternType.Prestress:
                     nature = LoadNature.Prestress;
                     break;
                 default:

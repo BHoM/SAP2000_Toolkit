@@ -9,9 +9,9 @@ using BH.Engine.Structure;
 using BH.Engine.SAP2000;
 
 #if Debug19 || Release19
-using SAP = SAP2000v19;
+using SAP2000v19;
 #else
-using SAP = SAP2000v1;
+using SAP2000v1;
 #endif
 
 namespace BH.Adapter.SAP2000
@@ -37,7 +37,7 @@ namespace BH.Adapter.SAP2000
 
             for (int i = 0; i < count; i++ )
             {
-                SAP.eLoadPatternType patternType = SAP.eLoadPatternType.Dead;
+                eLoadPatternType patternType = eLoadPatternType.Dead;
 
                 if (m_model.LoadPatterns.GetLoadType(names[i], ref patternType) != 0)
                 {
@@ -71,7 +71,7 @@ namespace BH.Adapter.SAP2000
             {
                 double[] factors = null;
                 int caseCount = 0;
-                SAP.eCNameType[] caseTypes = null;
+                eCNameType[] caseTypes = null;
                 string[] caseNames = null;
 
                 if (m_model.RespCombo.GetCaseList(names[i], ref caseCount, ref caseTypes, ref caseNames, ref factors) != 0)
@@ -137,7 +137,7 @@ namespace BH.Adapter.SAP2000
             double[] m3 = null;
 
 
-            if (m_model.PointObj.GetLoadForce("All", ref count, ref nodeNames, ref caseNames, ref steps, ref cSys, ref f1, ref f2, ref f3, ref m1, ref m2, ref m3, SAP.eItemType.Group) == 0)
+            if (m_model.PointObj.GetLoadForce("All", ref count, ref nodeNames, ref caseNames, ref steps, ref cSys, ref f1, ref f2, ref f3, ref m1, ref m2, ref m3, eItemType.Group) == 0)
             {
                 for (int i = 0; i < count; i++)
                 {
@@ -180,7 +180,7 @@ namespace BH.Adapter.SAP2000
             double[] val2 = null;
 
 
-            if (m_model.FrameObj.GetLoadDistributed("All", ref count, ref frameNames, ref caseNames, ref myTypes, ref cSys, ref dir, ref rd1, ref rd2, ref dist1, ref dist2, ref val1, ref val2, SAP.eItemType.Group) == 0)
+            if (m_model.FrameObj.GetLoadDistributed("All", ref count, ref frameNames, ref caseNames, ref myTypes, ref cSys, ref dir, ref rd1, ref rd2, ref dist1, ref dist2, ref val1, ref val2, eItemType.Group) == 0)
             {
                 for (int i = 0; i < count; i++)
                 {
@@ -270,7 +270,7 @@ namespace BH.Adapter.SAP2000
             double[] val = null;
 
 
-            if (m_model.AreaObj.GetLoadUniform("All", ref count, ref areaNames, ref caseNames, ref cSys, ref dir, ref val, SAP.eItemType.Group) == 0)
+            if (m_model.AreaObj.GetLoadUniform("All", ref count, ref areaNames, ref caseNames, ref cSys, ref dir, ref val, eItemType.Group) == 0)
             {
                 for (int i = 0; i < count; i++)
                 {

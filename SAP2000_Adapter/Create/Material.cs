@@ -9,9 +9,9 @@ using BH.Engine.Structure;
 using BH.Engine.SAP2000;
 
 #if Debug19 || Release19
-using SAP = SAP2000v19;
+using SAP2000v19;
 #else
-using SAP = SAP2000v1;
+using SAP2000v1;
 #endif
 
 namespace BH.Adapter.SAP2000
@@ -28,7 +28,7 @@ namespace BH.Adapter.SAP2000
 
         private bool CreateObject(IMaterialFragment material)
         {
-            SAP.eMatType matType = SAP.eMatType.NoDesign;
+            eMatType matType = eMatType.NoDesign;
             int color = 0;
             string guid = "";
             string notes = "";

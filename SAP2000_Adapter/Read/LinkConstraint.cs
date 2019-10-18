@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 #if Debug19 || Release19
-using SAP = SAP2000v19;
+using SAP2000v19;
 #else
-using SAP = SAP2000v1;
+using SAP2000v1;
 #endif
 
 namespace BH.Adapter.SAP2000
@@ -34,25 +34,25 @@ namespace BH.Adapter.SAP2000
 
             foreach (string id in ids)
             {
-                SAP.eLinkPropType linkType = SAP.eLinkPropType.Linear;
+                eLinkPropType linkType = eLinkPropType.Linear;
                 m_model.PropLink.GetTypeOAPI(id, ref linkType);
 
                 LinkConstraint constr = null;
 
                 switch (linkType)
                 {
-                    case SAP.eLinkPropType.Linear:
+                    case eLinkPropType.Linear:
                         constr = GetLinearLinkConstraint(id);
                         break;
-                    case SAP.eLinkPropType.Damper:
-                    case SAP.eLinkPropType.Gap:
-                    case SAP.eLinkPropType.Hook:
-                    case SAP.eLinkPropType.PlasticWen:
-                    case SAP.eLinkPropType.Isolator1:
-                    case SAP.eLinkPropType.Isolator2:
-                    case SAP.eLinkPropType.MultilinearElastic:
-                    case SAP.eLinkPropType.MultilinearPlastic:
-                    case SAP.eLinkPropType.Isolator3:
+                    case eLinkPropType.Damper:
+                    case eLinkPropType.Gap:
+                    case eLinkPropType.Hook:
+                    case eLinkPropType.PlasticWen:
+                    case eLinkPropType.Isolator1:
+                    case eLinkPropType.Isolator2:
+                    case eLinkPropType.MultilinearElastic:
+                    case eLinkPropType.MultilinearPlastic:
+                    case eLinkPropType.Isolator3:
                     default:
                         Engine.Reflection.Compute.RecordError("Reading of LinkConstraint of type " + linkType + " not implemented");
                         break;
