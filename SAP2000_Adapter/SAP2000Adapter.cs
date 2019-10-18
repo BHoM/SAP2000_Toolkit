@@ -8,7 +8,11 @@ using SAP = SAP2000v1;
 
 namespace BH.Adapter.SAP2000
 {
-    public partial class SAP2000Adapter : BHoMAdapter
+#if Debug19 || Release19
+    public partial class SAP2000v19Adapter : BHoMAdapter
+#else
+    public partial class SAP2000v21Adapter : BHoMAdapter
+#endif
     {        
         /***************************************************/
         /**** Public Properties                         ****/
@@ -20,7 +24,11 @@ namespace BH.Adapter.SAP2000
         /**** Constructors                              ****/
         /***************************************************/
 
-        public SAP2000Adapter(string filePath = "", bool Active = false)
+#if Debug19 || Release19
+        public SAP2000v19Adapter(string filePath = "", bool Active = false)
+#else
+        public SAP2000v21Adapter(string filePath = "", bool Active = false)
+#endif
         {
             if (Active)
             {
@@ -31,7 +39,12 @@ namespace BH.Adapter.SAP2000
                 Config.ProcessInMemory = false;
                 Config.CloneBeforePush = true;
 
+#if Debug19 || Release19
                 string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 19\SAP2000.exe";
+#else
+                string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 21\SAP2000.exe";
+#endif
+
                 SAP.cHelper helper = new SAP.Helper();
 
                 object runningInstance = null;

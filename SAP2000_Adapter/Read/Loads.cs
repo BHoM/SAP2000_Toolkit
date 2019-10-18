@@ -16,7 +16,11 @@ using SAP = SAP2000v1;
 
 namespace BH.Adapter.SAP2000
 {
-    public partial class SAP2000Adapter
+#if Debug19 || Release19
+    public partial class SAP2000v19Adapter : BHoMAdapter
+#else
+    public partial class SAP2000v21Adapter : BHoMAdapter
+#endif
     {
         /***************************************************/
         /**** Private Methods                           ****/
@@ -41,7 +45,7 @@ namespace BH.Adapter.SAP2000
                 }
                 else
                 {
-                    Loadcase bhomCase = BH.Engine.Structure.Create.Loadcase(names[i], i, Engine.SAP2000.Convert.ToBHoM(patternType));
+                    Loadcase bhomCase = BH.Engine.Structure.Create.Loadcase(names[i], i, patternType.ToBHoM());
                     bhomCase.CustomData[AdapterId] = names[i];
                     loadCases.Add(bhomCase);
                 }

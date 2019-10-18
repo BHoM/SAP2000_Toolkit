@@ -9,7 +9,11 @@ using System.Collections.Generic;
 
 namespace BH.Adapter.SAP2000
 {
-    public partial class SAP2000Adapter
+#if Debug19 || Release19
+    public partial class SAP2000v19Adapter : BHoMAdapter
+#else
+    public partial class SAP2000v21Adapter : BHoMAdapter
+#endif
     {
         /***************************************************/
         /**** BHoM Adapter Interface                    ****/
