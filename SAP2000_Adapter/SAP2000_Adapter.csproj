@@ -29,6 +29,24 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug19|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug19\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release19|AnyCPU'">
+    <OutputPath>bin\Release19\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Acoustic_oM">
       <HintPath>..\..\BHoM\Build\Acoustic_oM.dll</HintPath>
@@ -112,6 +130,10 @@
       <HintPath>..\..\BHoM_Engine\Build\Results_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="SAP2000v1, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CSI_SAP2000v21_x64.1.0.0\lib\SAP2000v1.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="SAP2000v19, Version=19.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CSI_SAP2000v19_x64.1.0.0\lib\SAP2000v19.dll</HintPath>
       <Private>True</Private>
@@ -156,9 +178,7 @@
     <Compile Include="Create\Loads.cs" />
     <Compile Include="Create\_Create.cs" />
     <Compile Include="Delete\Delete.cs" />
-    <Compile Include="_Engine\Convert\ToBHoM\Bar.cs" />
     <Compile Include="_Engine\Convert\ToBHoM\Loads.cs" />
-    <Compile Include="_Engine\Convert\ToSAP2000\Bar.cs" />
     <Compile Include="_Engine\Convert\ToSAP2000\Loads.cs" />
     <Compile Include="_Engine\Convert\ToSAP2000\Material.cs" />
     <Compile Include="Types\NextId.cs" />

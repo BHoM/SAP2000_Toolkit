@@ -2,10 +2,10 @@
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Geometry;
 
-#if Debug21 || Release21
-using SAP2000v1;
+#if Debug19 || Release19
+using SAP = SAP2000v19;
 #else
-using SAP2000v19;
+using SAP = SAP2000v1;
 #endif
 
 namespace BH.Engine.SAP2000
@@ -16,18 +16,18 @@ namespace BH.Engine.SAP2000
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static eMatType GetMaterialType(this IMaterialFragment material)
+        public static SAP.eMatType GetMaterialType(this IMaterialFragment material)
         {
             if (material is Steel)
-                return eMatType.Steel;
+                return SAP.eMatType.Steel;
             else if (material is Concrete)
-                return eMatType.Concrete;
+                return SAP.eMatType.Concrete;
             else if (material is Aluminium)
-                return eMatType.Aluminum;
+                return SAP.eMatType.Aluminum;
             else if (material is Timber)
-                return eMatType.NoDesign;
+                return SAP.eMatType.NoDesign;
             else
-                return eMatType.NoDesign;
+                return SAP.eMatType.NoDesign;
         }
 
         /***************************************************/

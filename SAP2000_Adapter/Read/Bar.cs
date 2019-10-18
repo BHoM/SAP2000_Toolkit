@@ -3,6 +3,7 @@ using BH.oM.Structure.Constraints;
 using BH.oM.Structure.SectionProperties;
 using System.Collections.Generic;
 using System.Linq;
+using BH.Engine.SAP2000;
 
 namespace BH.Adapter.SAP2000
 {
@@ -47,7 +48,7 @@ namespace BH.Adapter.SAP2000
                     double[] springEnd = new double[6];
 
                     m_model.FrameObj.GetReleases(id, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd);
-                    bhomBar.Release = Engine.SAP2000.Convert.GetBarRelease(restraintStart, springStart, restraintEnd, springEnd);
+                    bhomBar.Release = restraintStart.GetBarRelease(springStart, restraintEnd, springEnd);
 
                     //bhomBar.Release.StartRelease = Engine.SAP2000.Convert.GetConstraint6DOF(restraintStart, springStart);
                     //bhomBar.Release.EndRelease = Engine.SAP2000.Convert.GetConstraint6DOF(restraintEnd, springEnd);

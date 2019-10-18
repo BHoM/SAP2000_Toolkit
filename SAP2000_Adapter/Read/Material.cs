@@ -5,10 +5,10 @@ using BH.oM.Adapters.SAP2000;
 using System.Collections.Generic;
 using System.Linq;
 
-#if Debug21 || Release21
-using SAP2000v1;
+#if Debug19 || Release19
+using SAP = SAP2000v19;
 #else
-using SAP2000v19;
+using SAP = SAP2000v1;
 #endif
 
 namespace BH.Adapter.SAP2000
@@ -34,7 +34,7 @@ namespace BH.Adapter.SAP2000
 
             foreach (string materialName in ids)
             {
-                eMatType matType = eMatType.NoDesign;
+                SAP.eMatType matType = SAP.eMatType.NoDesign;
                 int symType = 0;
                 int colour = 0;
                 string guid = "";
@@ -95,26 +95,26 @@ namespace BH.Adapter.SAP2000
 
                     switch (matType)
                     {
-                        case eMatType.Steel:
+                        case SAP.eMatType.Steel:
                             m_model.PropMaterial.GetOSteel(materialName, ref fy, ref fu, ref efy, ref efu, ref i0, ref i1, ref strainHardening, ref strainMaxF, ref strainRupture);
                             m = BH.Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                             break;
-                        case eMatType.Concrete:
+                        case SAP.eMatType.Concrete:
                             m_model.PropMaterial.GetOConcrete(materialName, ref fc, ref b0, ref ft, ref i0, ref i1, ref efy, ref efu, ref strainFc, ref strainMaxF);
                             m = BH.Engine.Structure.Create.Concrete(materialName, e, v, thermCo, mass, 0, 0, fy);
                             break;
-                        case eMatType.Aluminum:
+                        case SAP.eMatType.Aluminum:
                             m = BH.Engine.Structure.Create.Aluminium(materialName, e, v, thermCo, mass, 0);
                             break;
-                        case eMatType.ColdFormed:
+                        case SAP.eMatType.ColdFormed:
                             m_model.PropMaterial.GetOColdFormed(materialName, ref fy, ref fu, ref i1);
                             m = BH.Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                             break;
-                        case eMatType.Rebar:
+                        case SAP.eMatType.Rebar:
                             m_model.PropMaterial.GetORebar(materialName, ref fy, ref fu, ref efy, ref efu, ref i0, ref i1, ref strainHardening, ref strainMaxF, ref b0);
                             m = BH.Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                             break;
-                        case eMatType.Tendon:
+                        case SAP.eMatType.Tendon:
                             m_model.PropMaterial.GetOTendon(materialName, ref fy, ref fu, ref i0, ref i1);
                             m = BH.Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                             break;

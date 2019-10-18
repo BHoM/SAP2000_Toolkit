@@ -29,6 +29,24 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug19|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug19\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release19|AnyCPU'">
+    <OutputPath>bin\Release19\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>ManagedMinimumRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Acoustic_oM">
       <HintPath>..\..\BHoM\Build\Acoustic_oM.dll</HintPath>
@@ -130,7 +148,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterId.cs" />
+    <Compile Include="Convert\ToBHoM\Bar.cs" />
     <Compile Include="Convert\ToBHoM\Constraint.cs" />
+    <Compile Include="Convert\ToBHoM\Loads.cs" />
+    <Compile Include="Convert\ToSAP2000\Bar.cs" />
+    <Compile Include="Convert\ToSAP2000\Loads.cs" />
     <Compile Include="Modify\RigidLink.cs" />
     <Compile Include="Convert\ToSAP2000\Constraint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

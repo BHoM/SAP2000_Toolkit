@@ -1,9 +1,9 @@
 ﻿using BH.oM.Structure.Loads;
 
-#if Debug21 || Release21
-using SAP2000v1;
+#if Debug19 || Release19
+using SAP = SAP2000v19;
 #else
-using SAP2000v19;
+using SAP = SAP2000v1;
 #endif
 
 namespace BH.Engine.SAP2000
@@ -14,49 +14,49 @@ namespace BH.Engine.SAP2000
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static LoadNature ToBHoM(this eLoadPatternType patType)
+        public static LoadNature ToBHoM(this SAP.eLoadPatternType patType)
         {
             LoadNature nature = new LoadNature();
 
             switch (patType)
             {
-                case eLoadPatternType.Dead:
+                case SAP.eLoadPatternType.Dead:
                     nature = LoadNature.Dead;
                     break;
-                case eLoadPatternType.SuperDead:
+                case SAP.eLoadPatternType.SuperDead:
                     nature = LoadNature.SuperDead;
                     break;
-                case eLoadPatternType.Live:
+                case SAP.eLoadPatternType.Live:
                     nature = LoadNature.Live;
                     break;
-                case eLoadPatternType.Quake:
+                case SAP.eLoadPatternType.Quake:
                     nature = LoadNature.Seismic;
                     break;
-                case eLoadPatternType.Wind:
+                case SAP.eLoadPatternType.Wind:
                     nature = LoadNature.Wind;
                     break;
-                case eLoadPatternType.Snow:
+                case SAP.eLoadPatternType.Snow:
                     nature = LoadNature.Snow;
                     break;
-                case eLoadPatternType.Other:
+                case SAP.eLoadPatternType.Other:
                     nature = LoadNature.Other;
                     break;
-                case eLoadPatternType.Temperature:
+                case SAP.eLoadPatternType.Temperature:
                     nature = LoadNature.Temperature;
                     break;
-                case eLoadPatternType.Rooflive:
+                case SAP.eLoadPatternType.Rooflive:
                     nature = LoadNature.Live;
                     break;
-                case eLoadPatternType.Notional:
+                case SAP.eLoadPatternType.Notional:
                     nature = LoadNature.Notional;
                     break;
-                case eLoadPatternType.PatternLive:
+                case SAP.eLoadPatternType.PatternLive:
                     nature = LoadNature.Live;
                     break;
-                case eLoadPatternType.TemperatureGradient:
+                case SAP.eLoadPatternType.TemperatureGradient:
                     nature = LoadNature.Temperature;
                     break;
-                case eLoadPatternType.Prestress:
+                case SAP.eLoadPatternType.Prestress:
                     nature = LoadNature.Prestress;
                     break;
                 default:
@@ -65,28 +65,6 @@ namespace BH.Engine.SAP2000
             }
 
             return nature;
-        }
-
-        /***************************************************/
-
-        public static LoadAxis LoadAxisToBHoM(this string cSys)
-        {
-            LoadAxis axis = new LoadAxis();
-
-            switch (cSys)
-            {
-                case "Global":
-                    axis = LoadAxis.Global;
-                    break;
-                case "Local":
-                    axis = LoadAxis.Local;
-                    break;
-                default:
-                    axis = LoadAxis.Global;
-                    break;
-            }
-
-            return axis;
         }
 
         /***************************************************/

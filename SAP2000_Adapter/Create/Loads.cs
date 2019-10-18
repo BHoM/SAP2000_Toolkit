@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-#if Debug21 || Release21
-using SAP2000v1;
+#if Debug19 || Release19
+using SAP = SAP2000v19;
 #else
-using SAP2000v19;
+using SAP = SAP2000v1;
 #endif
 
 namespace BH.Adapter.SAP2000
@@ -43,7 +43,7 @@ namespace BH.Adapter.SAP2000
         private bool CreateObject(LoadCombination loadcombination)
         {
             string name = loadcombination.Name;
-            eCNameType nameType = eCNameType.LoadCase;
+            SAP.eCNameType nameType = SAP.eCNameType.LoadCase;
             if (m_model.RespCombo.Add(name, 0) == 0)
             {
                 List<Tuple<double, ICase>> bhomCases = loadcombination.LoadCases;
@@ -92,7 +92,7 @@ namespace BH.Adapter.SAP2000
             foreach (Node bhNode in nodes)
             {
                 string name = bhNode.CustomData[AdapterId].ToString();
-                if (m_model.PointObj.SetLoadForce(name, loadPat, ref val, replace, cSys, eItemType.Objects) != 0)
+                if (m_model.PointObj.SetLoadForce(name, loadPat, ref val, replace, cSys, SAP.eItemType.Objects) != 0)
                     CreateElementError("Point Load", name);
             }
 
@@ -125,7 +125,7 @@ namespace BH.Adapter.SAP2000
             }
             bool relDist = true;
             string cSys = bhLoad.Axis.ToCSI();
-            eItemType type = eItemType.Objects;
+            SAP.eItemType type = SAP.eItemType.Objects;
             bool replace = true;
             
 
@@ -172,7 +172,7 @@ namespace BH.Adapter.SAP2000
             }
             bool replace = true;
             string cSys = bhLoad.Axis.ToCSI();
-            eItemType type = eItemType.Objects;
+            SAP.eItemType type = SAP.eItemType.Objects;
 
             foreach (Panel panel in panels)
             {

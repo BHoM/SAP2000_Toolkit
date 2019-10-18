@@ -1,9 +1,9 @@
 ﻿using BH.oM.Structure.Loads;
 
-#if Debug21 || Release21
-using SAP2000v1;
+#if Debug19 || Release19
+using SAP = SAP2000v19;
 #else
-using SAP2000v19;
+using SAP = SAP2000v1;
 #endif
 
 namespace BH.Engine.SAP2000
@@ -14,70 +14,48 @@ namespace BH.Engine.SAP2000
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static eLoadPatternType ToCSI(this LoadNature loadNature)
+        public static SAP.eLoadPatternType ToCSI(this LoadNature loadNature)
         {
-            eLoadPatternType patType = new eLoadPatternType();
+            SAP.eLoadPatternType patType = new SAP.eLoadPatternType();
 
             switch (loadNature)
             {
                 case LoadNature.Dead:
-                    patType = eLoadPatternType.Dead;
+                    patType = SAP.eLoadPatternType.Dead;
                     break;
                 case LoadNature.SuperDead:
-                    patType = eLoadPatternType.SuperDead;
+                    patType = SAP.eLoadPatternType.SuperDead;
                     break;
                 case LoadNature.Live:
-                    patType = eLoadPatternType.Live;
+                    patType = SAP.eLoadPatternType.Live;
                     break;
                 case LoadNature.Seismic:
-                    patType = eLoadPatternType.Quake;
+                    patType = SAP.eLoadPatternType.Quake;
                     break;
                 case LoadNature.Wind:
-                    patType = eLoadPatternType.Wind;
+                    patType = SAP.eLoadPatternType.Wind;
                     break;
                 case LoadNature.Snow:
-                    patType = eLoadPatternType.Snow;
+                    patType = SAP.eLoadPatternType.Snow;
                     break;
                 case LoadNature.Other:
-                    patType = eLoadPatternType.Other;
+                    patType = SAP.eLoadPatternType.Other;
                     break;
                 case LoadNature.Temperature:
-                    patType = eLoadPatternType.Temperature;
+                    patType = SAP.eLoadPatternType.Temperature;
                     break;
                 case LoadNature.Notional:
-                    patType = eLoadPatternType.Notional;
+                    patType = SAP.eLoadPatternType.Notional;
                     break;
                 case LoadNature.Prestress:
-                    patType = eLoadPatternType.Prestress;
+                    patType = SAP.eLoadPatternType.Prestress;
                     break;
                 default:
-                    patType = eLoadPatternType.Other;
+                    patType = SAP.eLoadPatternType.Other;
                     break;
             }
 
             return patType;
-        }
-
-        /***************************************************/
-
-        public static string ToCSI(this LoadAxis axis)
-        {
-            string cSys = "";
-
-            switch (axis)
-            {
-                case LoadAxis.Global:
-                    cSys = "Global";
-                    break;
-                case LoadAxis.Local:
-                    cSys = "Local";
-                    break;
-                default:
-                    cSys = "Global";
-                    break;
-            }
-
-            return cSys;
         }
 
         /***************************************************/

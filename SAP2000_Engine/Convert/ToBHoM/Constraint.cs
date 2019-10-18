@@ -8,7 +8,7 @@ namespace BH.Engine.SAP2000
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Constraint6DOF GetConstraint6DOF(bool[] restraint, double[] spring)
+        public static Constraint6DOF GetConstraint6DOF(this bool[] restraint, double[] spring)
         {
             Constraint6DOF bhConstraint = new Constraint6DOF();
             bhConstraint.TranslationX = restraint[0] == true ? DOFType.Fixed : DOFType.Free;
@@ -30,7 +30,7 @@ namespace BH.Engine.SAP2000
 
         /***************************************************/
 
-        public static BarRelease GetBarRelease(bool[] startRestraint, double[] startSpring, bool[] endRestraint, double[] endSpring)
+        public static BarRelease GetBarRelease(this bool[] startRestraint, double[] startSpring, bool[] endRestraint, double[] endSpring)
         {
             Constraint6DOF startRelease = new Constraint6DOF();
 
