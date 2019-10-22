@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 #if Debug19 || Release19
 using SAP2000v19;
@@ -41,13 +43,21 @@ namespace BH.Adapter.SAP2000
 
 #if Debug19 || Release19
                 string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 19\SAP2000.exe";
+                int sapVersion = 19;
+#else
+                string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 21\SAP2000.exe";
+                int sapVersion = 21;
+#endif
 
                 cHelper helper = new Helper();
 
                 object runningInstance = null;
-                if (System.Diagnostics.Process.GetProcessesByName("SAP2000").Length > 0)
+
+                var processes = System.Diagnostics.Process.GetProcessesByName("SAP2000").Where(x => x.MainModule.FileVersionInfo.FileMajorPart == sapVersion);
+
+                if (processes.Count() > 0)
                 {
-                    runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.SAP2000.API.SAPObject");
+                    runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.SAP2000.API.SapObject");
 
                     m_app = (cOAPI)runningInstance;
                     m_model = m_app.SapModel;
@@ -61,7 +71,8 @@ namespace BH.Adapter.SAP2000
                     try
                     {
                         m_app = helper.CreateObject(pathToSAP);
-                        m_app.ApplicationStart();
+                        if (m_app.ApplicationStart() != 0)
+                            Engine.Reflection.Compute.RecordError($"Could not start SAP2000v{sapVersion}");
                         m_model = m_app.SapModel;
                         m_model.InitializeNewModel(eUnits.N_m_C);
                         if (System.IO.File.Exists(filePath))
@@ -74,18 +85,6 @@ namespace BH.Adapter.SAP2000
                         Console.WriteLine("Cannot load SAP2000, check that SAP2000 is installed and a license is available");
                     }
                 }
-#else
-                cHelper helper = new Helper();
-
-                m_app = helper.CreateObjectProgID("CSI.SAP2000.API.SapObject");
-
-                m_app.ApplicationStart(eUnits.N_m_C, true);
-
-                m_model = m_app.SapModel;
-
-#endif
-
-                
             }
         }
 
