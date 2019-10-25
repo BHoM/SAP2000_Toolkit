@@ -70,7 +70,11 @@ namespace BH.Adapter.SAP2000
                     //open SAP if not running
                     try
                     {
+#if Debug19 || Release19
                         m_app = helper.CreateObject(pathToSAP);
+#else
+                        m_app = helper.CreateObjectProgID("CSI.SAP2000.API.SapObject");
+#endif
                         if (m_app.ApplicationStart() != 0)
                             Engine.Reflection.Compute.RecordError($"Could not start SAP2000v{sapVersion}");
                         m_model = m_app.SapModel;
