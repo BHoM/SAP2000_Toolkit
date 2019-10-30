@@ -20,7 +20,7 @@ namespace BH.Adapter.SAP2000
         /**** Adapter overload method                   ****/
         /***************************************************/
 
-        protected override bool Create<T>(IEnumerable<T> objects, bool replaceAll = false)
+        protected override bool Create<T>(IEnumerable<T> objects)
         {
             bool success = true;
 

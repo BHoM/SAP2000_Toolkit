@@ -21,10 +21,7 @@ namespace BH.Adapter.SAP2000
             {
                 AdapterId = ID;
 
-                Config.SeparateProperties = true;
-                Config.MergeWithComparer = true;
-                Config.ProcessInMemory = false;
-                Config.CloneBeforePush = true;
+                Config.HandleDependencies = true;
 
                 string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 19\SAP2000.exe";
                 cHelper helper = new SAP2000v19.Helper();
