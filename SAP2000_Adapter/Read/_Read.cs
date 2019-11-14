@@ -35,7 +35,7 @@ namespace BH.Adapter.SAP2000
                 return ReadSurfaceProperty(ids as dynamic);
             else if (type == typeof(LoadCombination))
                 return ReadLoadCombination(ids as dynamic);
-            else if (type == typeof(Loadcase) || type.GetInterfaces().Contains(typeof(ICase)))
+            else if (type == typeof(Loadcase))
                 return ReadLoadcase(ids as dynamic);
             else if (type == typeof(ILoad) || type.GetInterfaces().Contains(typeof(ILoad)))
                 return ReadLoad(type, ids as dynamic);
