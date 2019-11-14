@@ -41,7 +41,6 @@ namespace BH.Adapter.SAP2000
             if (m_model.RespCombo.Add(loadcombination.Name, 0) == 0)
             {
                 loadcombination.CustomData[AdapterId] = loadcombination.Name;
-                List<Tuple<double, ICase>> bhomCases = loadcombination.LoadCases;
                 foreach (Tuple<double, ICase> comboCase in loadcombination.LoadCases)
                 {
                     double factor = comboCase.Item1;

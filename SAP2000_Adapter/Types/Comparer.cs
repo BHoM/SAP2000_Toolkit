@@ -4,6 +4,7 @@ using BH.oM.Structure.Elements;
 using BH.oM.Structure.Constraints;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Structure.SurfaceProperties;
+using BH.oM.Structure.Loads;
 using System;
 using System.Collections.Generic;
 
@@ -54,6 +55,8 @@ namespace BH.Adapter.SAP2000
             {typeof(IMaterialFragment), new BHoMObjectNameComparer() },
             {typeof(LinkConstraint), new BHoMObjectNameComparer() },
             {typeof(ISurfaceProperty), new BHoMObjectNameComparer() },
+            {typeof(ICase), new BHoMObjectNameComparer() },
+
         };
 
 
