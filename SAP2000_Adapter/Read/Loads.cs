@@ -71,13 +71,22 @@ namespace BH.Adapter.SAP2000
                 }
                 else
                 {
-                    List<Loadcase> comboCases = new List<Loadcase>();
-                    foreach (string caseName in caseNames)
+                    LoadCombination bhomCombo = new LoadCombination()
                     {
-                        comboCases.Add(bhomCases[caseName]);
-                    }
-                    LoadCombination bhomCombo = BH.Engine.Structure.Create.LoadCombination(names[i], i, comboCases, factors.ToList());
+                        Name = names[i],
+                        Number = i,
+                    };
                     bhomCombo.CustomData[AdapterId] = names[i];
+                    if (caseCount > 0)
+                    {
+                        List<ICase> comboCases = new List<ICase>();
+                        for (int j = 0; j < caseCount; j++)
+                        {
+                            comboCases.Add(bhomCases[caseNames[j]]);
+                            bhomCombo.LoadCases.Add(new Tuple<double, ICase>(factors[j], comboCases[j]));
+                        }
+                    }
+
                     combinations.Add(bhomCombo);
                 }
             }
