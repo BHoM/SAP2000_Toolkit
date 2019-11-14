@@ -15,7 +15,12 @@ namespace BH.Adapter.SAP2000
 
         private bool CreateObject(ISectionProperty bhomSection)
         {
-            return SetSection(bhomSection as dynamic);
+            if (SetSection(bhomSection as dynamic))
+            {
+                bhomSection.CustomData[AdapterId] = bhomSection.Name;
+                return true;
+            }
+            else { return false; }
         }
 
         /***************************************************/

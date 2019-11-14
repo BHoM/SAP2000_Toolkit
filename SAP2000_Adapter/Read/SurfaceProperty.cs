@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.SurfaceProperties;
+using BH.oM.Structure.MaterialFragments;
 
 namespace BH.Adapter.SAP2000
 {
@@ -13,6 +14,9 @@ namespace BH.Adapter.SAP2000
         private List<ISurfaceProperty> ReadSurfaceProperty(List<string> ids = null)
         {
             List<ISurfaceProperty> propertyList = new List<ISurfaceProperty>();
+
+            Dictionary<string, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => x.CustomData[AdapterId].ToString());
+
             int nameCount = 0;
             string[] nameArr = { };
 
@@ -26,7 +30,7 @@ namespace BH.Adapter.SAP2000
             {
                 int shellType = 0;
                 bool includeDrillingDOF = true;
-                string material = "";
+                string materialName = "";
                 double matAng = 0;
                 double thickness = 0;
                 double bending = 0;
@@ -37,7 +41,7 @@ namespace BH.Adapter.SAP2000
                 double[] modifiers = new double[] { };
                 bool hasModifiers = false;
 
-                m_model.PropArea.GetShell_1(id, ref shellType, ref includeDrillingDOF, ref material, ref matAng, ref thickness, ref bending, ref color, ref notes, ref guid);
+                m_model.PropArea.GetShell_1(id, ref shellType, ref includeDrillingDOF, ref materialName, ref matAng, ref thickness, ref bending, ref color, ref notes, ref guid);
                 if (m_model.PropArea.GetModifiers(id, ref modifiers) == 0)
                     hasModifiers = true;
 
@@ -46,7 +50,7 @@ namespace BH.Adapter.SAP2000
                     ConstantThickness panelConstant = new ConstantThickness();
                     panelConstant.CustomData[AdapterId] = id;
                     panelConstant.Name = id;
-                    panelConstant.Material = ReadMaterial(new List<string>() { material })[0];
+                    panelConstant.Material = bhomMaterials[materialName];
                     panelConstant.Thickness = thickness;
                     panelConstant.CustomData.Add("MaterialAngle", matAng);
                     panelConstant.CustomData.Add("BendingThickness", bending);

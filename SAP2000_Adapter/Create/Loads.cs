@@ -37,22 +37,22 @@ namespace BH.Adapter.SAP2000
 
         private bool CreateObject(LoadCombination loadcombination)
         {
-            string name = loadcombination.Name;
             eCNameType nameType = eCNameType.LoadCase;
-            if (m_model.RespCombo.Add(name, 0) == 0)
+            if (m_model.RespCombo.Add(loadcombination.Name, 0) == 0)
             {
+                loadcombination.CustomData[AdapterId] = loadcombination.Name;
                 List<Tuple<double, ICase>> bhomCases = loadcombination.LoadCases;
                 foreach (Tuple<double, ICase> comboCase in loadcombination.LoadCases)
                 {
                     double factor = comboCase.Item1;
                     ICase bhomCase = comboCase.Item2;
-                    if (m_model.RespCombo.SetCaseList(name, ref nameType, bhomCase.Name, factor) != 0)
-                        Engine.Reflection.Compute.RecordWarning("Could not add case " + bhomCase.Name + " to combo " + name);
+                    if (m_model.RespCombo.SetCaseList(loadcombination.Name, ref nameType, bhomCase.CustomData[AdapterId].ToString(), factor) != 0)
+                        Engine.Reflection.Compute.RecordWarning("Could not add case " + bhomCase.Name + " to combo " + loadcombination.Name);
                 }
             }
             else
             {
-                CreateElementError("Load Combination", name);
+                CreateElementError("Load Combination", loadcombination.Name);
             }
 
             return true;
@@ -86,9 +86,10 @@ namespace BH.Adapter.SAP2000
 
             foreach (Node bhNode in nodes)
             {
-                string name = bhNode.CustomData[AdapterId].ToString();
-                if (m_model.PointObj.SetLoadForce(name, loadPat, ref val, replace, cSys, eItemType.Objects) != 0)
-                    CreateElementError("Point Load", name);
+                if (m_model.PointObj.SetLoadForce(bhNode.CustomData[AdapterId].ToString(), loadPat, ref val, replace, cSys, eItemType.Objects) != 0)
+                {
+                    CreateElementError("Point Load", bhLoad.Name);
+                }
             }
 
             return true;

@@ -35,7 +35,7 @@ namespace BH.Adapter.SAP2000
 
                 m_model.PointObj.GetCoordCartesian(id, ref x, ref y, ref z);
                 bhNode.Position = Engine.Geometry.Create.Point(x, y, z);
-                bhNode.CustomData.Add(AdapterId, id);
+                bhNode.CustomData[AdapterId] = id;
 
                 m_model.PointObj.GetRestraint(id, ref restraint);
                 m_model.PointObj.SetSpring(id, ref spring);

@@ -21,7 +21,7 @@ namespace BH.Adapter.SAP2000
         private List<ISectionProperty> ReadSectionProperties(List<string> ids = null)
         {
             List<ISectionProperty> propList = new List<ISectionProperty>();
-            Dictionary<String, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => x.Name);
+            Dictionary<string, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => x.CustomData[AdapterId].ToString());
 
             int nameCount = 0;
             string[] names = { };
