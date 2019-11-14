@@ -51,7 +51,7 @@ namespace BH.Adapter.SAP2000
         {
             List<LoadCombination> combinations = new List<LoadCombination>();
 
-            Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
+            Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.CustomData[AdapterId].ToString());
 
             int count = 0;
             string[] names = null;

@@ -22,7 +22,7 @@ namespace BH.Adapter.SAP2000
                     Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} was assigned {AdapterId} of {name}");
                 bhBar.CustomData[AdapterId] = name;
 
-                string barProp = bhBar.SectionProperty != null ? bhBar.SectionProperty.Name : "None";
+                string barProp = bhBar.SectionProperty != null ? bhBar.SectionProperty.CustomData[AdapterId].ToString() : "None";
 
                 if (m_model.FrameObj.SetSection(name, barProp) != 0)
                 {

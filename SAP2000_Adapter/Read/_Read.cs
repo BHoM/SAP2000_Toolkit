@@ -27,7 +27,7 @@ namespace BH.Adapter.SAP2000
                 return ReadBars(ids as dynamic);
             else if (type == typeof(ISectionProperty) || type.GetInterfaces().Contains(typeof(ISectionProperty)))
                 return ReadSectionProperties(ids as dynamic);
-            else if (type == typeof(IMaterialFragment))
+            else if (type == typeof(IMaterialFragment) || type.GetInterfaces().Contains(typeof(IMaterialFragment)))
                 return ReadMaterial(ids as dynamic);
             else if (type == typeof(Panel))
                 return ReadPanel(ids as dynamic);

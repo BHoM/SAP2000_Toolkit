@@ -23,9 +23,9 @@ namespace BH.Adapter.SAP2000
             double[] y = boundaryPoints.Select(item => item.Y).ToArray();
             double[] z = boundaryPoints.Select(item => item.Z).ToArray();
 
-            string name = bhPanel.Name.ToString();
+            string name = "";
 
-            if (m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, "Default", name) == 0)
+            if (m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, "Default", bhPanel.Name.ToString()) == 0)
             {
                 if (name != bhPanel.Name & bhPanel.Name != "")
                     Engine.Reflection.Compute.RecordNote($"Panel {bhPanel.Name} was assigned {AdapterId} of {name}");

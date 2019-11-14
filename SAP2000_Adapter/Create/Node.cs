@@ -13,9 +13,9 @@ namespace BH.Adapter.SAP2000
         private bool CreateObject(Node bhNode)
         {
 
-            string name = bhNode.Name.ToString();
+            string name = "";
 
-            if (m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name, name) == 0)
+            if (m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name, bhNode.Name.ToString()) == 0)
             {
                 if (name != bhNode.Name)
                     Engine.Reflection.Compute.RecordNote($"Node {bhNode.Name} was assigned {AdapterId} of {name}");

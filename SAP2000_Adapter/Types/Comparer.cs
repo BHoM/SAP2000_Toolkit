@@ -3,6 +3,7 @@ using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Constraints;
 using BH.oM.Structure.SectionProperties;
+using BH.oM.Structure.SurfaceProperties;
 using System;
 using System.Collections.Generic;
 
@@ -24,14 +25,21 @@ namespace BH.Adapter.SAP2000
             Type type = typeof(T);
 
             if (m_Comparers.ContainsKey(type))
-            {
                 return m_Comparers[type] as IEqualityComparer<T>;
-            }
+
+            else if (type.BaseType != null && m_Comparers.ContainsKey(type.BaseType))
+                return m_Comparers[type.BaseType] as IEqualityComparer<T>;
+
             else
             {
+                foreach (Type interType in type.GetInterfaces())
+                {
+                    if (m_Comparers.ContainsKey(interType))
+                        return m_Comparers[interType] as IEqualityComparer<T>;
+                }
+
                 return EqualityComparer<T>.Default;
             }
-
         }
 
 
@@ -45,7 +53,7 @@ namespace BH.Adapter.SAP2000
             {typeof(ISectionProperty), new BHoMObjectNameOrToStringComparer() },
             {typeof(IMaterialFragment), new BHoMObjectNameComparer() },
             {typeof(LinkConstraint), new BHoMObjectNameComparer() },
-            //{typeof(Property2D), new BHoMObjectNameComparer() },
+            {typeof(ISurfaceProperty), new BHoMObjectNameComparer() },
         };
 
 

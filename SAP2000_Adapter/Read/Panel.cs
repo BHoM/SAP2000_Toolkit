@@ -16,8 +16,9 @@ namespace BH.Adapter.SAP2000
         private List<Panel> ReadPanel(List<string> ids = null)
         {
             List<Panel> bhomPanels = new List<Panel>();
+
             Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterId].ToString());
-            Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => x.Name);
+            Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => x.CustomData[AdapterId].ToString());
             
             if (ids == null)
             {

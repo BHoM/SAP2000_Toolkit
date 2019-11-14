@@ -114,7 +114,7 @@ namespace BH.Adapter.SAP2000
                             m = BH.Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                             break;
                         default:
-                            m = BH.Engine.Structure.Create.Steel(materialName, mass);
+                            m = BH.Engine.Structure.Create.Steel(materialName);
                             Engine.Reflection.Compute.RecordWarning("Could not extract structural properties for material " + materialName);
                             break;
                     }
