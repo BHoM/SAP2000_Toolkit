@@ -45,8 +45,11 @@ namespace BH.Adapter.SAP2000
                 {
                     double factor = comboCase.Item1;
                     ICase bhomCase = comboCase.Item2;
+                    if (!bhomCase.CustomData.ContainsKey(AdapterId))
+                        Engine.Reflection.Compute.RecordWarning($"case {bhomCase.Name} has no {AdapterId}. Try pushing the loadcase and using the result of that push to build the combo.");
+
                     if (m_model.RespCombo.SetCaseList(loadcombination.Name, ref nameType, bhomCase.CustomData[AdapterId].ToString(), factor) != 0)
-                        Engine.Reflection.Compute.RecordWarning("Could not add case " + bhomCase.Name + " to combo " + loadcombination.Name);
+                            Engine.Reflection.Compute.RecordWarning("Could not add case " + bhomCase.Name + " to combo " + loadcombination.Name);
                 }
             }
             else
