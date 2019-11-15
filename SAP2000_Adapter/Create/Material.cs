@@ -25,10 +25,6 @@ namespace BH.Adapter.SAP2000
             string notes = "";
             string name = "";
 
-            //if (m_model.PropMaterial.GetMaterial(material.Name, ref matType, ref color, ref notes, ref guid) == 0) //use existing material if present
-            //{
-            //    material.CustomData[AdapterId] = material.Name;
-            //}
             if (m_model.PropMaterial.AddMaterial(ref name, matType, "United States", material.Name, material.Name, guid) == 0) //try to get the material from a dataset
             {
                 material.CustomData[AdapterId] = name;
