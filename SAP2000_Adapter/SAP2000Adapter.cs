@@ -26,7 +26,7 @@ namespace BH.Adapter.SAP2000
                 AdapterId = ID;
 
 
-                string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 19\SAP2000.exe";
+                string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 21\SAP2000.exe";
                 cHelper helper = new Helper();
 
                 object runningInstance = null;
