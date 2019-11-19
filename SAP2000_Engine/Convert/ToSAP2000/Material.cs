@@ -1,7 +1,11 @@
-﻿using BH.oM.Physical.Materials;
-using BH.oM.Structure.MaterialFragments;
+﻿using BH.oM.Structure.MaterialFragments;
 using BH.oM.Geometry;
-using SAP2000v19;
+using SAP2000v1;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BH.Engine.SAP2000
 {

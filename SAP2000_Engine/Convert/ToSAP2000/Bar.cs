@@ -1,5 +1,9 @@
-﻿using BH.oM.Structure.Loads;
-using SAP2000v19;
+﻿using BH.oM.Geometry;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BH.Engine.SAP2000
 {
@@ -9,13 +13,13 @@ namespace BH.Engine.SAP2000
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static oM.Geometry.Vector BarLocalAxisToCSI(this oM.Geometry.Vector axisBHoM)
+        public static Vector BarLocalAxisToCSI(this Vector axisBHoM)
         {
-            return Engine.Geometry.Modify.Transform(axisBHoM, barLocalAxisToCSI);
+            return Geometry.Modify.Transform(axisBHoM, barLocalAxisToCSI);
         }
 
         /***************************************************/
 
-        public static oM.Geometry.TransformMatrix barLocalAxisToCSI = Engine.Geometry.Modify.Transpose(barLocalAxisToBHoM);
+        public static TransformMatrix barLocalAxisToCSI = Geometry.Modify.Transpose(barLocalAxisToBHoM);
     }
 }

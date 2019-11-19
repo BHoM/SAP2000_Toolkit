@@ -1,13 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System;
+﻿using BH.Engine.SAP2000;
+using BH.Engine.Structure;
+using BH.oM.Base;
+using BH.oM.Geometry;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
-using BH.oM.Geometry;
-using BH.oM.Base;
-using BH.Engine.Structure;
-using BH.Engine.SAP2000;
-using SAP2000v19;
+using SAP2000v1;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BH.Adapter.SAP2000
 {
@@ -218,7 +220,7 @@ namespace BH.Adapter.SAP2000
                             force.Z = -val;
                             break;
                         default:
-                            BH.Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
+                            Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
                             break;
                     }
                     switch (myTypes[i])
@@ -242,7 +244,7 @@ namespace BH.Adapter.SAP2000
                             });
                             break;
                         default:
-                            BH.Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myTypes[i].ToString());
+                            Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myTypes[i].ToString());
                             break;
                     }
                 }
