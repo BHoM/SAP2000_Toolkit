@@ -1,7 +1,10 @@
 ﻿using BH.oM.Structure.Constraints;
-using SAP2000v19;
+using SAP2000v1;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BH.Adapter.SAP2000
 {

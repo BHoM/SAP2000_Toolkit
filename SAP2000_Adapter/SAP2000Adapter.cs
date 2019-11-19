@@ -1,5 +1,9 @@
-﻿using SAP2000v19;
+﻿using SAP2000v1;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BH.Adapter.SAP2000
 {
@@ -23,7 +27,7 @@ namespace BH.Adapter.SAP2000
 
 
                 string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 19\SAP2000.exe";
-                cHelper helper = new SAP2000v19.Helper();
+                cHelper helper = new Helper();
 
                 object runningInstance = null;
                 if (System.Diagnostics.Process.GetProcessesByName("SAP2000").Length > 0)

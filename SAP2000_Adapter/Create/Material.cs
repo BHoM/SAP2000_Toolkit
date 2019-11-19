@@ -1,13 +1,11 @@
-﻿using System;
+﻿using BH.Engine.SAP2000;
+using BH.oM.Structure.MaterialFragments;
+using SAP2000v1;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Physical.Materials;
-using BH.oM.Structure.MaterialFragments;
-using BH.Engine.Structure;
-using BH.Engine.SAP2000;
-using SAP2000v19;
 
 namespace BH.Adapter.SAP2000
 {
