@@ -22,6 +22,7 @@ namespace BH.Adapter.SAP2000
         public SAP2000Adapter(string filePath = "", bool Active = false)
         {
 
+            //Initialization
             Modules.Structure.ModuleLoader.LoadModules(this);
 
             if (Active)
