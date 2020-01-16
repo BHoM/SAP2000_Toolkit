@@ -21,9 +21,12 @@ namespace BH.Adapter.SAP2000
 
         public SAP2000Adapter(string filePath = "", bool Active = false)
         {
+
+            Modules.Structure.ModuleLoader.LoadModules(this);
+
             if (Active)
             {
-                AdapterId = ID;
+                AdapterIdName = ID;
 
 
                 string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 21\SAP2000.exe";

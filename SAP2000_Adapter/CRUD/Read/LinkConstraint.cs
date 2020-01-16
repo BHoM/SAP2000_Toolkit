@@ -80,7 +80,7 @@ namespace BH.Adapter.SAP2000
             m_model.PropLink.GetLinear(name, ref dof, ref fix, ref stiff, ref damp, ref dj2, ref dj3, ref stiffCoupled, ref dampCoupled, ref notes, ref guid);
             
             constraint.Name = name;
-            constraint.CustomData[AdapterId] = name;
+            constraint.CustomData[AdapterIdName] = name;
             constraint.XtoX = fix[0];
             constraint.ZtoZ = fix[1];
             constraint.YtoY = fix[2];

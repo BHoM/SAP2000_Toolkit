@@ -16,8 +16,8 @@ namespace BH.Adapter.SAP2000
         {
 
             List<Bar> bhomBars = new List<Bar>();
-            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterId].ToString());
-            Dictionary<string, ISectionProperty> bhomSections = ReadSectionProperties().ToDictionary(x => x.CustomData[AdapterId].ToString());
+            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+            Dictionary<string, ISectionProperty> bhomSections = ReadSectionProperties().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
 
             int nameCount = 0;
             string[] names = { };
@@ -33,7 +33,7 @@ namespace BH.Adapter.SAP2000
                 try
                 {
                     Bar bhomBar = new Bar();
-                    bhomBar.CustomData[AdapterId] = id;
+                    bhomBar.CustomData[AdapterIdName] = id;
                     string startId = "";
                     string endId = "";
                     m_model.FrameObj.GetPoints(id, ref startId, ref endId);
