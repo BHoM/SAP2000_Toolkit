@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BH.oM.Adapter;
 
 namespace BH.Adapter.SAP2000
 {
@@ -12,7 +13,7 @@ namespace BH.Adapter.SAP2000
         /**** Public Methods                            ****/
         /***************************************************/
 
-        protected override int Delete(Type type, IEnumerable<object> ids)
+        protected override int IDelete(Type type, IEnumerable<object> ids, ActionConfig actionConfig = null)
         {
             return 0;
             throw new NotImplementedException();

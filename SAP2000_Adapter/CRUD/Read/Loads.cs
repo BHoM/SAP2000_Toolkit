@@ -39,7 +39,7 @@ namespace BH.Adapter.SAP2000
                 else
                 {
                     Loadcase bhomCase = BH.Engine.Structure.Create.Loadcase(names[i], i, patternType.ToBHoM());
-                    bhomCase.CustomData[AdapterId] = names[i];
+                    bhomCase.CustomData[AdapterIdName] = names[i];
                     loadCases.Add(bhomCase);
                 }
             }
@@ -53,7 +53,7 @@ namespace BH.Adapter.SAP2000
         {
             List<LoadCombination> combinations = new List<LoadCombination>();
 
-            Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.CustomData[AdapterId].ToString());
+            Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
 
             int count = 0;
             string[] names = null;
@@ -78,7 +78,7 @@ namespace BH.Adapter.SAP2000
                         Name = names[i],
                         Number = i,
                     };
-                    bhomCombo.CustomData[AdapterId] = names[i];
+                    bhomCombo.CustomData[AdapterIdName] = names[i];
                     if (caseCount > 0)
                     {
                         List<ICase> comboCases = new List<ICase>();
@@ -124,7 +124,7 @@ namespace BH.Adapter.SAP2000
             List<ILoad> loads = new List<ILoad>();
 
             Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
-            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterId].ToString());
+            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
 
             int count = 0;
             string[] nodeNames = null;
@@ -166,7 +166,7 @@ namespace BH.Adapter.SAP2000
             List<ILoad> loads = new List<ILoad>();
 
             Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
-            Dictionary<string, Bar> bhomBars = ReadBars().ToDictionary(x => x.CustomData[AdapterId].ToString());
+            Dictionary<string, Bar> bhomBars = ReadBars().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
 
             int count = 0;
             string[] frameNames = null;
@@ -262,7 +262,7 @@ namespace BH.Adapter.SAP2000
             List<ILoad> loads = new List<ILoad>();
 
             Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
-            Dictionary<string, Panel> bhomPanels = ReadPanel().ToDictionary(x => x.CustomData[AdapterId].ToString());
+            Dictionary<string, Panel> bhomPanels = ReadPanel().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
 
             int count = 0;
             string[] areaNames = null;
