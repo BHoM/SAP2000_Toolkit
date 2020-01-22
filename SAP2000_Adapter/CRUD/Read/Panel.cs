@@ -17,8 +17,8 @@ namespace BH.Adapter.SAP2000
         {
             List<Panel> bhomPanels = new List<Panel>();
 
-            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterId].ToString());
-            Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => x.CustomData[AdapterId].ToString());
+            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+            Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
             
             if (ids == null)
             {
@@ -51,7 +51,7 @@ namespace BH.Adapter.SAP2000
                 Panel bhomPanel = BH.Engine.Structure.Create.Panel(outEdges, noOpenings, bhomProperties[propertyName], id);
                 
                 //Set the properties
-                bhomPanel.CustomData[AdapterId] = id;
+                bhomPanel.CustomData[AdapterIdName] = id;
                 
                 //Add the panel to the list
                 bhomPanels.Add(bhomPanel);

@@ -6,7 +6,7 @@
         /**** Public Strings                            ****/
         /***************************************************/
 
-        public const string AdapterId = "SAP2000_id";
+        public const string AdapterIdName = "SAP2000_id";
 
         /***************************************************/
     }

@@ -119,7 +119,7 @@ namespace BH.Adapter.SAP2000
                             break;
                     }
 
-                    m.CustomData.Add(AdapterId, materialName);
+                    m.CustomData.Add(AdapterIdName, materialName);
 
                     materialList.Add(m);
                 }
