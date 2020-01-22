@@ -11,7 +11,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Analytical;
-using BH.oM.Adapter;
 
 namespace BH.Adapter.SAP2000
 {
@@ -21,7 +20,7 @@ namespace BH.Adapter.SAP2000
         /**** Adapter overload method                   ****/
         /***************************************************/
 
-        protected override bool ICreate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
+        protected override bool Create<T>(IEnumerable<T> objects)
         {
             bool success = true;
 

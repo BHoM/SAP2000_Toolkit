@@ -16,14 +16,13 @@ namespace BH.Adapter.SAP2000
         {
             string name = "";
 
-
-            if (m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterIdName].ToString(), bhBar.EndNode.CustomData[AdapterIdName].ToString(), ref name, "Default", bhBar.Name.ToString()) == 0)
+            if (m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterId].ToString(), bhBar.EndNode.CustomData[AdapterId].ToString(), ref name, "Default", bhBar.Name.ToString()) == 0)
             {
                 if (name != bhBar.Name & bhBar.Name != "")
-                    Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} was assigned {AdapterIdName} of {name}");
-                bhBar.CustomData[AdapterIdName] = name;
+                    Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} was assigned {AdapterId} of {name}");
+                bhBar.CustomData[AdapterId] = name;
 
-                string barProp = bhBar.SectionProperty != null ? bhBar.SectionProperty.CustomData[AdapterIdName].ToString() : "None";
+                string barProp = bhBar.SectionProperty != null ? bhBar.SectionProperty.CustomData[AdapterId].ToString() : "None";
 
                 if (m_model.FrameObj.SetSection(name, barProp) != 0)
                 {

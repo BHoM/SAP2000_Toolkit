@@ -15,7 +15,7 @@ namespace BH.Adapter.SAP2000
         {
             List<ISurfaceProperty> propertyList = new List<ISurfaceProperty>();
 
-            Dictionary<string, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+            Dictionary<string, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => x.CustomData[AdapterId].ToString());
 
             int nameCount = 0;
             string[] nameArr = { };
@@ -48,7 +48,7 @@ namespace BH.Adapter.SAP2000
                 else
                 {
                     ConstantThickness panelConstant = new ConstantThickness();
-                    panelConstant.CustomData[AdapterIdName] = id;
+                    panelConstant.CustomData[AdapterId] = id;
                     panelConstant.Name = id;
                     panelConstant.Material = bhomMaterials[materialName];
                     panelConstant.Thickness = thickness;

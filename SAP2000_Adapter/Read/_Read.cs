@@ -10,7 +10,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BH.oM.Adapter;
 
 namespace BH.Adapter.SAP2000
 {
@@ -19,8 +18,8 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
         /**** Adapter overload method                   ****/
         /***************************************************/
-        
-        protected override IEnumerable<IBHoMObject> IRead(Type type, IList ids, ActionConfig actionConfig = null)
+
+        protected override IEnumerable<IBHoMObject> Read(Type type, IList ids)
         {
             if (type == typeof(Node))
                 return ReadNodes(ids as dynamic);

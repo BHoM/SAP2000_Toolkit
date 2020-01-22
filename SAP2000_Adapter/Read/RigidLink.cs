@@ -14,7 +14,7 @@ namespace BH.Adapter.SAP2000
         private List<RigidLink> ReadRigidLink(List<string> ids = null)
         {
             List<RigidLink> linkList = new List<RigidLink>();
-            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterId].ToString());
 
             //Read all links, filter by id at end, so that we can join multi-links.
             int nameCount = 0;

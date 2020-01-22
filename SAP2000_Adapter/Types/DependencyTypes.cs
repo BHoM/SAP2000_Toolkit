@@ -12,22 +12,49 @@ namespace BH.Adapter.SAP2000
     public partial class SAP2000Adapter
     {
         /***************************************************/
-        /**** Protected Methods                         ****/
+        /**** BHoM Adapter Interface                    ****/
         /***************************************************/
-        
-        protected void SetupDependencies()
+
+        //Standard implementation for dependency types (change the dictionary below to override):
+
+        protected override List<Type> DependencyTypes<T>()
         {
-            DependencyTypes = new Dictionary<Type, List<Type>>
+            Type type = typeof(T);
+
+            if (m_DependencyTypes.ContainsKey(type))
+                return m_DependencyTypes[type];
+
+            else if (type.BaseType != null && m_DependencyTypes.ContainsKey(type.BaseType))
+                return m_DependencyTypes[type.BaseType];
+
+            else
             {
-                {typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node) } },
-                {typeof(ISectionProperty), new List<Type> { typeof(IMaterialFragment) } },
-                {typeof(Panel), new List<Type> { typeof(ISurfaceProperty) } },
-                {typeof(ISurfaceProperty), new List<Type> { typeof(IMaterialFragment) } },
-                {typeof(RigidLink), new List<Type> { typeof(LinkConstraint), typeof(Node) } },
-                {typeof(ILoad), new List<Type> {typeof(Loadcase) } },
-                {typeof(LoadCombination), new List<Type> {typeof(Loadcase) } }
-            };
+                foreach (Type interType in type.GetInterfaces())
+                {
+                    if (m_DependencyTypes.ContainsKey(interType))
+                        return m_DependencyTypes[interType];
+                }
+            }
+
+
+            return new List<Type>();
         }
+
+
+        /***************************************************/
+        /**** Private Fields                            ****/
+        /***************************************************/
+
+        private static Dictionary<Type, List<Type>> m_DependencyTypes = new Dictionary<Type, List<Type>>
+        {
+            {typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node) } },
+            {typeof(ISectionProperty), new List<Type> { typeof(IMaterialFragment) } },
+            {typeof(Panel), new List<Type> { typeof(ISurfaceProperty) } },
+            {typeof(ISurfaceProperty), new List<Type> { typeof(IMaterialFragment) } },
+            {typeof(RigidLink), new List<Type> { typeof(LinkConstraint), typeof(Node) } },
+            {typeof(ILoad), new List<Type> {typeof(Loadcase) } },
+            {typeof(LoadCombination), new List<Type> {typeof(Loadcase) } }
+        };
 
         /***************************************************/
     }

@@ -28,10 +28,10 @@ namespace BH.Adapter.SAP2000
             if (m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, "Default", bhPanel.Name.ToString()) == 0)
             {
                 if (name != bhPanel.Name & bhPanel.Name != "")
-                    Engine.Reflection.Compute.RecordNote($"Panel {bhPanel.Name} was assigned {AdapterIdName} of {name}");
-                bhPanel.CustomData[AdapterIdName] = name;
+                    Engine.Reflection.Compute.RecordNote($"Panel {bhPanel.Name} was assigned {AdapterId} of {name}");
+                bhPanel.CustomData[AdapterId] = name;
 
-                string propName = bhPanel.Property.CustomData[AdapterIdName].ToString();
+                string propName = bhPanel.Property.CustomData[AdapterId].ToString();
                 if (m_model.AreaObj.SetProperty(name, propName, 0) != 0)
                     CreatePropertyError("Surface Property", "Panel", name);
             }

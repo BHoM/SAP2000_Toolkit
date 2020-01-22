@@ -17,7 +17,7 @@ namespace BH.Adapter.SAP2000
         {
             if (SetSection(bhomSection as dynamic))
             {
-                bhomSection.CustomData[AdapterIdName] = bhomSection.Name;
+                bhomSection.CustomData[AdapterId] = bhomSection.Name;
                 return true;
             }
             else { return false; }

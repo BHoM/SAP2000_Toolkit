@@ -20,8 +20,8 @@ namespace BH.Adapter.SAP2000
                 Node masterNode = link.MasterNode;
                 Node slaveNode = link.SlaveNodes[0];
 
-                if ( m_model.LinkObj.AddByPoint(masterNode.CustomData[AdapterIdName].ToString(), 
-                    slaveNode.CustomData[AdapterIdName].ToString(), ref name, false, "Default") != 0)
+                if ( m_model.LinkObj.AddByPoint(masterNode.CustomData[AdapterId].ToString(), 
+                    slaveNode.CustomData[AdapterId].ToString(), ref name, false, "Default") != 0)
                 {
                     CreateElementError("RigidLink", name);
                 }
@@ -29,7 +29,7 @@ namespace BH.Adapter.SAP2000
                 linkIds.Add(name);
             }
 
-            bhLink.CustomData[AdapterIdName] = linkIds;
+            bhLink.CustomData[AdapterId] = linkIds;
 
             return true;
         }

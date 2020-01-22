@@ -25,11 +25,11 @@ namespace BH.Adapter.SAP2000
 
             if (m_model.PropMaterial.AddMaterial(ref name, matType, "United States", material.Name, material.Name, guid) == 0) //try to get the material from a dataset
             {
-                material.CustomData[AdapterIdName] = name;
+                material.CustomData[AdapterId] = name;
             }
             else if (m_model.PropMaterial.SetMaterial(material.Name, matType, color, notes, guid) == 0) //create the material
             {
-                material.CustomData[AdapterIdName] = material.Name;
+                material.CustomData[AdapterId] = material.Name;
 
                 if (material is IIsotropic)
                 {
