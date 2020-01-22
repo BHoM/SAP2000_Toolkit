@@ -46,7 +46,7 @@ namespace BH.Adapter.SAP2000
                 return ReadLinkConstraints(ids as dynamic);
 
 
-            return null;//<--- returning null will throw error in replace method of BHOM_Adapter line 34: can't do typeof(null) - returning null does seem the most sensible to return though
+            return null;
         }
 
         /***************************************************/
