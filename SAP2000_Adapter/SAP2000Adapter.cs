@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BH.oM.Adapter;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.SAP2000;
 
 namespace BH.Adapter.SAP2000
 {
@@ -12,8 +15,8 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
         /**** Public Properties                         ****/
         /***************************************************/
-
-        public const string ID = "SAP2000_id";
+        
+            public SAP2000ActionConfig SAPConfig { get; set; } = new SAP2000ActionConfig();
 
         /***************************************************/
         /**** Constructors                              ****/
@@ -23,13 +26,13 @@ namespace BH.Adapter.SAP2000
         {
 
             //Initialization
+            AdapterIdName = Engine.SAP2000.Convert.AdapterIdName;
             Modules.Structure.ModuleLoader.LoadModules(this);
+            SetupComparers();
+            SetupDependencies();   
 
             if (Active)
             {
-                AdapterIdName = ID;
-
-
                 string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 21\SAP2000.exe";
                 cHelper helper = new Helper();
 
@@ -72,6 +75,7 @@ namespace BH.Adapter.SAP2000
 
         private cOAPI m_app;
         private cSapModel m_model;
+        private ActionConfig actionConfig;
 
         /***************************************************/
     }
