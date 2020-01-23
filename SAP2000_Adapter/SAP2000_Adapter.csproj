@@ -182,9 +182,7 @@
     <Compile Include="Types\SetupComparer.cs" />
     <Compile Include="Types\SetupDependencies.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Execute\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\SAP2000_oM\SAP2000_oM.csproj">
       <Project>{bc975b64-e35e-4155-a067-7a88505e61c2}</Project>
