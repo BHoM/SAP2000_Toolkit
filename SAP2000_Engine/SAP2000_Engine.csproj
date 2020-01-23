@@ -134,7 +134,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdapterId.cs" />
+    <Compile Include="AdapterIdName.cs" />
     <Compile Include="Convert\ToBHoM\Bar.cs" />
     <Compile Include="Convert\ToSAP2000\Bar.cs" />
     <Compile Include="Convert\ToSAP2000\Loads.cs" />
