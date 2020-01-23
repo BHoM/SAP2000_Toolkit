@@ -1,9 +1,13 @@
-﻿using BH.oM.Base;
+﻿using BH.oM.Adapter;
+using BH.oM.Base;
 using System.ComponentModel;
 
 namespace BH.oM.Adapters.SAP2000
 {
-    public class SAP2000Config : BHoMObject
+    [Description("This Config can be specified in the `ActionConfig` input of any Adapter Action (e.g. Push).")]
+    // Note: this will get passed within any CRUD method (see their signature). 
+    // In order to access its properties, you will need to cast it to `SAP2000ActionConfig`.
+    public class SAP2000ActionConfig : ActionConfig
     {
         /***************************************************/
         /**** Public Properties                         ****/
