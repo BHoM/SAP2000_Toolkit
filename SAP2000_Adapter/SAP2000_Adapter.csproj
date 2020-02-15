@@ -69,6 +69,9 @@
       <HintPath>..\..\BHoM\Build\Common_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Data_oM">
+      <HintPath>..\..\BHoM\Build\Data_oM.dll</HintPath>
+    </Reference>
     <Reference Include="Environment_oM">
       <HintPath>..\..\BHoM\Build\Environment_oM.dll</HintPath>
       <Private>False</Private>
@@ -120,8 +123,8 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="SAP2000v1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=453d728ef24c6f5e, processorArchitecture=MSIL">
-      <HintPath>..\packages\BHoM.Interop.SAP2000v21.1.0.0\lib\net47\SAP2000v1.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\AppData\Roaming\BHoM\Assemblies\SAP2000v1.dll</HintPath>
     </Reference>
     <Reference Include="SAP2000v19, Version=19.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CSI_SAP2000v19_x64.1.0.0\lib\SAP2000v19.dll</HintPath>
@@ -173,6 +176,9 @@
     <Compile Include="CRUD\Read\Node.cs" />
     <Compile Include="CRUD\Read\Panel.cs" />
     <Compile Include="CRUD\Read\LinkConstraint.cs" />
+    <Compile Include="CRUD\Read\Results\BarResults.cs" />
+    <Compile Include="CRUD\Read\Results\NodeResults.cs" />
+    <Compile Include="CRUD\Read\Results\Result.cs" />
     <Compile Include="CRUD\Read\_IRead.cs" />
     <Compile Include="CRUD\Read\RigidLink.cs" />
     <Compile Include="CRUD\Read\Section.cs" />
