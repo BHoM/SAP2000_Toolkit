@@ -51,11 +51,13 @@ namespace BH.Adapter.SAP2000
         public IEnumerable<IResult> ReadResults(MeshResultRequest request, ActionConfig actionConfig = null)
         {
             List<string> cases = GetAllCases(request.Cases);
+            CheckAndSetUpCases(request)
             List<string> panelIds = CheckGetPanelIds(request);
 
             switch (request.ResultType)
             {
                 case MeshResultType.Forces:
+                    return ReadMeshForce(panelIds, request.smoothing)
                 case MeshResultType.Displacements:
                 case MeshResultType.Stresses:
                 case MeshResultType.VonMises:
@@ -68,6 +70,22 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
         /**** Private methods - Extraction methods      ****/
         /***************************************************/
+
+        private List<MeshResults> ReadMeshForce(List<string> panelIds, MeshResultSmoothingType smoothing)
+        {
+            return meshResults;
+        }
+
+        /***************************************************/
+
+
+
+        /***************************************************/
+
+
+
+        /***************************************************/
+
 
         /***************************************************/
         /**** Private methods - Support methods         ****/
