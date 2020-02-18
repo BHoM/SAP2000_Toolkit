@@ -48,16 +48,17 @@ namespace BH.Adapter.SAP2000
         /**** Public method - Read override             ****/
         /***************************************************/
 
-        public IEnumerable<IResult> ReadResults(MeshResultRequest request, ActionConfig actionConfig = null)
+        public IEnumerable<IResult> ReadResults(MeshResultRequest request,
+                                                ActionConfig actionConfig = null)
         {
             List<string> cases = GetAllCases(request.Cases);
-            CheckAndSetUpCases(request)
+            CheckAndSetUpCases(request);
             List<string> panelIds = CheckGetPanelIds(request);
 
             switch (request.ResultType)
             {
                 case MeshResultType.Forces:
-                    return ReadMeshForce(panelIds, request.smoothing)
+                    /* return ReadMeshForce(panelIds, request.smoothing);*/
                 case MeshResultType.Displacements:
                 case MeshResultType.Stresses:
                 case MeshResultType.VonMises:
@@ -71,25 +72,174 @@ namespace BH.Adapter.SAP2000
         /**** Private methods - Extraction methods      ****/
         /***************************************************/
 
-        private List<MeshResults> ReadMeshForce(List<string> panelIds, MeshResultSmoothingType smoothing)
+        private List<MeshResult> ReadMeshForce(List<string> panelIds,
+                                               MeshResultSmoothingType smoothing)
         {
-            return meshResults;
+            switch (smoothing)
+            {
+                case MeshResultSmoothingType.BySelection:
+                case MeshResultSmoothingType.Global:
+                case MeshResultSmoothingType.ByFiniteElementCentres:
+                    Engine.Reflection.Compute.RecordWarning("Smoothing type not supported for MeshForce. No results extracted");
+                default:
+                    return new List<MeshResult>();
+            }
+
+            List<MeshResult> results = new List<MeshResult>();
+            int resultCount = 0;
+            string[] obj = null;
+            string[] elm = null;
+            string[] pointElm = null;
+            string[] loadCase = null;
+            string[] stepType = null;
+            double[] stepNum = null;
+            double[] f11 = null;
+            double[] f22 = null;
+            double[] f12 = null;
+            double[] fMax = null;
+            double[] fMin = null;
+            double[] fAngle = null;
+            double[] fvm = null;
+            double[] m11 = null;
+            double[] m22 = null;
+            double[] m12 = null;
+            double[] mMax = null;
+            double[] mMin = null;
+            double[] mAngle = null;
+            double[] v13 = null;
+            double[] v23 = null;
+            double[] vMax = null;
+            double[] vAngle = null;
+
+            if (smoothing == MeshResultSmoothingType.ByPanel)
+                Engine.Reflection.Compute.RecordWarning("Force values have been smoothed outside the API by averaging all force values in each node");
+
+            for (int i = 0; i < panelIds.Count; i++)
+            {
+                List<MeshForce> forces = new List<MeshForce>();
+
+                int ret = m_model.Results.AreaForceShell(panelIds[i],
+                                                         eItemTypeElm.ObjectElm,
+                                                         ref resultCount,
+                                                         ref obj,
+                                                         ref elm,
+                                                         ref pointElm,
+                                                         ref loadCase,
+                                                         ref stepType,
+                                                         ref stepNum,
+                                                         ref f11,
+                                                         ref f22,
+                                                         ref f12,
+                                                         ref fMax,
+                                                         ref fMin,
+                                                         ref fAngle,
+                                                         ref fvm,
+                                                         ref m11,
+                                                         ref m22,
+                                                         ref m12,
+                                                         ref mMax,
+                                                         ref mMin,
+                                                         ref mAngle,
+                                                         ref v13,
+                                                         ref v23,
+                                                         ref vMax,
+                                                         ref vAngle);
+
+                for (int j = 0; j < resultCount; j++)
+                {
+                    double step = 0;
+                    if (stepType[j] == "Single Value" || stepNum.Length < j)
+                        step = 0;
+                    else:
+                        step = stepNum[j];
+
+                    MeshForce pf = new MeshForce(panelIds[i],
+                                                 pointElm[j],
+                                                 elm[j],
+                                                 loadCase[j],
+                                                 step, 0, 0, 0,
+                                                 oM.Geometry.Basis.XY,
+                                                 f11[j],
+                                                 f22[j],
+                                                 f12[j],
+                                                 m11[j],
+                                                 m22[j],
+                                                 m12[j],
+                                                 v13[j],
+                                                 v23[j]);
+                    forces.Add(pf);
+                }
+
+                if (smoothing == MeshResultSmoothingType.ByPanel)
+                    forces = SmoothenForces(forces);
+
+                results.AddRange(GroupMeshResults(forces));
+            }
+
+            return results;
+        }
+
+
+        /***************************************************/
+
+        /*
+        private List<MeshResults> ReadMeshDisplacement(List<string> panelIds, MeshResultSmoothingType smoothing)
+        {
+            return results
         }
 
         /***************************************************/
+        /*
+        private List<MeshResults> ReadMeshStress(List<string> panelIds, List<string> cases,
+                                                 MeshResultSmoothingType smoothing, MeshResultLayer layer)
+        {
+            return results
+        }
 
-
-
-        /***************************************************/
-
-
-
-        /***************************************************/
-
-
+       
         /***************************************************/
         /**** Private methods - Support methods         ****/
         /***************************************************/
- 
+
+        private List<MeshForce> SmoothenForces(List<MeshForce> forces)
+        {
+            List<MeshForce> smoothenedForces = new List<MeshForce>();
+
+            foreach (IEnumerable<MeshForce> gorup in forces.GroupBy(x => new { x.ResultCase,
+                        x.TimeStep, x.NodeID}))
+            {
+                MeshForce first = group.First();
+
+                double nxx = group.Average(x => x.NXX);
+                double nyy = group.Average(x => x.NYY);
+                double nxy = group.Average(x => x.NXY);
+
+                double mxx = group.Average(x => x.MXX);
+                double myy = group.Average(x => x.MYY);
+                double mxy = group.Average(x => x.MXY);
+
+                double vx = group.Average(x => x.VX);
+                double vy = group.Average(x => x.VY);
+
+                smoothenedForces.Add(new MeshForce(first.ObjectId,
+                                                   first.NodeID,
+                                                   "",
+                                                   first.ResultCase,
+                                                   first.TimeStep,
+                                                   first.MeshResultLayer,
+                                                   first.LayerPosition,
+                                                   MeshResultSmoothingType.ByPanel,
+                                                   first.Orientation,
+                                                   nxx
+                                                   nyy,
+                                                   nxy,
+                                                   mxx,
+                                                   myy,
+                                                   mxy,
+                                                   vx,
+                                                   vy));
+            }
+            return smoothenedForces;
+        }
     }
 }

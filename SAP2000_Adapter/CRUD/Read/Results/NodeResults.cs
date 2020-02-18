@@ -48,7 +48,8 @@ namespace BH.Adapter.SAP2000
         /**** Public method - Read override             ****/
         /***************************************************/
 
-        public IEnumerable<IResult> ReadResults(NodeResultRequest request, ActionConfig actionConfig = null)
+        public IEnumerable<IResult> ReadResults(NodeResultRequest request,
+                                                ActionConfig actionConfig = null)
         {
             CheckAndSetUpCases(request);
             List<string> nodeIds = CheckGetNodeIds(request);
@@ -71,7 +72,8 @@ namespace BH.Adapter.SAP2000
         /**** Private method - Extraction methods       ****/
         /***************************************************/
 
-        private List<NodeResult> ReadNodeAcceleration(IList ids = null, IList cases = null)
+        private List<NodeResult> ReadNodeAcceleration(IList ids = null,
+                                                      IList cases = null)
         {
             throw new NotImplementedException("Node Acceleration results is not supported yet!");
 
@@ -98,8 +100,22 @@ private List<NodeDisplacement> ReadNodeDisplacement(List<string> nodeIds)
 
             for (int i = 0; i < nodeIds.Count; i++)
             {
-                int ret = m_model.Results.JointDispl(nodeIds[i].ToString(), eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref elm, ref loadcaseNames, ref stepType, ref stepNum, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz);
-                if (ret == 0){
+                int ret = m_model.Results.JointDispl(nodeIds[i].ToString(),
+                                                     eItemTypeElm.ObjectElm,
+                                                     ref resultCount,
+                                                     ref objects,
+                                                     ref elm,
+                                                     ref loadcaseNames,
+                                                     ref stepType,
+                                                     ref stepNum,
+                                                     ref ux,
+                                                     ref uy,
+                                                     ref uz,
+                                                     ref rx,
+                                                     ref ry,
+                                                     ref rz);
+                if (ret == 0)
+                {
                     for (int j = 0; j < resultCount; j++)
                     {
                         NodeDisplacement nd = new NodeDisplacement()
@@ -143,13 +159,24 @@ private List<NodeDisplacement> ReadNodeDisplacement(List<string> nodeIds)
 
             for (int i = 0; i < nodeIds.Count; i++)
             {
-                int ret = m_model.Results.JointReact(nodeIds[i], eItemTypeElm.ObjectElm, ref resultCount,
-                    ref objects, ref elm, ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz);
+                int ret = m_model.Results.JointReact(nodeIds[i],
+                                                     eItemTypeElm.ObjectElm,
+                                                     ref resultCount,
+                                                     ref objects,
+                                                     ref elm,
+                                                     ref loadcaseNames,
+                                                     ref stepType,
+                                                     ref stepNum,
+                                                     ref fx,
+                                                     ref fy,
+                                                     ref fz,
+                                                     ref mx,
+                                                     ref my,
+                                                     ref mz);
                 if (ret == 0)
                 {
                     for (int j = 0; j < resultCount; j++)
                     {
-
                         NodeReaction nr = new NodeReaction()
                         {
                             ResultCase = loadcaseNames[j],
@@ -173,7 +200,8 @@ private List<NodeDisplacement> ReadNodeDisplacement(List<string> nodeIds)
         /***************************************************/
 
         
-        private List<NodeResult> ReadNodeVelocity(IList ids = null, IList cases = null)
+        private List<NodeResult> ReadNodeVelocity(IList ids = null,
+                                                  IList cases = null)
         {
             throw new NotImplementedException("Node velocity results are not supported yet!");
 
@@ -201,9 +229,8 @@ private List<NodeDisplacement> ReadNodeDisplacement(List<string> nodeIds)
                     nodeIds.Add(ids[i].ToString());
                 }
             }
-
             return nodeIds;
         }
-
     }
 }
+

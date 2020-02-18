@@ -48,7 +48,8 @@ namespace BH.Adapter.SAP2000
         /**** Public method - Read override             ****/
         /***************************************************/
 
-        public IEnumerable<IResult> ReadResults(BarResultRequest request, ActionConfig actionConfig = null)
+        public IEnumerable<IResult> ReadResults(BarResultRequest request,
+                                                ActionConfig actionConfig = null)
         {
             CheckAndSetUpCases(request);
             List<string> barIds = CheckGetBarIds(request);
@@ -59,7 +60,8 @@ namespace BH.Adapter.SAP2000
                     return ReadBarForce(barIds, request.Divisions);
                 case BarResultType.BarDisplacement:
                 case BarResultType.BarDeformation:
-                    Engine.Reflection.Compute.RecordError("SAP2000 cannot export localised BarDeformations. To get the full displacement of the bars in global coordinates, try pulling BarDisplacements");
+                    Engine.Reflection.Compute.RecordError("SAP2000 cannot export localised BarDeformations." +
+                    "To get the full displacement of the bars in global coordinates, try pulling BarDisplacements");
                     return new List<IResult>();
                 case BarResultType.BarStrain:
                 case BarResultType.BarStress:
@@ -73,10 +75,12 @@ namespace BH.Adapter.SAP2000
         /**** Private method - Extraction methods       ****/
         /***************************************************/
 
-        private List<BarDisplacement> ReadBarDisplacements(List<string> barIds = null, int divisions = 5)
+        private List<BarDisplacement> ReadBarDisplacements(List<string> barIds = null,
+                                                           int divisions = 5)
         {
             List<BarDisplacement> displacements  = new List<BarDisplacement>();
-            Engine.Reflection.Compute.RecordWarning("Displacements will only be extracted at SAP2000 calculation nodes. 'Divisions' parameter will not be considered in result extraction");
+            Engine.Reflection.Compute.RecordWarning("Displacements will only be extracted at SAP2000 calculation nodes." +
+                                                    "'Divisions' parameter will not be considered in result extraction");
 
             int resultCount = 0;
             string[] Obj = null;
@@ -118,8 +122,21 @@ namespace BH.Adapter.SAP2000
 
                 foreach (var nodePos in nodeWithPos)
                 {
-                    int ret = m_model.Results.JointDispl(nodePos.Key, eItemTypeElm.Element, ref resultCount, ref Obj, ref Elm, ref LoadCase, ref StepType, ref StepNum, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz);
-                    
+                         int ret = m_model.Results.JointDispl(nodePos.Key,
+                                                              eItemTypeElm.Element,
+                                                              ref resultCount,
+                                                              ref Obj,
+                                                              ref Elm,
+                                                              ref LoadCase,
+                                                              ref StepType,
+                                                              ref StepNum,
+                                                              ref ux,
+                                                              ref uy,
+                                                              ref uz,
+                                                              ref rx,
+                                                              ref ry,
+                                                              ref rz);
+
                     if (ret == 0)
                     {
                         for (int j = 0; j < resultCount; j++)
@@ -186,9 +203,28 @@ namespace BH.Adapter.SAP2000
                 int divs = divisions;
 
                 m_model.FrameObj.SetOutputStations(barIds[i], type, 0, divs);
-                m_model.FrameObj.GetOutputStations(barIds[i], ref type, ref segSize, ref divs, ref op1, ref op2);
-                int ret = m_model.Results.FrameForce(barIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref objStation, ref elm, ref elmStation,
-                ref loadcaseNames, ref stepType, ref stepNum, ref p, ref v2, ref v3, ref t, ref m2, ref m3);
+                m_model.FrameObj.GetOutputStations(barIds[i],
+                                                   ref type,
+                                                   ref segSize,
+                                                   ref divs,
+                                                   ref op1,
+                                                   ref op2);
+                int ret = m_model.Results.FrameForce(barIds[i],
+                                                     eItemTypeElm.ObjectElm,
+                                                     ref resultCount,
+                                                     ref objects,
+                                                     ref objStation,
+                                                     ref elm,
+                                                     ref elmStation,
+                                                     ref loadcaseNames,
+                                                     ref stepType,
+                                                     ref stepNum,
+                                                     ref p,
+                                                     ref v2,
+                                                     ref v3,
+                                                     ref t,
+                                                     ref m2,
+                                                     ref m3);
                 if (ret == 0)
                 {
                     for (int j = 0; j < resultCount; j++)
@@ -216,10 +252,14 @@ namespace BH.Adapter.SAP2000
             return barForces;
         }
 
+        /***************************************************/
+
         private List<BarResult> ReadBarStrains(List<string> barIds = null, int divisions = 5)
         {
             throw new NotImplementedException("Bar strain results are not supported yet!");
         }
+
+        /***************************************************/
 
         private List<BarResult> ReadBarStresses(List<string> barIds = null, int divisions = 5)
         {
@@ -254,6 +294,8 @@ namespace BH.Adapter.SAP2000
             return barIds;
         }
 
+        /***************************************************/
+
         private double GetBarLength(string barId, Dictionary<string, Point> pts)
         {
             string p1Id = "";
@@ -266,6 +308,8 @@ namespace BH.Adapter.SAP2000
 
             return p1.Distance(p2);
         }
+
+        /***************************************************/
 
         private Point CheckGetPoint(string pointId, Dictionary<string, Point> pts)
         {
@@ -282,7 +326,5 @@ namespace BH.Adapter.SAP2000
             }
             return pt;
         }
-
     }
-
 }

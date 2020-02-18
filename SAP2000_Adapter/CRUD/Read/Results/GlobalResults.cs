@@ -45,7 +45,8 @@ namespace BH.Adapter.SAP2000
     /**** Public method - Read override             ****/
     /***************************************************/
 
-    public IEnumerable<IResult> ReadResults(GlobalResultRequest request, ActionConfig actionConfig = null)
+    public IEnumerable<IResult> ReadResults(GlobalResultRequest request,
+                                            ActionConfig actionConfig = null)
     {
         CheckAndSetUpCases(request);
 
@@ -84,8 +85,19 @@ namespace BH.Adapter.SAP2000
         double gy = 0;
         double gz = 0;
 
-        int ret = m_model.Results.BaseReact(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum,
-                                            ref fx, ref fy, ref fz, ref mx, ref my, ref mz, ref gx, ref gy, ref gz);
+        int ret = m_model.Results.BaseReact(ref resultCount,
+                                            ref loadcaseNames,
+                                            ref stepType,
+                                            ref stepNum,
+                                            ref fx,
+                                            ref fy,
+                                            ref fz,
+                                            ref mx,
+                                            ref my,
+                                            ref mz,
+                                            ref gx,
+                                            ref gy,
+                                            ref gz);
 
         for (int i; i < resultCount; i++)
         {
@@ -131,7 +143,23 @@ namespace BH.Adapter.SAP2000
         double[] sumRy = null;
         double[] sumRz = null;
 
-        int ret = m_model.Results.ModalParticipatingMassRatios(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum, ref period, ref ux, ref uy, ref uz, ref sumUx, ref sumUy, ref sumUz, ref rx, ref ry, ref rz, ref sumRx, ref sumRy, ref sum Rz);
+        int ret = m_model.Results.ModalParticipatingMassRatios(ref resultCount,
+                                                               ref loadcaseNames,
+                                                               ref stepType,
+                                                               ref stepNum,
+                                                               ref period,
+                                                               ref ux,
+                                                               ref uy,
+                                                               ref uz,
+                                                               ref sumUx,
+                                                               ref sumUy,
+                                                               ref sumUz,
+                                                               ref rx,
+                                                               ref ry,
+                                                               ref rz,
+                                                               ref sumRx,
+                                                               ref sumRy,
+                                                               ref sumRz);
 
         if (ret != 0) Engine.Reflection.Compute.RecordError("Could not extract Modal information.");
 
