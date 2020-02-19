@@ -80,8 +80,9 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
-private List<NodeDisplacement> ReadNodeDisplacement(List<string> nodeIds)
+        private List<NodeDisplacement> ReadNodeDisplacement(List<string> nodeIds)
         {
+
             List<NodeDisplacement> nodeDisplacements = new List<NodeDisplacement>();
 
             int resultCount = 0;
@@ -119,22 +120,22 @@ private List<NodeDisplacement> ReadNodeDisplacement(List<string> nodeIds)
                     for (int j = 0; j < resultCount; j++)
                     {
                         NodeDisplacement nd = new NodeDisplacement()
-                            {
-                                ResultCase = loadcaseNames[j],
-                                ObjectId = nodeIds[i],
-                                UX = ux[j],
-                                UY = uy[j],
-                                UZ = uz[j],
-                                RX = rx[j],
-                                RY = ry[j],
-                                RZ = rz[j],
-                                TimeStep = stepNum[j]
-                            };
+                        {
+                            ResultCase = loadcaseNames[j],
+                            ObjectId = nodeIds[i],
+                            UX = ux[j],
+                            UY = uy[j],
+                            UZ = uz[j],
+                            RX = rx[j],
+                            RY = ry[j],
+                            RZ = rz[j],
+                            TimeStep = stepNum[j]
+                        };
                         nodeDisplacements.Add(nd);
                     }
-                    return nodeDisplacements;
                 }
-            } 
+            }
+            return nodeDisplacements;
         }
 
         /***************************************************/
