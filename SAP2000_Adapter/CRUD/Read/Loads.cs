@@ -2,6 +2,7 @@
 using BH.Engine.Structure;
 using BH.oM.Base;
 using BH.oM.Geometry;
+using BH.oM.Dimensional;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using SAP2000v1;

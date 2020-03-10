@@ -2,6 +2,7 @@
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.SurfaceProperties;
 using BH.Engine.Geometry;
+using BH.oM.Dimensional;
 using System.Collections.Generic;
 using System.Linq;
 

@@ -1,5 +1,6 @@
 ﻿using BH.oM.Base;
 using BH.oM.Common.Materials;
+using BH.oM.Dimensional;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using BH.oM.Structure.Constraints;

@@ -79,8 +79,7 @@
       <HintPath>..\..\BHoM_Engine\Build\Library_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Physical_Engine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Physical_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Physical_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
