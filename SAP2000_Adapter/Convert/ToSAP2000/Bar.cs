@@ -27,7 +27,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.Engine.SAP2000
+namespace BH.Adapter.SAP2000
 {
     public static partial class Convert
     {   
@@ -35,22 +35,13 @@ namespace BH.Engine.SAP2000
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Vector BarLocalAxisToBHoM(this Vector axisCSI)
+        public static Vector BarLocalAxisToCSI(this Vector axisBHoM)
         {
-            return Geometry.Modify.Transform(axisCSI, barLocalAxisToBHoM);
+            return Engine.Geometry.Modify.Transform(axisBHoM, barLocalAxisToCSI);
         }
 
         /***************************************************/
 
-        public static TransformMatrix barLocalAxisToBHoM = new TransformMatrix()
-        {
-            Matrix = new double[4, 4]
-            {
-                { 1,  0,  0, 0 },
-                { 0,  0, -1, 0 },
-                { 0,  1,  0, 0 },
-                { 0,  0,  0, 1 }
-            }
-        };
+        public static TransformMatrix barLocalAxisToCSI = Engine.Geometry.Modify.Transpose(barLocalAxisToBHoM);
     }
 }

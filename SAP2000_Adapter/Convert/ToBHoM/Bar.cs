@@ -20,57 +20,38 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Structure.Elements;
+using BH.oM.Geometry;
+using BH.Engine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BH.Adapter.SAP2000
 {
-    public partial class SAP2000Adapter
-    {
+    public static partial class Convert
+    {   
         /***************************************************/
-        /**** Private Methods                           ****/
+        /**** Public Methods                            ****/
         /***************************************************/
 
-        private List<Node> ReadNodes(List<string> ids = null)
+        public static Vector BarLocalAxisToBHoM(this Vector axisCSI)
         {
-            List<Node> nodeList = new List<Node>();
-
-            int nameCount = 0;
-            string[] nameArr = { };
-
-            if (ids == null)
-            {
-                if (m_model.PointObj.GetNameList(ref nameCount, ref nameArr) == 0)
-                {
-                    ids = nameArr.ToList();
-                }
-            }
-
-            foreach (string id in ids)
-            {
-                Node bhNode = new Node();
-                double x, y, z;
-                x = y = z = 0;
-                bool[] restraint = new bool[6];
-                double[] spring = new double[6];
-
-                m_model.PointObj.GetCoordCartesian(id, ref x, ref y, ref z);
-                bhNode.Position = Engine.Geometry.Create.Point(x, y, z);
-                bhNode.CustomData[AdapterIdName] = id;
-
-                m_model.PointObj.GetRestraint(id, ref restraint);
-                m_model.PointObj.SetSpring(id, ref spring);
-                bhNode.Support = Convert.GetConstraint6DOF(restraint, spring);
-
-
-                nodeList.Add(bhNode);
-            }
-
-
-            return nodeList;
+            return Engine.Geometry.Modify.Transform(axisCSI, barLocalAxisToBHoM);
         }
 
         /***************************************************/
+
+        public static TransformMatrix barLocalAxisToBHoM = new TransformMatrix()
+        {
+            Matrix = new double[4, 4]
+            {
+                { 1,  0,  0, 0 },
+                { 0,  0, -1, 0 },
+                { 0,  1,  0, 0 },
+                { 0,  0,  0, 1 }
+            }
+        };
     }
 }

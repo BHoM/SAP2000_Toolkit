@@ -22,7 +22,7 @@
 
 using BH.oM.Structure.Constraints;
 
-namespace BH.Engine.SAP2000
+namespace BH.Adapter.SAP2000
 {
     public static partial class Convert
     {   

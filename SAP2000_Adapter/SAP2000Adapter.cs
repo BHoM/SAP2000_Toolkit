@@ -48,7 +48,7 @@ namespace BH.Adapter.SAP2000
         {
 
             //Initialization
-            AdapterIdName = Engine.SAP2000.Convert.AdapterIdName;
+            AdapterIdName = Adapter.SAP2000.Convert.AdapterIdName;
             Modules.Structure.ModuleLoader.LoadModules(this);
             SetupComparers();
             SetupDependencies();   

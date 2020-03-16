@@ -29,7 +29,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BH.Engine.SAP2000
+namespace BH.Adapter.SAP2000
 {
     public static partial class Convert
     {
