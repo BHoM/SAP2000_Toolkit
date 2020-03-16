@@ -135,7 +135,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterIdName.cs" />
-    <Compile Include="Modify\RigidLink.cs" />
+    <Compile Include="Modify\SplitRigidLink.cs" />
+    <Compile Include="Modify\JoinRigidLink.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -44,7 +44,7 @@ namespace BH.Adapter.SAP2000
         /**** Constructors                              ****/
         /***************************************************/
 
-        public SAP2000Adapter(string filePath = "", bool Active = false)
+        public SAP2000Adapter(string filePath = "", bool active = false)
         {
 
             //Initialization
@@ -53,7 +53,7 @@ namespace BH.Adapter.SAP2000
             SetupComparers();
             SetupDependencies();   
 
-            if (Active)
+            if (active)
             {
                 string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 21\SAP2000.exe";
                 cHelper helper = new Helper();
@@ -97,7 +97,6 @@ namespace BH.Adapter.SAP2000
 
         private cOAPI m_app;
         private cSapModel m_model;
-        private ActionConfig actionConfig;
 
         /***************************************************/
     }
