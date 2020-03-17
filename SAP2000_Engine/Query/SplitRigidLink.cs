@@ -28,48 +28,32 @@ using BH.oM.Structure.Constraints;
 
 namespace BH.Engine.SAP2000
 {
-    public static partial class Modify
+    public static partial class Query
     {
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static List<RigidLink> JoinRigidLink(List<RigidLink> linkList)
+        public static List<RigidLink> SplitRigidLink(RigidLink link)
         {
-            List<RigidLink> joinedList = null;
+            List<RigidLink> links = null;
 
-            Dictionary<string, Node> masterDict = null;
-            Dictionary<string, List<Node>> slaveDict = null;
-
-            //Use first constraint for all
-            LinkConstraint constraint = linkList.First().Constraint;
-
-            foreach (RigidLink link in linkList)
+            if (link.SlaveNodes.Count() <= 1)
             {
-                string[] nameParts = link.Name.Split(new[] { ":::" }, StringSplitOptions.None);
-                if (nameParts.Count() == 1)
-                    joinedList.Add(link);
-                else
+                links.Add(link);
+            }
+            else
+            {
+                int i = 0;
+                foreach (Node slave in link.SlaveNodes)
                 {
-                    string name = nameParts[0];
-                    if (masterDict.ContainsKey(name))
-                    {
-                        slaveDict[name].Add(link.SlaveNodes[0]);
-                    }
-                    else
-                    {
-                        masterDict.Add(name, link.MasterNode);
-                        slaveDict.Add(name, new List<Node> { link.SlaveNodes[0] });
-                    }
+                    RigidLink newLink = BH.Engine.Structure.Create.RigidLink(link.MasterNode, new List<Node> { slave }, link.Constraint);
+                    newLink.Name = link.Name + ":::" + i;
+                    i++;
                 }
             }
 
-            foreach (KeyValuePair<string, Node> kvp in masterDict)
-            {
-                RigidLink newLink = Structure.Create.RigidLink(kvp.Value, slaveDict[kvp.Key], constraint, kvp.Key);
-            }           
-
-            return joinedList;
+            return links;
         }
 
         /***************************************************/

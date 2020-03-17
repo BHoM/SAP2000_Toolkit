@@ -33,7 +33,7 @@ namespace BH.Adapter.SAP2000
 
         private bool CreateObject(RigidLink bhLink)
         {
-            List < RigidLink> bhomLinks = BH.Engine.SAP2000.Modify.SplitRigidLink(bhLink);
+            List < RigidLink> bhomLinks = BH.Engine.SAP2000.Query.SplitRigidLink(bhLink);
             List<string> linkIds = null;
 
             foreach (RigidLink link in bhomLinks)
