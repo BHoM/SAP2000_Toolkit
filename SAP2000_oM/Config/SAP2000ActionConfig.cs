@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -36,7 +36,7 @@ namespace BH.oM.Adapters.SAP2000
         /***************************************************/
 
         [Description("Sets whether the loads being pushed should overwrite existing loads on the same object within the same loadcase")]
-        public bool ReplaceLoads { get; set; } = false;
+        public virtual bool ReplaceLoads { get; set; } = false;
 
         /***************************************************/
     }
