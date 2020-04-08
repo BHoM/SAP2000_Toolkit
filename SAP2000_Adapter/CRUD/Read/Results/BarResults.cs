@@ -34,6 +34,7 @@ using BH.oM.Structure.Loads;
 using BH.oM.Structure.Requests;
 using BH.oM.Adapters.SAP2000;
 using BH.oM.Geometry;
+using BH.oM.Dimensional;
 using BH.Engine.Geometry;
 /*using SAP2000v19;*/
 using BH.oM.Adapter;
