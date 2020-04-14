@@ -46,7 +46,7 @@ namespace BH.Adapter.SAP2000
                 if (! bhNode.Orientation.Equals(BH.oM.Geometry.Basis.XY))
                 {
                     int myVectOpt = 3; //specify orientation by vectors
-                    string globalCSys = "Global"; //specify point orientation relative to the global coordinate system
+                    string globalCSys = "GLOBAL"; //specify point orientation relative to the global coordinate system
                     int[] myDir = { 1, 2 }; //not used for VecOpt = 3
                     string[] noPts = { "None", "None" }; //not used for VecOpt = 3
                     int myPlane2 = 12; //specify point orientation by local 1(X) and 2(Y) vectors
