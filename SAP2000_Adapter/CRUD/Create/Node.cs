@@ -43,6 +43,23 @@ namespace BH.Adapter.SAP2000
                     Engine.Reflection.Compute.RecordNote($"Node {bhNode.Name} was assigned {AdapterIdName} of {name}");
                 bhNode.CustomData[AdapterIdName] = name;
 
+                if (! bhNode.Orientation.Equals(BH.oM.Geometry.Basis.XY))
+                {
+                    int myVectOpt = 3; //specify orientation by vectors
+                    string globalCSys = "Global"; //specify point orientation relative to the global coordinate system
+                    int[] myDir = { 1, 2 }; //not used for VecOpt = 3
+                    string[] noPts = { "None", "None" }; //not used for VecOpt = 3
+                    int myPlane2 = 12; //specify point orientation by local 1(X) and 2(Y) vectors
+                    double[] myAxVect = bhNode.Orientation.X.ToDoubleArray();
+                    double[] myPlVect = bhNode.Orientation.Y.ToDoubleArray();
+
+                    if (m_model.PointObj.SetLocalAxesAdvanced(name, true, 
+                            myVectOpt, globalCSys, ref myDir, ref noPts, ref myAxVect, myPlane2, 
+                            myVectOpt, globalCSys, ref myDir, ref noPts, ref myPlVect) != 0)
+                        CreatePropertyWarning("Node Local Axes", "Node", name);
+                }
+
+
                 if (bhNode.Support != null)
                 {
                     bool[] restraint = new bool[6];
