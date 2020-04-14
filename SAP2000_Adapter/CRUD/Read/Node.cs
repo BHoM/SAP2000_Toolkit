@@ -170,31 +170,6 @@ namespace BH.Adapter.SAP2000
                                 basis = Basis.XY;
                                 break;
                         }
-                        //switch (myPlane2)
-                        //{
-                        //    case 12:
-                        //        basis = new Basis(vec1, vec2, vec1.CrossProduct(vec2));
-                        //        break;
-                        //    case 13:
-                        //        basis = new Basis(vec1, vec1.CrossProduct(-vec2), vec2);
-                        //        break;
-                        //    case 21:
-                        //        basis = new Basis(vec2, vec1, vec2.CrossProduct(vec1));
-                        //        break;
-                        //    case 23:
-                        //        basis = new Basis(vec1.CrossProduct(vec2), vec1, vec2);
-                        //        break;
-                        //    case 31:
-                        //        basis = new Basis(vec2, vec2.CrossProduct(-vec1), vec1);
-                        //        break;
-                        //    case 32:
-                        //        basis = new Basis(vec2.CrossProduct(vec1), vec2, vec1);
-                        //        break;
-                        //    default:
-                        //        CreatePropertyWarning("Orientation", "Node", id);
-                        //        basis = Basis.XY;
-                        //        break;
-                        //}
                     }
                     catch
                     {
