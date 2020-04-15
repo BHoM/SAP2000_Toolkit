@@ -162,6 +162,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Convert\AdapterIdName.cs" />
+    <Compile Include="Convert\ToBHoM\Bar.cs" />
+    <Compile Include="Convert\ToBHoM\Constraint.cs" />
+    <Compile Include="Convert\ToBHoM\Loads.cs" />
+    <Compile Include="Convert\ToSAP2000\Bar.cs" />
+    <Compile Include="Convert\ToSAP2000\Constraint.cs" />
+    <Compile Include="Convert\ToSAP2000\Loads.cs" />
+    <Compile Include="Convert\ToSAP2000\Material.cs" />
     <Compile Include="CRUD\Create\Errors.cs" />
     <Compile Include="CRUD\Create\Node.cs" />
     <Compile Include="CRUD\Create\Section.cs" />

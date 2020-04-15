@@ -1,4 +1,26 @@
-﻿using SAP2000v1;
+﻿/*
+ * This file is part of the Buildings and Habitats object Model (BHoM)
+ * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
+ *
+ * Each contributor holds copyright over their respective contributions.
+ * The project versioning (Git) records all such contribution source information.
+ *                                           
+ *                                                                              
+ * The BHoM is free software: you can redistribute it and/or modify         
+ * it under the terms of the GNU Lesser General Public License as published by  
+ * the Free Software Foundation, either version 3.0 of the License, or          
+ * (at your option) any later version.                                          
+ *                                                                              
+ * The BHoM is distributed in the hope that it will be useful,              
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of               
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                 
+ * GNU Lesser General Public License for more details.                          
+ *                                                                            
+ * You should have received a copy of the GNU Lesser General Public License     
+ * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
+ */
+
+using SAP2000v1;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,16 +44,16 @@ namespace BH.Adapter.SAP2000
         /**** Constructors                              ****/
         /***************************************************/
 
-        public SAP2000Adapter(string filePath = "", bool Active = false)
+        public SAP2000Adapter(string filePath = "", bool active = false)
         {
 
             //Initialization
-            AdapterIdName = Engine.SAP2000.Convert.AdapterIdName;
+            AdapterIdName = Adapter.SAP2000.Convert.AdapterIdName;
             Modules.Structure.ModuleLoader.LoadModules(this);
             SetupComparers();
             SetupDependencies();   
 
-            if (Active)
+            if (active)
             {
                 string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 21\SAP2000.exe";
                 cHelper helper = new Helper();
@@ -75,7 +97,6 @@ namespace BH.Adapter.SAP2000
 
         private cOAPI m_app;
         private cSapModel m_model;
-        private ActionConfig actionConfig;
 
         /***************************************************/
     }

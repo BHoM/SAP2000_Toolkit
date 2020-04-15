@@ -20,44 +20,40 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Structure;
 using BH.oM.Structure.Elements;
-using BH.Engine.SAP2000;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using BH.oM.Structure.Constraints;
 
-namespace BH.Adapter.SAP2000
+namespace BH.Engine.SAP2000
 {
-    public partial class SAP2000Adapter
+    public static partial class Query
     {
         /***************************************************/
-        /**** Private Methods                            ****/
+        /**** Public Methods                            ****/
         /***************************************************/
 
-        private bool CreateObject(Node bhNode)
+        public static List<RigidLink> SplitRigidLink(RigidLink link)
         {
+            List<RigidLink> links = null;
 
-            string name = "";
-
-            if (m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name, bhNode.Name.ToString()) == 0)
+            if (link.SlaveNodes.Count() <= 1)
             {
-                if (name != bhNode.Name)
-                    Engine.Reflection.Compute.RecordNote($"Node {bhNode.Name} was assigned {AdapterIdName} of {name}");
-                bhNode.CustomData[AdapterIdName] = name;
-
-                if (bhNode.Support != null)
+                links.Add(link);
+            }
+            else
+            {
+                int i = 0;
+                foreach (Node slave in link.SlaveNodes)
                 {
-                    bool[] restraint = new bool[6];
-                    double[] spring = new double[6];
-
-                    bhNode.GetSAPConstraint(ref restraint, ref spring);
-
-                    if (m_model.PointObj.SetRestraint(name, ref restraint) != 0)
-                        CreatePropertyWarning("Node Restraint", "Node", name);
-                    if (m_model.PointObj.SetSpring(name, ref spring) != 0)
-                        CreatePropertyWarning("Node Spring", "Node", name);
+                    RigidLink newLink = BH.Engine.Structure.Create.RigidLink(link.MasterNode, new List<Node> { slave }, link.Constraint);
+                    newLink.Name = link.Name + ":::" + i;
+                    i++;
                 }
             }
 
-            return true;
+            return links;
         }
 
         /***************************************************/

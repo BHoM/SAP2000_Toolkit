@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,45 +20,23 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.Structure;
-using BH.oM.Structure.Elements;
-using BH.Engine.SAP2000;
+using BH.oM.Adapter;
+using BH.oM.Base;
+using System.ComponentModel;
 
-namespace BH.Adapter.SAP2000
+namespace BH.oM.Adapters.SAP2000
 {
-    public partial class SAP2000Adapter
+    [Description("This Config can be specified in the `ActionConfig` input of any Adapter Action (e.g. Push).")]
+    // Note: this will get passed within any CRUD method (see their signature). 
+    // In order to access its properties, you will need to cast it to `SAP2000ActionConfig`.
+    public class SAP2000ActionConfig : ActionConfig
     {
         /***************************************************/
-        /**** Private Methods                            ****/
+        /**** Public Properties                         ****/
         /***************************************************/
 
-        private bool CreateObject(Node bhNode)
-        {
-
-            string name = "";
-
-            if (m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name, bhNode.Name.ToString()) == 0)
-            {
-                if (name != bhNode.Name)
-                    Engine.Reflection.Compute.RecordNote($"Node {bhNode.Name} was assigned {AdapterIdName} of {name}");
-                bhNode.CustomData[AdapterIdName] = name;
-
-                if (bhNode.Support != null)
-                {
-                    bool[] restraint = new bool[6];
-                    double[] spring = new double[6];
-
-                    bhNode.GetSAPConstraint(ref restraint, ref spring);
-
-                    if (m_model.PointObj.SetRestraint(name, ref restraint) != 0)
-                        CreatePropertyWarning("Node Restraint", "Node", name);
-                    if (m_model.PointObj.SetSpring(name, ref spring) != 0)
-                        CreatePropertyWarning("Node Spring", "Node", name);
-                }
-            }
-
-            return true;
-        }
+        [Description("Sets whether the loads being pushed should overwrite existing loads on the same object within the same loadcase")]
+        public virtual bool ReplaceLoads { get; set; } = false;
 
         /***************************************************/
     }
