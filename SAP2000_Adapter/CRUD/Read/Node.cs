@@ -54,29 +54,34 @@ namespace BH.Adapter.SAP2000
             foreach (string id in ids)
             {
                 Node bhNode = new Node();
-                double x = 0, y = 0, z = 0;
 
-                if (m_model.PointObj.GetCoordCartesian(id, ref x, ref y, ref z) == 0)
-                {
-                    bhNode.CustomData[AdapterIdName] = id;
+                bhNode.CustomData[AdapterIdName] = id;
 
-                    bhNode.Position = Create.Point( x, y, z );
+                bhNode.Position = ReadNodeCoordinates(id);
 
-                    bhNode.Orientation = ReadNodeLocalAxes(id);
+                bhNode.Orientation = ReadNodeLocalAxes(id);
 
-                    bhNode.Support = ReadNodeSupport(id);
+                bhNode.Support = ReadNodeSupport(id);
 
-                    nodeList.Add(bhNode);
-                }
-                else
-                    ReadElementError("Node", id);
+                nodeList.Add(bhNode);                
             }
 
             return nodeList;
         }
 
         /***************************************************/
+        
+        private Point ReadNodeCoordinates(string id)
+        {
+            double x = 0, y = 0, z = 0;
 
+            if (m_model.PointObj.GetCoordCartesian(id, ref x, ref y, ref z) == 0)
+                return Create.Point(x, y, z);
+
+            return null;
+        }
+
+        /***************************************************/
         private Basis ReadNodeLocalAxes(string id)
         {
             Basis basis = Basis.XY;
@@ -106,83 +111,77 @@ namespace BH.Adapter.SAP2000
                     ref myAxVectOpt, ref myAxCSys, ref myAxDir, ref myAxPt, ref myAxVect, ref myPlane2,
                     ref myPlVectOpt, ref myPlCSys, ref myPlDir, ref myPlPt, ref myPlVect);
 
-                if (myAxCSys == "GLOBAL" && myPlCSys == "GLOBAL")
+                if (myAxCSys != "GLOBAL" || myPlCSys != "GLOBAL")
+                    Engine.Reflection.Compute.RecordWarning("No support for reading node orientations not in Global Coordinates. Check results carefully");
+
+                Vector vec1 = null;
+                Vector vec2 = null;
+                Vector vec3 = null;
+
+                List<Vector> axes = new List<Vector>() { Vector.XAxis, Vector.YAxis, Vector.ZAxis };
+
+                switch (myAxVectOpt)
                 {
-                    Vector vec1 = null;
-                    Vector vec2 = null;
-                    Vector vec3 = null;
-
-                    List<Vector> axes = new List<Vector>() { Vector.XAxis, Vector.YAxis, Vector.ZAxis };
-
-                    switch (myAxVectOpt)
-                    {
-                        case 1: // Coordinate Direction
-                            vec1 = System.Math.Sign(myAxDir[0]) * axes[(System.Math.Abs(myAxDir[0]) - 1)];
-                            break;
-                        case 2: // Two Joints
-                            List<Node> pts1 = ReadNodes(myAxPt.ToList());
-                            vec1 = Create.Line(pts1[0].Position, pts1[1].Position).Direction();
-                            break;
-                        case 3: // User Vector
-                            vec1 = Create.Vector(myAxVect[0], myAxVect[1], myAxVect[2]);
-                            break;
-                    }
-
-                    switch (myPlVectOpt)
-                    {
-                        case 1: // Coordinate Direction
-                            vec2 = System.Math.Sign(myPlDir[0]) * axes[(System.Math.Abs(myPlDir[0]) - 1)];
-                            vec3 = System.Math.Sign(myPlDir[1]) * axes[(System.Math.Abs(myPlDir[1]) - 1)];
-                            break;
-                        case 2: // Two Joints
-                            List<Node> pts2 = ReadNodes(myPlPt.ToList());
-                            vec2 = Create.Line(pts2[0].Position, pts2[1].Position).Direction();
-                            break;
-                        case 3: // User Vector
-                            vec2 = Create.Vector(myPlVect[0], myPlVect[1], myPlVect[2]);
-                            break;
-                    }
-
-                    try
-                    {
-                        switch (myPlane2)
-                        {
-                            case 12:
-                                basis = Create.Basis(vec1, vec2);
-                                break;
-                            case 13:
-                                basis = Create.Basis(vec1, vec1.CrossProduct(-vec2));
-                                break;
-                            case 21:
-                                basis = Create.Basis(vec2, vec1);
-                                break;
-                            case 23:
-                                basis = Create.Basis(vec1.CrossProduct(vec2), vec1);
-                                break;
-                            case 31:
-                                basis = Create.Basis(vec2, vec2.CrossProduct(-vec1));
-                                break;
-                            case 32:
-                                basis = Create.Basis(vec2.CrossProduct(vec1), vec2);
-                                break;
-                            default:
-                                CreatePropertyWarning("Orientation", "Node", id);
-                                basis = Basis.XY;
-                                break;
-                        }
-                    }
-                    catch
-                    {
-                        Engine.Reflection.Compute.RecordWarning($"Could not create basis for node {id}. Returning XY basis. Vectors were {vec1.ToString()}, {vec2.ToString()}, {vec3.ToString()}. Plane was {myPlane2}");
-                        basis = Basis.XY;
-                    }
-
-                    if (basis.X.CrossProduct(basis.Y) != basis.Z)
-                        Engine.Reflection.Compute.RecordWarning($"Local axis vectors for node {id} are not orthogonal. Check results carefully.");
+                    case 1: // Coordinate Direction
+                        vec1 = System.Math.Sign(myAxDir[0]) * axes[(System.Math.Abs(myAxDir[0]) - 1)];
+                        break;
+                    case 2: // Two Joints
+                        IEnumerable<string> axPtIds = myAxPt.AsEnumerable().Select(x => (x == "None" ? id : x));
+                        List<Point> pts1 = axPtIds.Select( x => ReadNodeCoordinates(x)).ToList();
+                        vec1 = Create.Line(pts1[0], pts1[1]).Direction();
+                        break;
+                    case 3: // User Vector
+                        vec1 = Create.Vector(myAxVect[0], myAxVect[1], myAxVect[2]);
+                        break;
                 }
-                else
+
+                switch (myPlVectOpt)
                 {
-                    Engine.Reflection.Compute.RecordWarning("No support for reading node orientations not in Global Coordinates. Returning a node oriented to Global XY");
+                    case 1: // Coordinate Direction
+                        vec2 = System.Math.Sign(myPlDir[0]) * axes[(System.Math.Abs(myPlDir[0]) - 1)];
+                        vec3 = System.Math.Sign(myPlDir[1]) * axes[(System.Math.Abs(myPlDir[1]) - 1)];
+                        break;
+                    case 2: // Two Joints
+                        IEnumerable<string> plPtIds = myPlPt.AsEnumerable().Select(x => (x == "None" ? id : x));
+                        List<Point> pts2 = plPtIds.Select(x => ReadNodeCoordinates(x)).ToList();
+                        vec2 = Create.Line(pts2[0], pts2[1]).Direction();
+                        break;
+                    case 3: // User Vector
+                        vec2 = Create.Vector(myPlVect[0], myPlVect[1], myPlVect[2]);
+                        break;
+                }
+
+                try
+                {
+                    switch (myPlane2)
+                    {
+                        case 12:
+                            basis = Create.Basis(vec1, vec2);
+                            break;
+                        case 13:
+                            basis = Create.Basis(vec1, vec1.CrossProduct(-vec2));
+                            break;
+                        case 21:
+                            basis = Create.Basis(vec2, vec1);
+                            break;
+                        case 23:
+                            basis = Create.Basis(vec1.CrossProduct(vec2), vec1);
+                            break;
+                        case 31:
+                            basis = Create.Basis(vec2, vec2.CrossProduct(-vec1));
+                            break;
+                        case 32:
+                            basis = Create.Basis(vec2.CrossProduct(vec1), vec2);
+                            break;
+                        default:
+                            CreatePropertyWarning("Orientation", "Node", id);
+                            basis = Basis.XY;
+                            break;
+                    }
+                }
+                catch
+                {
+                    Engine.Reflection.Compute.RecordWarning($"Could not create basis for node {id}. Returning XY basis. Vectors were {vec1.ToString()}, {vec2.ToString()}, {vec3.ToString()}. Plane was {myPlane2}");
                     basis = Basis.XY;
                 }
             }
@@ -201,6 +200,7 @@ namespace BH.Adapter.SAP2000
             
         }
 
+        /***************************************************/
         private Constraint6DOF ReadNodeSupport(string id)
         {
             bool[] restraint = new bool[6];
@@ -211,9 +211,13 @@ namespace BH.Adapter.SAP2000
             return Convert.GetConstraint6DOF(restraint, spring);
         }
 
+        /***************************************************/
+
         private double ToRadians(double a)
         {
             return a * System.Math.PI / 180;
         }
+
+        /***************************************************/
     }
 }

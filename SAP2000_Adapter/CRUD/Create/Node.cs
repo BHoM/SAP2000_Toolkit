@@ -64,7 +64,7 @@ namespace BH.Adapter.SAP2000
                 {
                     bool[] restraint = new bool[6];
                     double[] spring = new double[6];
-
+                    
                     bhNode.GetSAPConstraint(ref restraint, ref spring);
 
                     if (m_model.PointObj.SetRestraint(name, ref restraint) != 0)
