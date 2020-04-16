@@ -22,12 +22,6 @@
 
 using SAP2000v1;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Adapter;
-using BH.Engine.Adapter;
 using BH.oM.Adapters.SAP2000;
 
 namespace BH.Adapter.SAP2000

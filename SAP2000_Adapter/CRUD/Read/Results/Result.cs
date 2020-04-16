@@ -2,12 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BH.oM.Structure.Results;
 using BH.oM.Common;
-using BH.oM.Structure.Elements;
-using BH.oM.Adapters.SAP2000;
 using BH.oM.Structure.Loads;
 using BH.oM.Data.Requests;
 using BH.oM.Adapter;

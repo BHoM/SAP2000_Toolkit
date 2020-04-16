@@ -47,10 +47,6 @@
       <HintPath>..\..\BHoM_Engine\Build\BHoM_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Common_Engine">
-      <HintPath>..\..\BHoM_Engine\Build\Common_Engine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Common_oM">
       <HintPath>..\..\BHoM\Build\Common_oM.dll</HintPath>
       <Private>False</Private>
@@ -140,7 +136,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Create\" />
-    <Folder Include="Query\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
