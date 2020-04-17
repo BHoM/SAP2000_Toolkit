@@ -51,7 +51,7 @@ namespace BH.Adapter.SAP2000
                 case BarResultType.BarForce:
                     return ReadBarForce(barIds, request.Divisions);
                 case BarResultType.BarDisplacement:
-                    return ReadBarDisplacement(barIds, request.Divisions);
+                    return ReadBarDisplacements(barIds, request.Divisions);
                 case BarResultType.BarDeformation:
                     Engine.Reflection.Compute.RecordError("SAP2000 cannot export localised BarDeformations." +
                     "To get the full displacement of the bars in global coordinates, try pulling BarDisplacements");
