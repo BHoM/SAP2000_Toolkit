@@ -121,6 +121,38 @@ namespace BH.Adapter.SAP2000
             return true;
         }
 
+
+        /***************************************************/
+
+        private bool CreateLoad(PointDisplacement bhLoad)
+        {
+            List<Node> nodes = bhLoad.Objects.Elements.ToList();
+            string loadPat = bhLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            string cSys = bhLoad.Axis.ToCSI();
+            double[] val =
+            {
+                bhLoad.Force.X,
+                bhLoad.Force.Y,
+                bhLoad.Force.Z,
+                bhLoad.Moment.X,
+                bhLoad.Moment.Y,
+                bhLoad.Moment.Z,
+            };
+
+            bool replace = true;
+
+            foreach (Node bhNode in nodes)
+            {
+                if (m_model.PointObj.SetLoadForce(bhNode.CustomData[AdapterIdName].ToString(), loadPat, ref val, replace, cSys, eItemType.Objects) != 0)
+                {
+                    CreateElementError("Point Load", bhLoad.Name);
+                }
+            }
+
+            return true;
+        }
+
+
         /***************************************************/
 
         private bool CreateLoad(BarUniformlyDistributedLoad bhLoad)
