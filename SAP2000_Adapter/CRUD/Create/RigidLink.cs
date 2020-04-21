@@ -47,7 +47,17 @@ namespace BH.Adapter.SAP2000
                 {
                     CreateElementError("RigidLink", name);
                 }
-                
+
+                foreach (string gName in bhLink.Tags)
+                {
+                    string groupName = gName.ToString();
+                    if (m_model.LinkObj.SetGroupAssign(name, groupName) != 0)
+                    {
+                        m_model.GroupDef.SetGroup(groupName);
+                        m_model.LinkObj.SetGroupAssign(name, groupName);
+                    }
+                }
+
                 linkIds.Add(name);
             }
 

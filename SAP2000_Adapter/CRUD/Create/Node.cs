@@ -72,6 +72,16 @@ namespace BH.Adapter.SAP2000
                     if (m_model.PointObj.SetSpring(name, ref spring) != 0)
                         CreatePropertyWarning("Node Spring", "Node", name);
                 }
+
+                foreach (string gName in bhNode.Tags)
+                {
+                    string groupName = gName.ToString();
+                    if (m_model.PointObj.SetGroupAssign(name, groupName) != 0)
+                    {
+                        m_model.GroupDef.SetGroup(groupName);
+                        m_model.PointObj.SetGroupAssign(name, groupName);
+                    }
+                }
             }
 
             return true;
