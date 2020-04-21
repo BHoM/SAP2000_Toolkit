@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BH.Engine.Structure;
 
 namespace BH.Adapter.SAP2000
 {
@@ -40,24 +41,25 @@ namespace BH.Adapter.SAP2000
         private bool CreateObject(IMaterialFragment material)
         {
             eMatType matType = material.GetMaterialType();
+            string bhName = material.DescriptionOrName();
             int color = 0;
             string guid = "";
             string notes = "";
             string name = "";
 
-            if (m_model.PropMaterial.AddMaterial(ref name, matType, "United States", material.Name, material.Name, guid) == 0) //try to get the material from a dataset
+            if (m_model.PropMaterial.AddMaterial(ref name, matType, "United States", bhName, bhName, guid) == 0) //try to get the material from a dataset
             {
                 material.CustomData[AdapterIdName] = name;
             }
-            else if (m_model.PropMaterial.SetMaterial(material.Name, matType, color, notes, guid) == 0) //create the material
+            else if (m_model.PropMaterial.SetMaterial(bhName, matType, color, notes, guid) == 0) //create the material
             {
-                material.CustomData[AdapterIdName] = material.Name;
+                material.CustomData[AdapterIdName] = bhName;
 
                 if (material is IIsotropic)
                 {
                     IIsotropic isotropic = material as IIsotropic;
-                    if (m_model.PropMaterial.SetMPIsotropic(material.Name, isotropic.YoungsModulus, isotropic.PoissonsRatio, isotropic.ThermalExpansionCoeff) != 0)
-                        CreatePropertyWarning("Isotropy", "Material", material.Name);
+                    if (m_model.PropMaterial.SetMPIsotropic(bhName, isotropic.YoungsModulus, isotropic.PoissonsRatio, isotropic.ThermalExpansionCoeff) != 0)
+                        CreatePropertyWarning("Isotropy", "Material", bhName);
 
                 }
                 else if (material is IOrthotropic)
@@ -67,16 +69,16 @@ namespace BH.Adapter.SAP2000
                     double[] v = orthoTropic.PoissonsRatio.ToDoubleArray();
                     double[] a = orthoTropic.ThermalExpansionCoeff.ToDoubleArray();
                     double[] g = orthoTropic.ShearModulus.ToDoubleArray();
-                    if (m_model.PropMaterial.SetMPOrthotropic(material.Name, ref e, ref v, ref a, ref g) != 0)
-                        CreatePropertyWarning("Orthotropy", "Material", material.Name);
+                    if (m_model.PropMaterial.SetMPOrthotropic(bhName, ref e, ref v, ref a, ref g) != 0)
+                        CreatePropertyWarning("Orthotropy", "Material", bhName);
                 }
 
-                if (m_model.PropMaterial.SetWeightAndMass(material.Name, 2, material.Density) != 0)
-                    CreatePropertyWarning("Density", "Material", material.Name);
+                if (m_model.PropMaterial.SetWeightAndMass(bhName, 2, material.Density) != 0)
+                    CreatePropertyWarning("Density", "Material", bhName);
             }
             else
             {
-                CreateElementError("Material", material.Name);
+                CreateElementError("Material", bhName);
             }
 
             return true;
