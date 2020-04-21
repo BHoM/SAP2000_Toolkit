@@ -100,7 +100,14 @@ namespace BH.Adapter.SAP2000
                         Engine.Reflection.Compute.RecordWarning("Could not get local axes for bar " + id + ". Orientation angle is 0 by default");
                     }
 
-                    
+                    int numGroups = 0;
+                    string[] groupNames = new string[0];
+                    if (m_model.FrameObj.GetGroupAssign(id, ref numGroups, ref groupNames) == 0)
+                    {
+                        foreach (string grpName in groupNames)
+                            bhomBar.Tags.Add(grpName);
+                    }
+
                     bhomBars.Add(bhomBar);
                 }
                 catch

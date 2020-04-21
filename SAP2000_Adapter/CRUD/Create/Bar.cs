@@ -75,11 +75,21 @@ namespace BH.Adapter.SAP2000
                     }
                 }
 
-                else if (bhBar.Offset != null)
+                if (bhBar.Offset != null)
                 {
                     if (m_model.FrameObj.SetEndLengthOffset(name, false, -1 * (bhBar.Offset.Start.X), bhBar.Offset.End.X, 1) != 0)
                     {
                         CreatePropertyWarning("Length offset", "Bar", name);
+                    }
+                }
+
+                foreach (string gName in bhBar.Tags)
+                {
+                    string groupName = gName.ToString();
+                    if (m_model.FrameObj.SetGroupAssign(name, groupName) != 0)
+                    {
+                        m_model.GroupDef.SetGroup(groupName);
+                        m_model.FrameObj.SetGroupAssign(name, groupName);
                     }
                 }
             }
