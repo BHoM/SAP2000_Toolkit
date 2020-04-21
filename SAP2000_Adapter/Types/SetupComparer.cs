@@ -29,6 +29,7 @@ using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.Loads;
 using System;
 using System.Collections.Generic;
+using BH.Engine.Structure;
 
 namespace BH.Adapter.SAP2000
 {
@@ -39,7 +40,7 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
         
         //Compares nodes by distance (down to 3 decimal places -> mm)
-        //Compares Materials, SectionProprties, LinkConstraints, and Property2D by name
+        //Compares Materials, SectionProperties, LinkConstraints, and Property2D by name
         //Add/remove any type in the dictionary below that you want (or not) a specific comparison method for.
 
         private void SetupComparers()
@@ -47,11 +48,11 @@ namespace BH.Adapter.SAP2000
             AdapterComparers = new Dictionary<Type, object>
             {
                 {typeof(Node), new BH.Engine.Structure.NodeDistanceComparer(3) },   //The 3 in here sets how many decimal places to look at for node merging. 3 decimal places gives mm precision
-                {typeof(ISectionProperty), new BHoMObjectNameOrToStringComparer() },
-                {typeof(IMaterialFragment), new BHoMObjectNameComparer() },
-                {typeof(LinkConstraint), new BHoMObjectNameComparer() },
-                {typeof(ISurfaceProperty), new BHoMObjectNameComparer() },
-                {typeof(ICase), new BHoMObjectNameComparer() },
+                {typeof(ISectionProperty), new NameOrDescriptionComparer() },
+                {typeof(IMaterialFragment), new NameOrDescriptionComparer() },
+                {typeof(LinkConstraint), new NameOrDescriptionComparer() },
+                {typeof(ISurfaceProperty), new NameOrDescriptionComparer() },
+                {typeof(ICase), new BHoMObjectNameComparer() }, 
             };
         }
 

@@ -32,40 +32,40 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
         private bool CreateObject(ISurfaceProperty surfaceProperty)
         {
-            string materialName = surfaceProperty.Material.CustomData[AdapterIdName].ToString();
+            string propName = surfaceProperty.DescriptionOrName();
+            string matName = surfaceProperty.Material.CustomData[AdapterIdName].ToString();
 
             if (surfaceProperty.GetType() == typeof(Waffle))
             {
                 // not implemented!
-                CreatePropertyError("Waffle Not Implemented!", "Panel", surfaceProperty.Name);
+                CreatePropertyError("Waffle Not Implemented!", "Panel", propName);
             }
             else if (surfaceProperty.GetType() == typeof(Ribbed))
             {
                 // not implemented!
-                CreatePropertyError("Ribbed Not Implemented!", "Panel", surfaceProperty.Name);
+                CreatePropertyError("Ribbed Not Implemented!", "Panel", propName);
             }
             else if (surfaceProperty.GetType() == typeof(LoadingPanelProperty))
             {
                 // not implemented!
-                CreatePropertyError("Loading Panel Not Implemented!", "Panel", surfaceProperty.Name);
+                CreatePropertyError("Loading Panel Not Implemented!", "Panel", propName);
             }
             else if (surfaceProperty.GetType() == typeof(ConstantThickness))
             {
                 ConstantThickness constantThickness = (ConstantThickness)surfaceProperty;
                 int shellType = 1;
                 bool includeDrillingDOF = true;
-                string material = constantThickness.Material.CustomData[AdapterIdName].ToString();
-                if (m_model.PropArea.SetShell_1(surfaceProperty.Name, shellType, includeDrillingDOF, material, 0, constantThickness.Thickness, constantThickness.Thickness) != 0)
-                    CreatePropertyError("ConstantThickness", "SurfaceProperty", surfaceProperty.Name);
+                if (m_model.PropArea.SetShell_1(propName, shellType, includeDrillingDOF, matName, 0, constantThickness.Thickness, constantThickness.Thickness) != 0)
+                    CreatePropertyError("ConstantThickness", "SurfaceProperty", propName);
             }
 
-            surfaceProperty.CustomData[AdapterIdName] = surfaceProperty.Name;
+            surfaceProperty.CustomData[AdapterIdName] = propName;
 
             if (surfaceProperty.HasModifiers())
             {
                 double[] modifier = surfaceProperty.Modifiers();//(double[])surfaceProperty.CustomData["Modifiers"];
-                if (m_model.PropArea.SetModifiers(surfaceProperty.Name, ref modifier) != 0)
-                    CreatePropertyError("Modifiers", "SurfaceProperty", surfaceProperty.Name);
+                if (m_model.PropArea.SetModifiers(propName, ref modifier) != 0)
+                    CreatePropertyError("Modifiers", "SurfaceProperty", propName);
             }
 
             return true;
