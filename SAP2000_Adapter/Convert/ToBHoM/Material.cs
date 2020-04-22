@@ -35,13 +35,27 @@ namespace BH.Adapter.SAP2000
     {
         /***************************************************/
         /**** Public Methods                            ****/
+        /***************************************************/
 
+        public static eMatType GetMaterialType(this IMaterialFragment material)
+        {
+            if (material is Steel)
+                return eMatType.Steel;
+            else if (material is Concrete)
+                return eMatType.Concrete;
+            else if (material is Aluminium)
+                return eMatType.Aluminum;
+            else if (material is Timber)
+                return eMatType.NoDesign;
+            else
+                return eMatType.NoDesign;
+        }
 
         /***************************************************/
 
-        public static Vector ToVector(this double[] darray)
+        public static double[] ToDoubleArray(this Vector v)
         {
-            return new Vector() { X = darray[0], Y = darray[1], Z = darray[2] };
+            return new double[] { v.X, v.Y, v.Z };
         }
 
         /***************************************************/
