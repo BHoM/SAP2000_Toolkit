@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2020, the respective contributors. All rights reserved.
  *
@@ -20,30 +20,40 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Structure.MaterialFragments;
-using BH.oM.Geometry;
-using SAP2000v1;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BH.Adapter.SAP2000
+namespace BH.oM.Adapters.SAP2000
 {
-    public static partial class Convert
+
+    /***************************************************/
+    /**** Public Enums                              ****/
+    /***************************************************/
+
+    public enum SDShapeType
     {
-        /***************************************************/
-        /**** Public Methods                            ****/
-
-
-        /***************************************************/
-
-        public static Vector ToVector(this double[] darray)
-        {
-            return new Vector() { X = darray[0], Y = darray[1], Z = darray[2] };
-        }
-
-        /***************************************************/
+        ISection = 1,
+        Channel = 2,
+        Tee = 3,
+        Angle = 4,
+        DoubleAngle = 5,
+        Box = 6,
+        Pipe = 7,
+        Plate = 8,
+        SolidRectangle = 101,
+        SolidCircle = 102,
+        SolidSegment = 103,
+        SolidSector = 104,
+        Polygon = 201,
+        ReinforcingSingle = 301,
+        ReinforcingLine = 302,
+        ReinforcingRectangle = 303,
+        ReinforcingCircle = 304,
+        ReferenceLine = 401,
+        ReferenceCircle = 402,
+        CaltransSquare = 501,
+        CaltransCircle = 502,
+        CaltransHexagon = 503,
+        CaltransOctagon = 504,
     }
+
+    /***************************************************/
+
 }

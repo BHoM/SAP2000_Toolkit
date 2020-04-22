@@ -126,66 +126,38 @@ namespace BH.Adapter.SAP2000
                         m_model.PropFrame.GetGeneral(id, ref fileName, ref materialName, ref t3, ref t2, ref Area, ref As2, ref As3, ref Torsion, ref I22, ref I33, ref S22, ref S33, ref Z22, ref Z33, ref R22, ref R33, ref color, ref notes, ref guid);
                         constructor = "explicit";
                         break;
-                    case eFramePropType.DbChannel:                        
-                        break;
-                    case eFramePropType.SD:                        
-                        break;
-                    case eFramePropType.Variable:                        
-                        break;
-                    case eFramePropType.Joist:                        
-                        break;
-                    case eFramePropType.Bridge:                        
-                        break;
-                    case eFramePropType.Cold_C:                        
-                        break;
-                    case eFramePropType.Cold_2C:                        
-                        break;
                     case eFramePropType.Cold_Z:
                         m_model.PropFrame.GetColdZ(id, ref fileName, ref materialName, ref t3, ref t2, ref tw, ref radius, ref tfb, ref angle, ref color, ref notes, ref guid);
                         bhomProfile = BH.Engine.Geometry.Create.ZSectionProfile(t3, t2, tw, tw, radius, 0);
                         break;
-                    case eFramePropType.Cold_L:                        
-                        break;
-                    case eFramePropType.Cold_2L:                        
-                        break;
-                    case eFramePropType.Cold_Hat:                        
-                        break;
-                    case eFramePropType.BuiltupICoverplate:                        
-                        break;
-                    case eFramePropType.PCCGirderI:                        
-                        break;
-                    case eFramePropType.PCCGirderU:                        
-                        break;
-                    case eFramePropType.BuiltupIHybrid:                        
-                        break;
-                    case eFramePropType.BuiltupUHybrid:                        
-                        break;
-                    case eFramePropType.Concrete_L:                        
-                        break;
-                    case eFramePropType.FilledTube:                        
-                        break;
-                    case eFramePropType.FilledPipe:                        
-                        break;
-                    case eFramePropType.EncasedRectangle:                        
-                        break;
-                    case eFramePropType.EncasedCircle:                        
-                        break;
+                    case eFramePropType.DbChannel:
+                    case eFramePropType.SD:
+                    case eFramePropType.Variable:
+                    case eFramePropType.Joist:
+                    case eFramePropType.Bridge:
+                    case eFramePropType.Cold_C:
+                    case eFramePropType.Cold_2C:
+                    case eFramePropType.Cold_L:
+                    case eFramePropType.Cold_2L:
+                    case eFramePropType.Cold_Hat:
+                    case eFramePropType.BuiltupICoverplate:
+                    case eFramePropType.PCCGirderI:
+                    case eFramePropType.PCCGirderU:
+                    case eFramePropType.BuiltupIHybrid:
+                    case eFramePropType.BuiltupUHybrid:
+                    case eFramePropType.Concrete_L:
+                    case eFramePropType.FilledTube:
+                    case eFramePropType.FilledPipe:
+                    case eFramePropType.EncasedRectangle:
+                    case eFramePropType.EncasedCircle:
                     case eFramePropType.BucklingRestrainedBrace:
-                        break;
                     case eFramePropType.CoreBrace_BRB:
-                        break;
                     case eFramePropType.ConcreteTee:
-                        break;
                     case eFramePropType.ConcreteBox:
-                        break;
                     case eFramePropType.ConcretePipe:
-                        break;
                     case eFramePropType.ConcreteCross:
-                        break;
                     case eFramePropType.SteelPlate:
-                        break;
                     case eFramePropType.SteelRod:
-                        break;
                     default:                        
                         break;
                 }
@@ -228,18 +200,25 @@ namespace BH.Adapter.SAP2000
                         };
                         break;
                     case "standard":
-                        if (material is Aluminium || material is Steel)
+                        if (material is Steel)
                         {
                             bhomProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(bhomProfile);
+                        }
+                        if (material is Aluminium)
+                        {
+                            bhomProperty = BH.Engine.Structure.Create.AluminiumSectionFromProfile(bhomProfile);
                         }
                         else if (material is Concrete)
                         {
                             bhomProperty = BH.Engine.Structure.Create.ConcreteSectionFromProfile(bhomProfile);
                         }
+                        else if (material is Timber)
+                        {
+                            bhomProperty = BH.Engine.Structure.Create.TimberSectionFromProfile(bhomProfile);
+                        }
                         else
                         {
-                            bhomProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(bhomProfile);
-                            Engine.Reflection.Compute.RecordWarning("Reading sections of material type " + material.GetType().Name + "is not supported. Section with name " + id + " will be returned as a steel section");
+                            bhomProperty = BH.Engine.Structure.Create.GenericSectionFromProfile(bhomProfile);
                         }
                         break;
                 }

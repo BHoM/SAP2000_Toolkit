@@ -52,6 +52,10 @@ namespace BH.Adapter.SAP2000
 
         private bool SetSection(CableSection bhomSection)
         {
+            string name = bhomSection.DescriptionOrName();
+            string matName = bhomSection.Material.CustomData[AdapterIdName].ToString();
+            if (m_model.PropCable.SetProp(name, matName, bhomSection.Area) != 0)
+                Engine.Reflection.Compute.RecordError($"Could not create Cable section with name {name}");
             return false;
         }
 
@@ -71,6 +75,27 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
+        private bool SetSection(TimberSection bhomSection)
+        {
+            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), bhomSection.Material.CustomData[AdapterIdName].ToString());
+        }
+
+        /***************************************************/
+
+        private bool SetSection(SteelSection bhomSection)
+        {
+            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), bhomSection.Material.CustomData[AdapterIdName].ToString());
+        }
+
+        /***************************************************/
+
+        private bool SetSection(AluminiumSection bhomSection)
+        {
+            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), bhomSection.Material.CustomData[AdapterIdName].ToString());
+        }
+
+        /***************************************************/
+
         private bool SetSection(ExplicitSection bhomSection)
         {
             string matName = bhomSection.Material.CustomData[AdapterIdName].ToString();
@@ -79,13 +104,6 @@ namespace BH.Adapter.SAP2000
                 bhomSection.Iy, bhomSection.Iz, bhomSection.Wply, bhomSection.Wplz, bhomSection.Wely, 
                 bhomSection.Wely, bhomSection.Rgy, bhomSection.Rgz);
             return ret == 0;
-        }
-
-        /***************************************************/
-
-        private bool SetSection(SteelSection bhomSection)
-        {
-            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), bhomSection.Material.CustomData[AdapterIdName].ToString());
         }
 
         /***************************************************/

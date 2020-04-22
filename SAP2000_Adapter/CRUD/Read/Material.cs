@@ -77,7 +77,7 @@ namespace BH.Adapter.SAP2000
                     }
                     else if (symType == 1) // Orthotropic
                     {
-                        m_model.PropMaterial.GetMPOrthotropic(materialName, ref E, ref V, ref ThermCo, ref G);
+                        m_model.PropMaterial.GetMPOrthotropic(materialName, ref E, ref V, ref ThermCo, ref G);                        
                     }
                     else if (symType == 2) //Anisotropic
                     {
@@ -134,6 +134,23 @@ namespace BH.Adapter.SAP2000
                         case eMatType.Tendon:
                             m_model.PropMaterial.GetOTendon(materialName, ref fy, ref fu, ref i0, ref i1);
                             m = Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
+                            break;
+                        case eMatType.NoDesign:
+                            switch (symType)
+                            {
+                                case 0: 
+                                    m = new GenericIsotropicMaterial() { Name = materialName, YoungsModulus = e, PoissonsRatio = v, ThermalExpansionCoeff = thermCo, Density = mass };
+                                    break;
+                                case 1:
+                                    m = new GenericOrthotropicMaterial() { Name = materialName, YoungsModulus = E.ToVector(), PoissonsRatio = V.ToVector(), ThermalExpansionCoeff = ThermCo.ToVector(), Density = mass };
+                                    break;
+                                case 2:
+                                case 3:
+                                default:
+                                    m = Engine.Structure.Create.Steel(materialName);
+                                    Engine.Reflection.Compute.RecordWarning("Could not extract structural properties for material " + materialName);
+                                    break;
+                            }
                             break;
                         default:
                             m = Engine.Structure.Create.Steel(materialName);

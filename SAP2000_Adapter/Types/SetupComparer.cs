@@ -47,7 +47,7 @@ namespace BH.Adapter.SAP2000
         {
             AdapterComparers = new Dictionary<Type, object>
             {
-                {typeof(Node), new BH.Engine.Structure.NodeDistanceComparer(3) },   //The 3 in here sets how many decimal places to look at for node merging. 3 decimal places gives mm precision
+                {typeof(Node), new NodeDistanceComparer(3) },   //The 3 in here sets how many decimal places to look at for node merging. 3 decimal places gives mm precision
                 {typeof(ISectionProperty), new NameOrDescriptionComparer() },
                 {typeof(IMaterialFragment), new NameOrDescriptionComparer() },
                 {typeof(LinkConstraint), new NameOrDescriptionComparer() },
