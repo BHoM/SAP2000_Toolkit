@@ -177,6 +177,16 @@
     <Compile Include="CRUD\Create\Loads.cs" />
     <Compile Include="CRUD\Create\_ICreate.cs" />
     <Compile Include="CRUD\Create\SurfaceProperty.cs" />
+    <Compile Include="CRUD\Delete\Bar.cs" />
+    <Compile Include="CRUD\Delete\LinkConstraint.cs" />
+    <Compile Include="CRUD\Delete\Loads.cs" />
+    <Compile Include="CRUD\Delete\Material.cs" />
+    <Compile Include="CRUD\Delete\Node.cs" />
+    <Compile Include="CRUD\Delete\Panel.cs" />
+    <Compile Include="CRUD\Delete\RigidLink.cs" />
+    <Compile Include="CRUD\Delete\Section.cs" />
+    <Compile Include="CRUD\Delete\SurfaceProperty.cs" />
+    <Compile Include="CRUD\Delete\_IDelete.cs" />
     <Compile Include="CRUD\Read\Bar.cs" />
     <Compile Include="CRUD\Read\Errors.cs" />
     <Compile Include="CRUD\Read\Loads.cs" />
