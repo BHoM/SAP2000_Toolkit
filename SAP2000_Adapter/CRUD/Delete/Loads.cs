@@ -89,7 +89,7 @@ namespace BH.Adapter.SAP2000
             {
                 int nameCount = 0;
                 string[] nameArr = { };
-                m_model.PropArea.GetNameList(ref nameCount, ref nameArr);
+                m_model.RespCombo.GetNameList(ref nameCount, ref nameArr);
                 ids = nameArr.ToList();
             }
 
