@@ -57,14 +57,18 @@ namespace BH.Adapter.SAP2000
 
             foreach (string patternId in patternNames)
             {
-                count += (m_model.FrameObj.Delete(patternId) == 0 ? 1 : 0); //Delete object and increment count
-                //Delete object and increment count
+                if (m_model.LoadPatterns.Delete(patternId) == 0)
+                    count += 1;
+                else
+                    DeleteElementError("Load Pattern", patternId);
             }
 
             foreach (string caseId in caseNames)
             {
-                count += (m_model.FrameObj.Delete(caseId) == 0 ? 1 : 0); //Delete object and increment count
-                //Delete object and increment count
+                if (m_model.LoadCases.Delete(caseId) == 0)
+                    count += 1;
+                else
+                    DeleteElementError("Load Case", caseId);
             }
 
             return count;
@@ -86,7 +90,10 @@ namespace BH.Adapter.SAP2000
 
             foreach (string id in ids)
             {
-                //Delete object and increment count
+                if (m_model.RespCombo.Delete(id) == 0)
+                    count += 1;
+                else
+                    DeleteElementError("LoadCombination", id);
             }
 
             return count;

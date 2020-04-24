@@ -20,14 +20,6 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Geometry;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.SurfaceProperties;
-using BH.Engine.Geometry;
-using BH.oM.Dimensional;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace BH.Adapter.SAP2000
 {
     public partial class SAP2000Adapter
@@ -36,27 +28,16 @@ namespace BH.Adapter.SAP2000
         /**** Private Methods                           ****/
         /***************************************************/
 
-        private int DeletePanel(List<string> ids = null)
+        private void DeleteElementError(string elemType, string elemName)
         {
-            int count = 0;
+            Engine.Reflection.Compute.RecordError("Failed to read the element of type " + elemType + ", with id: " + elemName);
+        }
 
-            if (ids == null)
-            {
-                int nameCount = 0;
-                string[] nameArr = { };
-                m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
-                ids = nameArr.ToList();
-            }
+        /***************************************************/
 
-            foreach (string id in ids)
-            {
-                if (m_model.AreaObj.Delete(id) == 0)
-                    count += 1;
-                else
-                    DeleteElementError("Panel", id);
-            }
-
-            return count;
+        private void DeletePropertyError(string propType, string propName)
+        {
+            Engine.Reflection.Compute.RecordError("Failed to read property of type " + propType + ", with id: " + propName);
         }
 
         /***************************************************/

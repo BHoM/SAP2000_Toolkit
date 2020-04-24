@@ -178,6 +178,7 @@
     <Compile Include="CRUD\Create\_ICreate.cs" />
     <Compile Include="CRUD\Create\SurfaceProperty.cs" />
     <Compile Include="CRUD\Delete\Bar.cs" />
+    <Compile Include="CRUD\Delete\Errors.cs" />
     <Compile Include="CRUD\Delete\LinkConstraint.cs" />
     <Compile Include="CRUD\Delete\Loads.cs" />
     <Compile Include="CRUD\Delete\Material.cs" />

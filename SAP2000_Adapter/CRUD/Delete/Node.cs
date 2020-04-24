@@ -50,8 +50,10 @@ namespace BH.Adapter.SAP2000
 
             foreach (string id in ids)
             {
-                count += (m_model.PointObj.DeleteSpecialPoint(id) == 0 ? 1 : 0); //Delete object and increment count
-                //Delete object and increment count
+                if (m_model.PointObj.DeleteSpecialPoint(id) == 0)
+                    count += 1;
+                else
+                    DeleteElementError("Node", id);
             }
 
             return count;
