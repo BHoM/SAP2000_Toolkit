@@ -45,14 +45,19 @@ namespace BH.Adapter.SAP2000
         {
             int count = 0;
 
-            string[] patternNames = ids.ToArray();
-            string[] caseNames = ids.ToArray();
+            string[] patternNames = null;
+            string[] caseNames = null;
 
             if (ids == null)
             {
                 int nameCount = 0;
                 m_model.LoadCases.GetNameList(ref nameCount, ref patternNames);
                 m_model.LoadCases.GetNameList(ref nameCount, ref caseNames);
+            }
+            else
+            {
+                patternNames = ids.ToArray();
+                caseNames = ids.ToArray();
             }
 
             foreach (string patternId in patternNames)
