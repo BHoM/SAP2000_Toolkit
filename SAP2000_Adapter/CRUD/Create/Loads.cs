@@ -202,9 +202,12 @@ namespace BH.Adapter.SAP2000
                 bool replaceNow = replace;
                 for (int i = 0; i < dirs.Count(); i++)
                 {
-                    if (m_model.AreaObj.SetLoadUniform(name, loadPat, vals[i], dirs[i], replaceNow, cSys, type) != 0)
-                        CreateElementError("AreaLoad Dir", panel.Name + dirs[i]);
-                    replaceNow = false;
+                    if (vals[i] != 0)
+                    {
+                        if (m_model.AreaObj.SetLoadUniform(name, loadPat, vals[i], dirs[i], replaceNow, cSys, type) != 0)
+                            Engine.Reflection.Compute.RecordWarning($"Could not assign an area load in direction {dirs[i]}");
+                        replaceNow = false;
+                    }
                 }
             }
 
