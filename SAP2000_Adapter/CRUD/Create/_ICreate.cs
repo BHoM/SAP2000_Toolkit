@@ -46,19 +46,14 @@ namespace BH.Adapter.SAP2000
 
         protected override bool ICreate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
         {
-            bool success = true;
-
             if (typeof(BH.oM.Base.IBHoMObject).IsAssignableFrom(typeof(T)))
             {
-                success = CreateCollection(objects);
+                return (CreateCollection(objects));
             }
             else
             {
-                success = false;
+                return false;
             }
-
-            m_model.View.RefreshView();
-            return success;
         }
 
         /***************************************************/
