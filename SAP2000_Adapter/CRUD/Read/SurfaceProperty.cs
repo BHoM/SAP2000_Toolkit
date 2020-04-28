@@ -61,42 +61,35 @@ namespace BH.Adapter.SAP2000
                 string guid = "";
 
                 double[] modifiers = new double[] { };
-                bool hasModifiers = false;
 
-                m_model.PropArea.GetShell_1(id, ref shellType, ref includeDrillingDOF, ref materialName, ref matAng, ref thickness, ref bending, ref color, ref notes, ref guid);
-                if (m_model.PropArea.GetModifiers(id, ref modifiers) == 0)
-                    hasModifiers = true;
+                if (m_model.PropArea.GetShell_1(id, ref shellType, ref includeDrillingDOF, ref materialName, ref matAng, ref thickness, ref bending, ref color, ref notes, ref guid) != 0)
+                    Engine.Reflection.Compute.RecordWarning("Error while pulling Surface Property {id}. Check results carefully.");
 
-                else
-                {
-                    ConstantThickness panelConstant = new ConstantThickness();
-                    panelConstant.CustomData[AdapterIdName] = id;
-                    panelConstant.Name = id;
-                    panelConstant.Material = bhomMaterials[materialName];
-                    panelConstant.Thickness = thickness;
-                    panelConstant.CustomData.Add("MaterialAngle", matAng);
-                    panelConstant.CustomData.Add("BendingThickness", bending);
-                    panelConstant.CustomData.Add("Color", color);
-                    panelConstant.CustomData.Add("Notes", notes);
-                    panelConstant.CustomData.Add("GUID", guid);
+                m_model.PropArea.GetModifiers(id, ref modifiers);
+                                
+                ConstantThickness panelConstant = new ConstantThickness();
+                panelConstant.CustomData[AdapterIdName] = id;
+                panelConstant.Name = id;
+                panelConstant.Material = bhomMaterials[materialName];
+                panelConstant.Thickness = thickness;
+                panelConstant.CustomData.Add("MaterialAngle", matAng);
+                panelConstant.CustomData.Add("BendingThickness", bending);
+                panelConstant.CustomData.Add("Color", color);
+                panelConstant.CustomData.Add("Notes", notes);
+                panelConstant.CustomData.Add("GUID", guid);
+                
+                panelConstant.CustomData.Add("MembraneF11Modifier", modifiers[0]);
+                panelConstant.CustomData.Add("MembraneF22Modifier", modifiers[1]);
+                panelConstant.CustomData.Add("MembraneF12Modifier", modifiers[2]);
+                panelConstant.CustomData.Add("BendingM11Modifier", modifiers[3]);
+                panelConstant.CustomData.Add("BendingM22Modifier", modifiers[4]);
+                panelConstant.CustomData.Add("BendingM12Modifier", modifiers[5]);
+                panelConstant.CustomData.Add("ShearV13Modifier", modifiers[6]);
+                panelConstant.CustomData.Add("ShearV23Modifier", modifiers[7]);
+                panelConstant.CustomData.Add("MassModifier", modifiers[8]);
+                panelConstant.CustomData.Add("WeightModifier", modifiers[9]);                
 
-                    if (hasModifiers)
-                    {
-                        panelConstant.CustomData.Add("MembraneF11Modifier", modifiers[0]);
-                        panelConstant.CustomData.Add("MembraneF22Modifier", modifiers[1]);
-                        panelConstant.CustomData.Add("MembraneF12Modifier", modifiers[2]);
-                        panelConstant.CustomData.Add("BendingM11Modifier", modifiers[3]);
-                        panelConstant.CustomData.Add("BendingM22Modifier", modifiers[4]);
-                        panelConstant.CustomData.Add("BendingM12Modifier", modifiers[5]);
-                        panelConstant.CustomData.Add("ShearV13Modifier", modifiers[6]);
-                        panelConstant.CustomData.Add("ShearV23Modifier", modifiers[7]);
-                        panelConstant.CustomData.Add("MassModifier", modifiers[8]);
-                        panelConstant.CustomData.Add("WeightModifier", modifiers[9]);
-                    }
-
-                    propertyList.Add(panelConstant);
-                }
-
+                propertyList.Add(panelConstant);
             }
 
             return propertyList;

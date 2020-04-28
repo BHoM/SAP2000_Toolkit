@@ -36,10 +36,10 @@ namespace BH.Engine.SAP2000
 
         public static List<RigidLink> JoinRigidLink(List<RigidLink> linkList)
         {
-            List<RigidLink> joinedList = null;
+            List<RigidLink> joinedList = new List<RigidLink>();
 
-            Dictionary<string, Node> masterDict = null;
-            Dictionary<string, List<Node>> slaveDict = null;
+            Dictionary<string, Node> masterDict = new Dictionary<string, Node>();
+            Dictionary<string, List<Node>> slaveDict = new Dictionary<string, List<Node>>();
 
             //Use first constraint for all
             LinkConstraint constraint = linkList.First().Constraint;
@@ -67,6 +67,7 @@ namespace BH.Engine.SAP2000
             foreach (KeyValuePair<string, Node> kvp in masterDict)
             {
                 RigidLink newLink = Structure.Create.RigidLink(kvp.Value, slaveDict[kvp.Key], constraint, kvp.Key);
+                joinedList.Add(newLink);
             }           
 
             return joinedList;

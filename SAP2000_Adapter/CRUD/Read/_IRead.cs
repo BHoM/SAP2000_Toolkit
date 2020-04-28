@@ -54,7 +54,7 @@ namespace BH.Adapter.SAP2000
                 return ReadMaterial(ids as dynamic);
             else if (type == typeof(Panel))
                 return ReadPanel(ids as dynamic);
-            else if (type == typeof(ISurfaceProperty))
+            else if (type == typeof(ISurfaceProperty) || type.GetInterfaces().Contains(typeof(ISurfaceProperty)))
                 return ReadSurfaceProperty(ids as dynamic);
             else if (type == typeof(LoadCombination))
                 return ReadLoadCombination(ids as dynamic);

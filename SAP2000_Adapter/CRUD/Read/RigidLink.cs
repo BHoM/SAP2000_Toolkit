@@ -37,23 +37,30 @@ namespace BH.Adapter.SAP2000
         {
             List<RigidLink> linkList = new List<RigidLink>();
             Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+            Dictionary<string, LinkConstraint> bhomLinkConstraints = ReadLinkConstraints().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
 
             //Read all links, filter by id at end, so that we can join multi-links.
             int nameCount = 0;
             string[] names = { };
             m_model.LinkObj.GetNameList(ref nameCount, ref names);
 
+            if (ids == null)
+            {
+                ids = names.ToList();
+            }
+
             foreach (string name in names)
             {
                 string masterId = "";
                 string SlaveId = "";
+                string propName = "";
                 m_model.LinkObj.GetPoints(name, ref masterId, ref SlaveId);
 
-                //Assuming all constraints are fixed constraints
-                LinkConstraint constraint = Engine.Structure.Create.LinkConstraintFixed();
-                Engine.Reflection.Compute.RecordWarning("All Rigid Link constraints are being read as fully fixed. Check results carefully.");
+                m_model.LinkObj.GetProperty(name, ref propName);
 
-                RigidLink newLink = BH.Engine.Structure.Create.RigidLink(bhomNodes[masterId], new List<Node> { bhomNodes[SlaveId] }, constraint);
+                RigidLink newLink = BH.Engine.Structure.Create.RigidLink(bhomNodes[masterId], new List<Node> { bhomNodes[SlaveId] }, bhomLinkConstraints[propName]);
+
+                newLink.CustomData[AdapterIdName] = newLink.Name = name;
 
                 linkList.Add(newLink);
             }
