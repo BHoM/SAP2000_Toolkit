@@ -45,7 +45,7 @@ namespace BH.Adapter.SAP2000
                 {typeof(ISectionProperty), new List<Type> { typeof(IMaterialFragment) } },
                 {typeof(Panel), new List<Type> { typeof(ISurfaceProperty) } },
                 {typeof(ISurfaceProperty), new List<Type> { typeof(IMaterialFragment) } },
-                {typeof(RigidLink), new List<Type> { typeof(LinkConstraint), typeof(Node) } },
+                {typeof(RigidLink), new List<Type> { typeof(Node) } },
                 {typeof(ILoad), new List<Type> {typeof(Loadcase) } },
                 {typeof(LoadCombination), new List<Type> {typeof(Loadcase) } }
             };

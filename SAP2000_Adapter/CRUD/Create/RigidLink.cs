@@ -33,32 +33,47 @@ namespace BH.Adapter.SAP2000
 
         private bool CreateObject(RigidLink bhLink)
         {
-            List<RigidLink> bhomLinks = BH.Engine.SAP2000.Query.SplitRigidLink(bhLink);
-            List<string> linkIds = null;
+            List<RigidLink> subLinks = BH.Engine.SAP2000.Query.SplitRigidLink(bhLink);
+            List<string> linkIds = new List<string>();
 
-            foreach (RigidLink link in bhomLinks)
+            if (subLinks.Count < 1)
+                Engine.Reflection.Compute.RecordNote($"The RigidLink {bhLink.Name} was split into {subLinks.Count} separate links. They will be added to a new group called \"BHoM_Link_{bhLink.Name}\"");
+
+            foreach (RigidLink subLink in subLinks)
             {
                 string name = "";
-                Node masterNode = link.MasterNode;
-                Node slaveNode = link.SlaveNodes[0];
+                string masterNode = subLink.MasterNode.CustomData[AdapterIdName].ToString();
+                string slaveNode = subLink.SlaveNodes[0].CustomData[AdapterIdName].ToString();
 
-                if ( m_model.LinkObj.AddByPoint(masterNode.CustomData[AdapterIdName].ToString(), 
-                    slaveNode.CustomData[AdapterIdName].ToString(), ref name, false, "Default") != 0)
+                if (m_model.LinkObj.AddByPoint(masterNode, slaveNode, ref name, false, "Default", subLink.Name) == 0)
                 {
-                    CreateElementError("RigidLink", name);
-                }
+                    //Check if SAP respected the link name.
+                    if (subLink.Name != "" && subLink.Name != name)
+                        Engine.Reflection.Compute.RecordNote($"RigidLink {bhLink.Name} was assigned SAP id of {name}");
 
-                foreach (string gName in bhLink.Tags)
-                {
-                    string groupName = gName.ToString();
-                    if (m_model.LinkObj.SetGroupAssign(name, groupName) != 0)
+                    //Attempt to set property (if property has been pushed)
+                    if (subLink.Constraint.CustomData.TryGetValue(AdapterIdName, out object propName))
+                        if (m_model.LinkObj.SetProperty(name, propName.ToString()) != 0)
+                            CreatePropertyWarning("LinkConstraint", "RigidLink", bhLink.Name);
+
+                    //Add to groups per tags. For links that have been split, the original name will be tagged
+                    foreach (string gName in bhLink.Tags)
                     {
-                        m_model.GroupDef.SetGroup(groupName);
-                        m_model.LinkObj.SetGroupAssign(name, groupName);
+                        string groupName = gName.ToString();
+                        if (m_model.LinkObj.SetGroupAssign(name, groupName) != 0)
+                        {
+                            m_model.GroupDef.SetGroup(groupName);
+                            m_model.LinkObj.SetGroupAssign(name, groupName);
+                        }
                     }
-                }
 
-                linkIds.Add(name);
+                    linkIds.Add(name);
+                }
+                else
+                {
+                    //The sublink had a problem in SAP. the sublink property has not been set and the sublink was not added to a group. The sublink may or may not have been created.
+                    CreateElementError("RigidLink", subLink.Name);
+                }
             }
 
             bhLink.CustomData[AdapterIdName] = linkIds;
