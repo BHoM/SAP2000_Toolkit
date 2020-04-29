@@ -53,28 +53,36 @@ namespace BH.Adapter.SAP2000
 
             foreach (string id in ids)
             {
+                Panel bhomPanel = new Panel();
+
+                //Set the Adapter ID
+                bhomPanel.CustomData[AdapterIdName] = id;
+
                 //Get outline of panel
                 string[] pointNames = null;
                 int pointCount = 0;
-                m_model.AreaObj.GetPoints(id, ref pointCount, ref pointNames);
 
-                List<Point> pts = new List<Point>();
-                foreach (string name in pointNames)
-                    pts.Add(bhomNodes[name].Position);
-                pts.Add(pts[0]);
-                Polyline outline = new Polyline() { ControlPoints = pts };
-                List<Edge> outEdges = new List<Edge>() { BH.Engine.Structure.Create.Edge(outline, new oM.Structure.Constraints.Constraint4DOF()) };
+                if (m_model.AreaObj.GetPoints(id, ref pointCount, ref pointNames) == 0)
+                {
+                    List<Point> pts = new List<Point>();
+                    foreach (string name in pointNames)
+                        pts.Add(bhomNodes[name].Position);
+                    pts.Add(pts[0]);
+                    Polyline outline = new Polyline() { ControlPoints = pts };
+                    List<Edge> outEdges = new List<Edge>() { BH.Engine.Structure.Create.Edge(outline, new oM.Structure.Constraints.Constraint4DOF()) };
+
+                    bhomPanel.ExternalEdges = outEdges;
+                }
+
+                //Ignore the openings
+                List<Opening> noOpenings = null;
+                bhomPanel.Openings = noOpenings;
                 
                 //Get the section property
                 string propertyName = "";
-                m_model.AreaObj.GetProperty(id, ref propertyName);
-                List<Opening> noOpenings = null;
+                if (m_model.AreaObj.GetProperty(id, ref propertyName) == 0)
+                    bhomPanel.Property = bhomProperties[propertyName];
 
-                //Create the panel
-                Panel bhomPanel = BH.Engine.Structure.Create.Panel(outEdges, noOpenings, bhomProperties[propertyName], id);
-                
-                //Set the properties
-                bhomPanel.CustomData[AdapterIdName] = id;
                 
                 //Add the panel to the list
                 bhomPanels.Add(bhomPanel);

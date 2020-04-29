@@ -52,9 +52,10 @@ namespace BH.Adapter.SAP2000
             
             foreach (string id in ids)
             {
+                Bar bhomBar = new Bar();
+
                 try
                 {
-                    Bar bhomBar = new Bar();
                     bhomBar.CustomData[AdapterIdName] = id;
                     string startId = "";
                     string endId = "";
@@ -108,12 +109,13 @@ namespace BH.Adapter.SAP2000
                             bhomBar.Tags.Add(grpName);
                     }
 
-                    bhomBars.Add(bhomBar);
                 }
                 catch
                 {
                     ReadElementError("Bar", id.ToString());
                 }
+
+                bhomBars.Add(bhomBar);
             }
             return bhomBars;
         }

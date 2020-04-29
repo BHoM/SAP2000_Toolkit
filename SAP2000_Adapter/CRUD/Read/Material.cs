@@ -59,6 +59,8 @@ namespace BH.Adapter.SAP2000
 
                 if (m_model.PropMaterial.GetMaterial(materialName, ref matType, ref colour, ref notes, ref guid) == 0)
                 {
+                    IMaterialFragment bhMaterial;
+
                     m_model.PropMaterial.GetTypeOAPI(materialName, ref matType, ref symType);
 
                     double e = 0;
@@ -88,7 +90,6 @@ namespace BH.Adapter.SAP2000
                         m_model.PropMaterial.GetMPUniaxial(materialName, ref e, ref thermCo);
                     }
 
-
                     double mass = 0;
                     double weight = 0;
 
@@ -108,59 +109,58 @@ namespace BH.Adapter.SAP2000
                     int i1 = 0;//stress-strain hysteresis type
                     bool b0 = false;//is lightweight
 
-                    IMaterialFragment m;
 
                     switch (matType)
                     {
                         case eMatType.Steel:
                             m_model.PropMaterial.GetOSteel(materialName, ref fy, ref fu, ref efy, ref efu, ref i0, ref i1, ref strainHardening, ref strainMaxF, ref strainRupture);
-                            m = Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
+                            bhMaterial = Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                             break;
                         case eMatType.Concrete:
                             m_model.PropMaterial.GetOConcrete(materialName, ref fc, ref b0, ref ft, ref i0, ref i1, ref efy, ref efu, ref strainFc, ref strainMaxF);
-                            m = Engine.Structure.Create.Concrete(materialName, e, v, thermCo, mass, 0, 0, fy);
+                            bhMaterial = Engine.Structure.Create.Concrete(materialName, e, v, thermCo, mass, 0, 0, fy);
                             break;
                         case eMatType.Aluminum:
-                            m = Engine.Structure.Create.Aluminium(materialName, e, v, thermCo, mass, 0);
+                            bhMaterial = Engine.Structure.Create.Aluminium(materialName, e, v, thermCo, mass, 0);
                             break;
                         case eMatType.ColdFormed:
                             m_model.PropMaterial.GetOColdFormed(materialName, ref fy, ref fu, ref i1);
-                            m = Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
+                            bhMaterial = Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                             break;
                         case eMatType.Rebar:
                             m_model.PropMaterial.GetORebar(materialName, ref fy, ref fu, ref efy, ref efu, ref i0, ref i1, ref strainHardening, ref strainMaxF, ref b0);
-                            m = Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
+                            bhMaterial = Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                             break;
                         case eMatType.Tendon:
                             m_model.PropMaterial.GetOTendon(materialName, ref fy, ref fu, ref i0, ref i1);
-                            m = Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
+                            bhMaterial = Engine.Structure.Create.Steel(materialName, e, v, thermCo, mass, 0, fy, fu);
                             break;
                         case eMatType.NoDesign:
                             switch (symType)
                             {
                                 case 0: 
-                                    m = new GenericIsotropicMaterial() { Name = materialName, YoungsModulus = e, PoissonsRatio = v, ThermalExpansionCoeff = thermCo, Density = mass };
+                                    bhMaterial = new GenericIsotropicMaterial() { Name = materialName, YoungsModulus = e, PoissonsRatio = v, ThermalExpansionCoeff = thermCo, Density = mass };
                                     break;
                                 case 1:
-                                    m = new GenericOrthotropicMaterial() { Name = materialName, YoungsModulus = E.ToVector(), PoissonsRatio = V.ToVector(), ThermalExpansionCoeff = ThermCo.ToVector(), Density = mass };
+                                    bhMaterial = new GenericOrthotropicMaterial() { Name = materialName, YoungsModulus = E.ToVector(), PoissonsRatio = V.ToVector(), ThermalExpansionCoeff = ThermCo.ToVector(), Density = mass };
                                     break;
                                 case 2:
                                 case 3:
                                 default:
-                                    m = Engine.Structure.Create.Steel(materialName);
+                                    bhMaterial = Engine.Structure.Create.Steel(materialName);
                                     Engine.Reflection.Compute.RecordWarning("Could not extract structural properties for material " + materialName);
                                     break;
                             }
                             break;
                         default:
-                            m = Engine.Structure.Create.Steel(materialName);
+                            bhMaterial = Engine.Structure.Create.Steel(materialName);
                             Engine.Reflection.Compute.RecordWarning("Could not extract structural properties for material " + materialName);
                             break;
                     }
 
-                    m.CustomData.Add(AdapterIdName, materialName);
+                    bhMaterial.CustomData.Add(AdapterIdName, materialName);
 
-                    materialList.Add(m);
+                    materialList.Add(bhMaterial);
                 }
             }
 
