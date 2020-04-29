@@ -53,7 +53,9 @@ namespace BH.Adapter.SAP2000
                 eLinkPropType linkType = eLinkPropType.Linear;
                 m_model.PropLink.GetTypeOAPI(id, ref linkType);
 
-                LinkConstraint constr = null;
+                LinkConstraint constr = new LinkConstraint();
+
+                constr.CustomData[AdapterIdName] = id;
 
                 switch (linkType)
                 {
@@ -70,14 +72,11 @@ namespace BH.Adapter.SAP2000
                     case eLinkPropType.MultilinearPlastic:
                     case eLinkPropType.Isolator3:
                     default:
-                        Engine.Reflection.Compute.RecordError("Reading of LinkConstraint of type " + linkType + " not implemented");
+                        Engine.Reflection.Compute.RecordWarning($"Reading of LinkConstraint of type {linkType} not implemented. {id} will be returned as an empty LinkConstraint");
                         break;
                 }
-                
-                if (constr != null)
-                    propList.Add(constr);
-                else
-                    Engine.Reflection.Compute.RecordError("Failed to read link constraint with id :" + id);
+
+                propList.Add(constr);
 
             }
             return propList;
