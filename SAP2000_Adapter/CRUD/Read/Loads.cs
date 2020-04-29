@@ -53,18 +53,23 @@ namespace BH.Adapter.SAP2000
 
             for (int i = 0; i < count; i++ )
             {
+                Loadcase bhomCase = new Loadcase();
+                bhomCase.CustomData[AdapterIdName] = names[i];
+
                 eLoadPatternType patternType = eLoadPatternType.Dead;
 
-                if (m_model.LoadPatterns.GetLoadType(names[i], ref patternType) != 0)
+                if (m_model.LoadPatterns.GetLoadType(names[i], ref patternType) == 0)
                 {
-                    ReadElementError("Load Pattern", names[i]);
+                    bhomCase.Name = names[i];
+                    bhomCase.Number = i;
+                    bhomCase.Nature = patternType.ToBHoM();
                 }
                 else
                 {
-                    Loadcase bhomCase = BH.Engine.Structure.Create.Loadcase(names[i], i, patternType.ToBHoM());
-                    bhomCase.CustomData[AdapterIdName] = names[i];
-                    loadCases.Add(bhomCase);
+                    ReadElementError("Load Pattern", names[i]);
                 }
+
+                loadCases.Add(bhomCase);
             }
 
             return loadCases;
