@@ -92,5 +92,28 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
+
+        public static void ToSAP2000(this LinkConstraint linkConstraint, out bool[] dof, out bool[] fix, out double[] stiff, out double[] damp, out double dj2, out double dj3)
+        {
+            dof = new bool[6] { true,true,true,true,true,true };
+
+            fix = new bool[6] {
+                linkConstraint.XtoX,
+                linkConstraint.YtoY,
+                linkConstraint.ZtoZ,
+                linkConstraint.XXtoXX,
+                linkConstraint.YYtoYY,
+                linkConstraint.ZZtoZZ
+            };
+
+            stiff = new double[6] { 0, 0, 0, 0, 0, 0 };
+
+            damp = new double[6] { 0, 0, 0, 0, 0, 0 };
+
+            dj2 = 0;
+
+            dj3 = 0;
+        }
+        
     }
 }
