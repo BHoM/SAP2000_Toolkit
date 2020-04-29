@@ -63,7 +63,18 @@ namespace BH.Adapter.SAP2000
 
             if (surfaceProperty.HasModifiers())
             {
-                double[] modifier = surfaceProperty.Modifiers();//(double[])surfaceProperty.CustomData["Modifiers"];
+                double[] modifier = {
+                    surfaceProperty.Modifiers()[0],
+                    surfaceProperty.Modifiers()[2],
+                    surfaceProperty.Modifiers()[1],
+                    surfaceProperty.Modifiers()[3],
+                    surfaceProperty.Modifiers()[5],
+                    surfaceProperty.Modifiers()[4],
+                    surfaceProperty.Modifiers()[6],
+                    surfaceProperty.Modifiers()[7],
+                    surfaceProperty.Modifiers()[8],
+                    surfaceProperty.Modifiers()[9] };
+
                 if (m_model.PropArea.SetModifiers(propName, ref modifier) != 0)
                     CreatePropertyError("Modifiers", "SurfaceProperty", propName);
             }
