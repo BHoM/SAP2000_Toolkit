@@ -36,41 +36,30 @@ namespace BH.Engine.SAP2000
 
         public static List<RigidLink> JoinRigidLink(List<RigidLink> linkList)
         {
-            List<RigidLink> joinedList = new List<RigidLink>();
-
-            Dictionary<string, Node> masterDict = new Dictionary<string, Node>();
-            Dictionary<string, List<Node>> slaveDict = new Dictionary<string, List<Node>>();
-
-            //Use first constraint for all
-            LinkConstraint constraint = linkList.First().Constraint;
-
+            Dictionary<string, RigidLink> joinedList = new Dictionary<string, RigidLink>();
+            
             foreach (RigidLink link in linkList)
             {
                 string[] nameParts = link.Name.Split(new[] { ":::" }, StringSplitOptions.None);
                 if (nameParts.Count() == 1)
-                    joinedList.Add(link);
+                    joinedList.Add(link.Name, link);
                 else
                 {
-                    string name = nameParts[0];
-                    if (masterDict.ContainsKey(name))
+                    string JoinedName = nameParts[0];
+                    if (joinedList.ContainsKey(JoinedName))
                     {
-                        slaveDict[name].Add(link.SlaveNodes[0]);
+                        joinedList[JoinedName].SlaveNodes.Add(link.SlaveNodes[0]);
                     }
                     else
                     {
-                        masterDict.Add(name, link.MasterNode);
-                        slaveDict.Add(name, new List<Node> { link.SlaveNodes[0] });
+                        RigidLink newJoinedLink = (RigidLink)link.GetShallowClone();
+                        newJoinedLink.Name = JoinedName;
+                        joinedList.Add(JoinedName, newJoinedLink);
                     }
                 }
-            }
+            }        
 
-            foreach (KeyValuePair<string, Node> kvp in masterDict)
-            {
-                RigidLink newLink = Structure.Create.RigidLink(kvp.Value, slaveDict[kvp.Key], constraint, kvp.Key);
-                joinedList.Add(newLink);
-            }           
-
-            return joinedList;
+            return joinedList.Values.ToList();
         }
 
         /***************************************************/

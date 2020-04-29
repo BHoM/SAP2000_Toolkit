@@ -36,7 +36,7 @@ namespace BH.Adapter.SAP2000
             List<RigidLink> subLinks = BH.Engine.SAP2000.Query.SplitRigidLink(bhLink);
             List<string> linkIds = new List<string>();
 
-            if (subLinks.Count < 1)
+            if (subLinks.Count > 1)
                 Engine.Reflection.Compute.RecordNote($"The RigidLink {bhLink.Name} was split into {subLinks.Count} separate links. They will be added to a new group called \"BHoM_Link_{bhLink.Name}\"");
 
             foreach (RigidLink subLink in subLinks)
@@ -53,19 +53,24 @@ namespace BH.Adapter.SAP2000
 
                     //Attempt to set property (if property has been pushed)
                     if (subLink.Constraint.CustomData.TryGetValue(AdapterIdName, out object propName))
+                    {
                         if (m_model.LinkObj.SetProperty(name, propName.ToString()) != 0)
                             CreatePropertyWarning("LinkConstraint", "RigidLink", bhLink.Name);
+                    }
+                    else
+                        CreatePropertyWarning("LinkConstraint", "RigidLink", bhLink.Name);
+
 
                     //Add to groups per tags. For links that have been split, the original name will be tagged
-                    foreach (string gName in bhLink.Tags)
-                    {
-                        string groupName = gName.ToString();
-                        if (m_model.LinkObj.SetGroupAssign(name, groupName) != 0)
+                    foreach (string gName in subLink.Tags)
                         {
-                            m_model.GroupDef.SetGroup(groupName);
-                            m_model.LinkObj.SetGroupAssign(name, groupName);
+                            string groupName = gName.ToString();
+                            if (m_model.LinkObj.SetGroupAssign(name, groupName) != 0)
+                            {
+                                m_model.GroupDef.SetGroup(groupName);
+                                m_model.LinkObj.SetGroupAssign(name, groupName);
+                            }
                         }
-                    }
 
                     linkIds.Add(name);
                 }

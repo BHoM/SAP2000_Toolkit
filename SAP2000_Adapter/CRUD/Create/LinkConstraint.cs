@@ -20,37 +20,39 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Physical.Materials;
+using BH.Engine.Structure;
 using BH.oM.Structure.MaterialFragments;
-using BH.oM.Structure.Elements;
 using BH.oM.Structure.Constraints;
-using BH.oM.Structure.SectionProperties;
-using BH.oM.Structure.SurfaceProperties;
-using BH.oM.Structure.Loads;
+using BH.oM.Geometry.ShapeProfiles;
 using System;
-using System.Collections.Generic;
+
 
 namespace BH.Adapter.SAP2000
 {
     public partial class SAP2000Adapter
     {
         /***************************************************/
-        /**** Protected Methods                         ****/
+        /**** Private Methods                            ****/
         /***************************************************/
-        
-        protected void SetupDependencies()
+
+        private bool CreateObject(LinkConstraint bhLinkConstraint)
         {
-            DependencyTypes = new Dictionary<Type, List<Type>>
-            {
-                {typeof(Bar), new List<Type> { typeof(ISectionProperty), typeof(Node) } },
-                {typeof(ISectionProperty), new List<Type> { typeof(IMaterialFragment) } },
-                {typeof(Panel), new List<Type> { typeof(ISurfaceProperty) } },
-                {typeof(ISurfaceProperty), new List<Type> { typeof(IMaterialFragment) } },
-                {typeof(RigidLink), new List<Type> { typeof(LinkConstraint), typeof(Node) } },
-                {typeof(ILoad), new List<Type> {typeof(Loadcase) } },
-                {typeof(LoadCombination), new List<Type> {typeof(Loadcase) } }
-            };
+            string name = bhLinkConstraint.DescriptionOrName();
+            
+            bhLinkConstraint.ToSAP2000(out bool[] DOF, out bool[] Fixed, out double[] Ke, out double[] Ce, out double DJ2, out double DJ3);
+
+            if (m_model.PropLink.SetLinear(name, ref DOF, ref Fixed, ref Ke, ref Ce, DJ2, DJ3) != 0)
+                Engine.Reflection.Compute.RecordWarning($"SAP returned an error pushing LinkConstraint {name}. Check results.");
+
+            bhLinkConstraint.CustomData[AdapterIdName] = name;
+            
+            return false;
         }
 
         /***************************************************/
+        /**** Set Property                              ****/
+        /***************************************************/
+
     }
 }

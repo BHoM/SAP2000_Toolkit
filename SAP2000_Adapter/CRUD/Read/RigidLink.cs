@@ -43,12 +43,7 @@ namespace BH.Adapter.SAP2000
             int nameCount = 0;
             string[] names = { };
             m_model.LinkObj.GetNameList(ref nameCount, ref names);
-
-            if (ids == null)
-            {
-                ids = names.ToList();
-            }
-
+            
             foreach (string name in names)
             {
                 string masterId = "";
@@ -67,9 +62,11 @@ namespace BH.Adapter.SAP2000
 
             List<RigidLink> joinedList = BH.Engine.SAP2000.Query.JoinRigidLink(linkList);
 
-            List<RigidLink> filteredList = joinedList.Where(x => ids.Contains(x.Name)).ToList();
+            if (ids != null)
+                return joinedList.Where(x => ids.Contains(x.Name)).ToList();
+            else
+                return joinedList;
 
-            return filteredList;
         }
 
         /***************************************************/

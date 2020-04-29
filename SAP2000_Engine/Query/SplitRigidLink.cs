@@ -36,24 +36,29 @@ namespace BH.Engine.SAP2000
 
         public static List<RigidLink> SplitRigidLink(RigidLink link)
         {
-            List<RigidLink> SingleLinks = new List<RigidLink>();
+            List<RigidLink> singleLinks = new List<RigidLink>();
 
             if (link.SlaveNodes.Count() <= 1)
             {
-                SingleLinks.Add(link);
+                singleLinks.Add(link);
             }
             else
             {
                 for (int i = 0; i < link.SlaveNodes.Count(); i++)
                 {
-                    RigidLink subLink = BH.Engine.Structure.Create.RigidLink(link.MasterNode, new List<Node> { link.SlaveNodes[i] }, link.Constraint);
-                    if (link.Name != "" && link.Name != null)
+                    RigidLink subLink = BH.Engine.Base.Query.ShallowClone(link);
+                    subLink.SlaveNodes = new List<Node> { link.SlaveNodes[i] };
+                    if (link.Name != "")
+                    {
+                        subLink.Name = $"{link.Name}:::{i}";
                         subLink.Tags.Add($"BHoM_Link_{link.Name}");
-                    SingleLinks.Add(subLink);
+                    }
+
+                    singleLinks.Add(subLink);
                 }
             }
 
-            return SingleLinks;
+            return singleLinks;
         }
 
         /***************************************************/
