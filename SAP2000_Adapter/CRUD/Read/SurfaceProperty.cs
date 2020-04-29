@@ -77,19 +77,14 @@ namespace BH.Adapter.SAP2000
                 panelConstant.CustomData.Add("Color", color);
                 panelConstant.CustomData.Add("Notes", notes);
                 panelConstant.CustomData.Add("GUID", guid);
-                
-                panelConstant.CustomData.Add("MembraneF11Modifier", modifiers[0]);
-                panelConstant.CustomData.Add("MembraneF22Modifier", modifiers[1]);
-                panelConstant.CustomData.Add("MembraneF12Modifier", modifiers[2]);
-                panelConstant.CustomData.Add("BendingM11Modifier", modifiers[3]);
-                panelConstant.CustomData.Add("BendingM22Modifier", modifiers[4]);
-                panelConstant.CustomData.Add("BendingM12Modifier", modifiers[5]);
-                panelConstant.CustomData.Add("ShearV13Modifier", modifiers[6]);
-                panelConstant.CustomData.Add("ShearV23Modifier", modifiers[7]);
-                panelConstant.CustomData.Add("MassModifier", modifiers[8]);
-                panelConstant.CustomData.Add("WeightModifier", modifiers[9]);                
 
-                propertyList.Add(panelConstant);
+                ISurfaceProperty surfProp = Engine.Structure.Modify.ApplyModifiers(panelConstant as ISurfaceProperty,
+                    f11: modifiers[0], f22: modifiers[1], f12: modifiers[2],
+                    m11: modifiers[3], m22: modifiers[4], m12: modifiers[5],
+                    v13: modifiers[6], v23: modifiers[7],
+                    mass: modifiers[8], weight: modifiers[9]);
+
+                propertyList.Add(surfProp);
             }
 
             return propertyList;
