@@ -37,9 +37,11 @@
     </Reference>
     <Reference Include="Adapter_Engine">
       <HintPath>..\..\BHoM_Adapter\Build\Adapter_Engine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Adapter_oM">
       <HintPath>..\..\BHoM_Adapter\Build\Adapter_oM.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Analytical_oM">
       <HintPath>..\..\BHoM\Build\Analytical_oM.dll</HintPath>
@@ -125,11 +127,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\AppData\Roaming\BHoM\Assemblies\SAP2000v1.dll</HintPath>
     </Reference>
-    <Reference Include="SAP2000v19, Version=19.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSI_SAP2000v19_x64.1.0.0\lib\SAP2000v19.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SAP2000_Engine, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SAP2000_Engine">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Build\SAP2000_Engine.dll</HintPath>
     </Reference>
@@ -139,6 +137,7 @@
     </Reference>
     <Reference Include="Structure_AdapterModules">
       <HintPath>..\..\BHoM_Adapter\Build\Structure_AdapterModules.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Structure_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Structure_Engine.dll</HintPath>
