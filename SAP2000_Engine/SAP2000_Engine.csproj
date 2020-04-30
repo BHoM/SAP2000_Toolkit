@@ -103,10 +103,6 @@
       <HintPath>..\packages\BHoM.Interop.SAP2000v21.1.0.0\lib\net47\SAP2000v1.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SAP2000v19, Version=19.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSI_SAP2000v19_x64.1.0.0\lib\SAP2000v19.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Serialiser_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Serialiser_Engine.dll</HintPath>
       <Private>False</Private>
