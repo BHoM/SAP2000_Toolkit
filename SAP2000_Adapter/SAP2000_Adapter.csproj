@@ -126,10 +126,6 @@
     <Reference Include="SAP2000v1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=453d728ef24c6f5e, processorArchitecture=MSIL">
       <HintPath>..\packages\BHoM.Interop.SAP2000v21.1.0.0\lib\net47\SAP2000v1.dll</HintPath>
     </Reference>
-    <Reference Include="SAP2000_Engine">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Build\SAP2000_Engine.dll</HintPath>
-    </Reference>
     <Reference Include="Serialiser_Engine">
       <HintPath>..\..\BHoM_Engine\Build\Serialiser_Engine.dll</HintPath>
       <Private>False</Private>
@@ -210,9 +206,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SAP2000_Engine\SAP2000_Engine.csproj">
+      <Project>{4bb31ae9-b7ce-42c8-80a4-484389d23de2}</Project>
+      <Name>SAP2000_Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\SAP2000_oM\SAP2000_oM.csproj">
       <Project>{bc975b64-e35e-4155-a067-7a88505e61c2}</Project>
       <Name>SAP2000_oM</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
