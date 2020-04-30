@@ -124,8 +124,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="SAP2000v1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=453d728ef24c6f5e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\AppData\Roaming\BHoM\Assemblies\SAP2000v1.dll</HintPath>
+      <HintPath>..\packages\BHoM.Interop.SAP2000v21.1.0.0\lib\net47\SAP2000v1.dll</HintPath>
     </Reference>
     <Reference Include="SAP2000_Engine">
       <SpecificVersion>False</SpecificVersion>
@@ -207,15 +206,14 @@
     <Compile Include="Types\SetupComparer.cs" />
     <Compile Include="Types\SetupDependencies.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SAP2000_oM\SAP2000_oM.csproj">
       <Project>{bc975b64-e35e-4155-a067-7a88505e61c2}</Project>
       <Name>SAP2000_oM</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
