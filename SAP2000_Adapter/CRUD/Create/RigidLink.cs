@@ -52,7 +52,8 @@ namespace BH.Adapter.SAP2000
                         Engine.Reflection.Compute.RecordNote($"RigidLink {bhLink.Name} was assigned SAP id of {name}");
 
                     //Attempt to set property (if property has been pushed)
-                    if (subLink.Constraint.CustomData.TryGetValue(AdapterIdName, out object propName))
+                    object propName;
+                    if (subLink.Constraint.CustomData.TryGetValue(AdapterIdName, out propName))
                     {
                         if (m_model.LinkObj.SetProperty(name, propName.ToString()) != 0)
                             CreatePropertyWarning("LinkConstraint", "RigidLink", bhLink.Name);
