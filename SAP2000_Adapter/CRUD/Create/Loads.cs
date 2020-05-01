@@ -131,21 +131,21 @@ namespace BH.Adapter.SAP2000
             string cSys = bhLoad.Axis.ToCSI();
             double[] val =
             {
-                bhLoad.Force.X,
-                bhLoad.Force.Y,
-                bhLoad.Force.Z,
-                bhLoad.Moment.X,
-                bhLoad.Moment.Y,
-                bhLoad.Moment.Z,
+                bhLoad.Translation.X,
+                bhLoad.Translation.Y,
+                bhLoad.Translation.Z,
+                bhLoad.Rotation.X, // Rotation in radians
+                bhLoad.Rotation.Y,
+                bhLoad.Rotation.Z,
             };
 
             bool replace = true;
 
             foreach (Node bhNode in nodes)
             {
-                if (m_model.PointObj.SetLoadForce(bhNode.CustomData[AdapterIdName].ToString(), loadPat, ref val, replace, cSys, eItemType.Objects) != 0)
+                if (m_model.PointObj.SetLoadDispl(bhNode.CustomData[AdapterIdName].ToString(), loadPat, ref val, replace, cSys, eItemType.Objects) != 0)
                 {
-                    CreateElementError("Point Load", bhLoad.Name);
+                    CreateElementError("Point Displacement", bhLoad.Name);
                 }
             }
 
