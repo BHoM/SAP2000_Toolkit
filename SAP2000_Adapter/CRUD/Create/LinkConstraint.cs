@@ -39,10 +39,16 @@ namespace BH.Adapter.SAP2000
         private bool CreateObject(LinkConstraint bhLinkConstraint)
         {
             string name = bhLinkConstraint.DescriptionOrName();
-            
-            bhLinkConstraint.ToSAP2000(out bool[] DOF, out bool[] Fixed, out double[] Ke, out double[] Ce, out double DJ2, out double DJ3);
+            bool[] dof;
+            bool[] fix;
+            double[] stiff;
+            double[] damp;
+            double dj2;
+            double dj3;
 
-            if (m_model.PropLink.SetLinear(name, ref DOF, ref Fixed, ref Ke, ref Ce, DJ2, DJ3) != 0)
+            bhLinkConstraint.ToSAP2000(out dof, out fix, out stiff, out damp, out dj2, out dj3);
+
+            if (m_model.PropLink.SetLinear(name, ref dof, ref fix, ref stiff, ref damp, dj2, dj3) != 0)
                 Engine.Reflection.Compute.RecordWarning($"SAP returned an error pushing LinkConstraint {name}. Check results.");
 
             bhLinkConstraint.CustomData[AdapterIdName] = name;
