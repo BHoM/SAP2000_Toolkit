@@ -130,12 +130,17 @@ namespace BH.Adapter.SAP2000
                 return ReadBarLoad();
             else if (type == typeof(AreaUniformlyDistributedLoad))
                 return ReadAreaLoad();
+            /* JLJ */
+            else if (type == typeof(PointDisplacement))
+                return ReadPointDispl();
             else
             {
                 List<ILoad> loads = new List<ILoad>();
                 loads.AddRange(ReadPointLoad());
                 loads.AddRange(ReadBarLoad());
                 loads.AddRange(ReadAreaLoad());
+                /* JLJ */
+                loads.AddRange(ReadPointDispl());
                 return loads;
             }
         }
@@ -170,6 +175,48 @@ namespace BH.Adapter.SAP2000
                     {
                         Force = new Vector() { X = f1[i], Y = f2[i], Z = f3[i] },
                         Moment = new Vector() { X = m1[i], Y = m2[i], Z = m3[i] },
+                        Loadcase = bhomCases[caseNames[i]],
+                        Axis = cSys[i].LoadAxisToBHoM(),
+                        Objects = new BHoMGroup<Node>() { Elements = { bhomNodes[nodeNames[i]] } }
+                    });
+                }
+            }
+
+
+
+            return loads;
+        }
+
+        /***************************************************/
+
+        private List<ILoad> ReadPointDispl(List<string> ids = null)
+        {
+            List<ILoad> loads = new List<ILoad>(); //nodal displacements as nodal loads
+
+            Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
+            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+
+            int count = 0;
+            string[] nodeNames = null;
+            string[] caseNames = null;
+            int[] steps = null;
+            string[] cSys = null;
+            double[] u1 = null;
+            double[] u2 = null;
+            double[] u3 = null;
+            double[] r1 = null;
+            double[] r2 = null;
+            double[] r3 = null;
+
+
+            if (m_model.PointObj.GetLoadDispl("All", ref count, ref nodeNames, ref caseNames, ref steps, ref cSys, ref u1, ref u2, ref u3, ref r1, ref r2, ref r3, eItemType.Group) == 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    loads.Add(new PointDisplacement()
+                    {
+                        Translation = new Vector() { X = u1[i], Y = u2[i], Z = u3[i] },
+                        Rotation = new Vector() { X = r1[i], Y = r2[i], Z = r3[i] },
                         Loadcase = bhomCases[caseNames[i]],
                         Axis = cSys[i].LoadAxisToBHoM(),
                         Objects = new BHoMGroup<Node>() { Elements = { bhomNodes[nodeNames[i]] } }
