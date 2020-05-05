@@ -24,6 +24,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.MaterialFragments;
+using BH.Engine.Structure;
 
 namespace BH.Adapter.SAP2000
 {
@@ -64,30 +65,32 @@ namespace BH.Adapter.SAP2000
 
                 if (m_model.PropArea.GetShell_1(id, ref shellType, ref includeDrillingDOF, ref materialName, ref matAng, ref thickness, ref bending, ref color, ref notes, ref guid) != 0)
                     Engine.Reflection.Compute.RecordWarning("Error while pulling Surface Property {id}. Check results carefully.");
+                              
+                ConstantThickness bhSurfProp = new ConstantThickness();
 
-                m_model.PropArea.GetModifiers(id, ref modifiers);
-                                
-                ConstantThickness panelConstant = new ConstantThickness();
-                panelConstant.CustomData[AdapterIdName] = id;
-                panelConstant.Name = id;
-                panelConstant.Thickness = thickness;
-                panelConstant.CustomData.Add("MaterialAngle", matAng);
-                panelConstant.CustomData.Add("BendingThickness", bending);
-                panelConstant.CustomData.Add("Color", color);
-                panelConstant.CustomData.Add("Notes", notes);
-                panelConstant.CustomData.Add("GUID", guid);
+                bhSurfProp.CustomData[AdapterIdName] = id;
+                bhSurfProp.Name = id;
+                bhSurfProp.Thickness = thickness;
+                bhSurfProp.CustomData.Add("MaterialAngle", matAng);
+                bhSurfProp.CustomData.Add("BendingThickness", bending);
+                bhSurfProp.CustomData.Add("Color", color);
+                bhSurfProp.CustomData.Add("Notes", notes);
+                bhSurfProp.CustomData.Add("GUID", guid);
 
                 IMaterialFragment bhMat = new GenericIsotropicMaterial();
                 bhomMaterials.TryGetValue(materialName, out bhMat);
-                panelConstant.Material = bhMat;
+                bhSurfProp.Material = bhMat;
+                
+                if (m_model.PropArea.GetModifiers(id, ref modifiers) == 0)
+                {
+                    bhSurfProp.ApplyModifiers(
+                        f11: modifiers[0], f22: modifiers[1], f12: modifiers[2],
+                        m11: modifiers[3], m22: modifiers[4], m12: modifiers[5],
+                        v13: modifiers[6], v23: modifiers[7],
+                        mass: modifiers[8], weight: modifiers[9]);
+                }
 
-                ISurfaceProperty surfProp = Engine.Structure.Modify.ApplyModifiers(panelConstant as ISurfaceProperty,
-                    f11: modifiers[0], f22: modifiers[1], f12: modifiers[2],
-                    m11: modifiers[3], m22: modifiers[4], m12: modifiers[5],
-                    v13: modifiers[6], v23: modifiers[7],
-                    mass: modifiers[8], weight: modifiers[9]);
-
-                propertyList.Add(surfProp);
+                propertyList.Add(bhSurfProp);
             }
 
             return propertyList;
