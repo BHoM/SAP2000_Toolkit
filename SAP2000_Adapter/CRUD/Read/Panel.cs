@@ -81,9 +81,13 @@ namespace BH.Adapter.SAP2000
                 //Get the section property
                 string propertyName = "";
                 if (m_model.AreaObj.GetProperty(id, ref propertyName) == 0)
-                    bhomPanel.Property = bhomProperties[propertyName];
+                {
+                    ISurfaceProperty bhProp = new ConstantThickness();
+                    bhomProperties.TryGetValue(propertyName, out bhProp);
+                    bhomPanel.Property = bhProp;
+                }
 
-                
+
                 //Add the panel to the list
                 bhomPanels.Add(bhomPanel);
             }

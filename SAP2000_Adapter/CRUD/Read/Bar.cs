@@ -77,11 +77,12 @@ namespace BH.Adapter.SAP2000
                     
                     string propertyName = "";
                     string sAuto = ""; //This is the name of the auto select list assigned to the frame object, if any.
-                    m_model.FrameObj.GetSection(id, ref propertyName, ref sAuto);
-
-                    if (propertyName != "None")
+                    
+                    if (m_model.FrameObj.GetSection(id, ref propertyName, ref sAuto) == 0)
                     {
-                        bhomBar.SectionProperty = bhomSections[propertyName];
+                        ISectionProperty bhProp = new ExplicitSection();
+                        bhomSections.TryGetValue(propertyName, out bhProp);
+                        bhomBar.SectionProperty = bhProp;
                     }
 
                     double angle = 0;
