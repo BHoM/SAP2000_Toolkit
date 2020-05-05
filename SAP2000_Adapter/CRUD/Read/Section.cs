@@ -163,16 +163,7 @@ namespace BH.Adapter.SAP2000
                 }
 
                 IMaterialFragment material = null;
-
-                try
-                {
-                    material = bhomMaterials[materialName];
-                }
-                catch (Exception)
-                {
-                    material = bhomMaterials.FirstOrDefault().Value;
-                    Engine.Reflection.Compute.RecordWarning("Could not get material from SAP. Using a default material");
-                }
+                bhomMaterials.TryGetValue(materialName, out material);                
 
                 if (bhomProfile == null)
                 {

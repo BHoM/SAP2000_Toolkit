@@ -46,16 +46,21 @@ namespace BH.Adapter.SAP2000
             
             foreach (string name in names)
             {
+                RigidLink newLink = new RigidLink();
+
+                newLink.CustomData[AdapterIdName] = newLink.Name = name;
+
                 string masterId = "";
                 string SlaveId = "";
                 string propName = "";
                 m_model.LinkObj.GetPoints(name, ref masterId, ref SlaveId);
+                newLink.MasterNode = bhomNodes[masterId];
+                newLink.SlaveNodes = new List<Node> { bhomNodes[SlaveId] };
 
                 m_model.LinkObj.GetProperty(name, ref propName);
-
-                RigidLink newLink = BH.Engine.Structure.Create.RigidLink(bhomNodes[masterId], new List<Node> { bhomNodes[SlaveId] }, bhomLinkConstraints[propName]);
-
-                newLink.CustomData[AdapterIdName] = newLink.Name = name;
+                LinkConstraint bhProp = new LinkConstraint();
+                bhomLinkConstraints.TryGetValue(propName, out bhProp);
+                newLink.Constraint = bhProp;
 
                 linkList.Add(newLink);
             }
