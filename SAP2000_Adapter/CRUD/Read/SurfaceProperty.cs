@@ -70,13 +70,16 @@ namespace BH.Adapter.SAP2000
                 ConstantThickness panelConstant = new ConstantThickness();
                 panelConstant.CustomData[AdapterIdName] = id;
                 panelConstant.Name = id;
-                panelConstant.Material = bhomMaterials[materialName];
                 panelConstant.Thickness = thickness;
                 panelConstant.CustomData.Add("MaterialAngle", matAng);
                 panelConstant.CustomData.Add("BendingThickness", bending);
                 panelConstant.CustomData.Add("Color", color);
                 panelConstant.CustomData.Add("Notes", notes);
                 panelConstant.CustomData.Add("GUID", guid);
+
+                IMaterialFragment bhMat = new GenericIsotropicMaterial();
+                bhomMaterials.TryGetValue(materialName, out bhMat);
+                panelConstant.Material = bhMat;
 
                 ISurfaceProperty surfProp = Engine.Structure.Modify.ApplyModifiers(panelConstant as ISurfaceProperty,
                     f11: modifiers[0], f22: modifiers[1], f12: modifiers[2],
