@@ -45,7 +45,8 @@ namespace BH.Adapter.SAP2000
             AdapterIdName = Adapter.SAP2000.Convert.AdapterIdName;
             Modules.Structure.ModuleLoader.LoadModules(this);
             SetupComparers();
-            SetupDependencies();   
+            SetupDependencies();
+            m_AdapterSettings.DefaultPushType = oM.Adapter.PushType.CreateNonExisting;
 
             if (active)
             {
