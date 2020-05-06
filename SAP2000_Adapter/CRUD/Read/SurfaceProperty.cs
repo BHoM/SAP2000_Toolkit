@@ -61,10 +61,9 @@ namespace BH.Adapter.SAP2000
                 string notes = "";
                 string guid = "";
 
-                double[] modifiers = new double[] { };
 
                 if (m_model.PropArea.GetShell_1(id, ref shellType, ref includeDrillingDOF, ref materialName, ref matAng, ref thickness, ref bending, ref color, ref notes, ref guid) != 0)
-                    Engine.Reflection.Compute.RecordWarning("Error while pulling Surface Property {id}. Check results carefully.");
+                    Engine.Reflection.Compute.RecordWarning($"Error while pulling Surface Property {id}. Check results carefully.");
                               
                 ConstantThickness bhSurfProp = new ConstantThickness();
 
@@ -80,10 +79,12 @@ namespace BH.Adapter.SAP2000
                 IMaterialFragment bhMat = new GenericIsotropicMaterial();
                 bhomMaterials.TryGetValue(materialName, out bhMat);
                 bhSurfProp.Material = bhMat;
-                
+
+                double[] modifiers = new double[6];
+
                 if (m_model.PropArea.GetModifiers(id, ref modifiers) == 0)
                 {
-                    bhSurfProp.ApplyModifiers(
+                    bhSurfProp = (ConstantThickness)bhSurfProp.ApplyModifiers(
                         f11: modifiers[0], f22: modifiers[1], f12: modifiers[2],
                         m11: modifiers[3], m22: modifiers[4], m12: modifiers[5],
                         v13: modifiers[6], v23: modifiers[7],
