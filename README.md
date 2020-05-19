@@ -10,7 +10,7 @@ https://www.autodesk.co.uk/products/robot-structural-analysis
 SAP2000 version 21
 
 ### Documentation
-For more information about functionality see (_links to Toolkit specific Wiki and/or API when ready_)
+For more information about functionality see [Object Relation Table](https://github.com/BHoM/SAP2000_Toolkit/wiki/BHoM-SAP2000-Object-Relations)
 
 ---
 This toolkit is part of the Buildings and Habitats object Model. Find out more on our [wiki](https://github.com/BHoM/documentation/wiki) or at [https://bhom.xyz](https://bhom.xyz/)
