@@ -199,14 +199,32 @@ namespace BH.Adapter.SAP2000
             foreach (Panel panel in panels)
             {
                 string name = panel.CustomData[AdapterIdName].ToString();
-                bool replaceNow = replace;
-                for (int i = 0; i < dirs.Count(); i++)
+                string propName = "";
+                m_model.AreaObj.GetProperty(name, ref propName);
+                if (propName == "None")
                 {
-                    if (vals[i] != 0)
+                    bool replaceNow = replace;
+                    for (int i = 0; i < dirs.Count(); i++)
                     {
-                        if (m_model.AreaObj.SetLoadUniform(name, loadPat, vals[i], dirs[i], replaceNow, cSys, type) != 0)
-                            Engine.Reflection.Compute.RecordWarning($"Could not assign an area load in direction {dirs[i]}");
-                        replaceNow = false;
+                        if (vals[i] != 0)
+                        {
+                            if (m_model.AreaObj.SetLoadUniformToFrame(name, loadPat, vals[i], dirs[i], 2, replaceNow, cSys, type) != 0)
+                                Engine.Reflection.Compute.RecordWarning($"Could not assign an area load in direction {dirs[i]}");
+                            replaceNow = false;
+                        }
+                    }
+                }
+                else
+                {
+                    bool replaceNow = replace;
+                    for (int i = 0; i < dirs.Count(); i++)
+                    {
+                        if (vals[i] != 0)
+                        {
+                            if (m_model.AreaObj.SetLoadUniform(name, loadPat, vals[i], dirs[i], replaceNow, cSys, type) != 0)
+                                Engine.Reflection.Compute.RecordWarning($"Could not assign an area load in direction {dirs[i]}");
+                            replaceNow = false;
+                        }
                     }
                 }
             }
