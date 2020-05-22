@@ -4,7 +4,7 @@
 
 This toolkit allows interoperability between the BHoM and SAP2000. Enables creation and reading of structural finite element analysis models and analysis results. 
 
-https://www.autodesk.co.uk/products/robot-structural-analysis 
+[SAP2000 Product Website](https://www.csiamerica.com/products/sap2000)
 
 ### Known Versions of Software Supported
 SAP2000 version 21
