@@ -1,4 +1,4 @@
-[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0) [![Build status](https://ci.appveyor.com/api/projects/status/plmqiho414qw9oko/branch/master?svg=true)](https://ci.appveyor.com/api/projects/status/sap2000_toolkit/branch/master)
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0) [![Build status](https://ci.appveyor.com/api/projects/status/plmqiho414qw9oko/branch/master?svg=true)](https://ci.appveyor.com/api/projects/status/sap2000_toolkit/branch/master) [![Build Status](https://dev.azure.com/BHoMBot/BHoM/_apis/build/status/SAP2000_Toolkit/SAP2000_Toolkit.CheckCore?branchName=master)](https://dev.azure.com/BHoMBot/BHoM/_build/latest?definitionId=202&branchName=master)
 
 # SAP2000_Toolkit
 
