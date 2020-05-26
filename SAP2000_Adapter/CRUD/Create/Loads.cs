@@ -134,7 +134,7 @@ namespace BH.Adapter.SAP2000
                 bhLoad.Translation.X,
                 bhLoad.Translation.Y,
                 bhLoad.Translation.Z,
-                bhLoad.Rotation.X, // Rotation in radians
+                bhLoad.Rotation.X,
                 bhLoad.Rotation.Y,
                 bhLoad.Rotation.Z,
             };

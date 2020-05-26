@@ -135,7 +135,6 @@ namespace BH.Adapter.SAP2000
                 return ReadBarLoad();
             else if (type == typeof(AreaUniformlyDistributedLoad))
                 return ReadAreaLoad();
-            /* JLJ */
             else if (type == typeof(PointDisplacement))
                 return ReadPointDispl();
             else
@@ -144,7 +143,6 @@ namespace BH.Adapter.SAP2000
                 loads.AddRange(ReadPointLoad());
                 loads.AddRange(ReadBarLoad());
                 loads.AddRange(ReadAreaLoad());
-                /* JLJ */
                 loads.AddRange(ReadPointDispl());
                 return loads;
             }
@@ -196,7 +194,8 @@ namespace BH.Adapter.SAP2000
 
         private List<ILoad> ReadPointDispl(List<string> ids = null)
         {
-            List<ILoad> loads = new List<ILoad>(); //nodal displacements as nodal loads
+            // Nodal Displacements as Nodal Loads
+            List<ILoad> loads = new List<ILoad>();
 
             Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
             Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
@@ -233,6 +232,7 @@ namespace BH.Adapter.SAP2000
 
             return loads;
         }
+
 
         /***************************************************/
 
