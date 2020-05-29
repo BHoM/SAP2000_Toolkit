@@ -22,6 +22,8 @@
 
 using BH.Engine.Structure;
 using BH.oM.Structure.SurfaceProperties;
+using BH.oM.Structure.Fragments;
+using BH.Engine.Base;
 
 namespace BH.Adapter.SAP2000
 {
@@ -61,21 +63,24 @@ namespace BH.Adapter.SAP2000
 
             surfaceProperty.CustomData[AdapterIdName] = propName;
 
-            if (surfaceProperty.HasModifiers())
+            SurfacePropertyModifier modifier = surfaceProperty.FindFragment<SurfacePropertyModifier>();
+            if (modifier != null)
             {
-                double[] modifier = {
-                    surfaceProperty.Modifiers()[0],
-                    surfaceProperty.Modifiers()[2],
-                    surfaceProperty.Modifiers()[1],
-                    surfaceProperty.Modifiers()[3],
-                    surfaceProperty.Modifiers()[5],
-                    surfaceProperty.Modifiers()[4],
-                    surfaceProperty.Modifiers()[6],
-                    surfaceProperty.Modifiers()[7],
-                    surfaceProperty.Modifiers()[8],
-                    surfaceProperty.Modifiers()[9] };
+                double[] modifiers = new double[] 
+                {
+                    modifier.FXX,
+                    modifier.FYY,
+                    modifier.FXY,
+                    modifier.MXX,
+                    modifier.MYY,
+                    modifier.MXY,
+                    modifier.VXZ,
+                    modifier.VYZ,
+                    modifier.Mass,
+                    modifier.Weight
+                };
 
-                if (m_model.PropArea.SetModifiers(propName, ref modifier) != 0)
+            if (m_model.PropArea.SetModifiers(propName, ref modifiers) != 0)
                     CreatePropertyError("Modifiers", "SurfaceProperty", propName);
             }
 

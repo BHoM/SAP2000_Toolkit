@@ -25,6 +25,7 @@ using System.Linq;
 using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.Structure;
+using BH.oM.Structure.Fragments;
 
 namespace BH.Adapter.SAP2000
 {
@@ -84,11 +85,20 @@ namespace BH.Adapter.SAP2000
 
                 if (m_model.PropArea.GetModifiers(id, ref modifiers) == 0)
                 {
-                    bhSurfProp = (ConstantThickness)bhSurfProp.ApplyModifiers(
-                        f11: modifiers[0], f22: modifiers[1], f12: modifiers[2],
-                        m11: modifiers[3], m22: modifiers[4], m12: modifiers[5],
-                        v13: modifiers[6], v23: modifiers[7],
-                        mass: modifiers[8], weight: modifiers[9]);
+                    SurfacePropertyModifier modifier = new SurfacePropertyModifier
+                    {
+                        FXX = modifiers[0],
+                        FYY = modifiers[1],
+                        FXY = modifiers[2],
+                        MXX = modifiers[3],
+                        MYY = modifiers[4],
+                        MXY = modifiers[5],
+                        VXZ = modifiers[6],
+                        VYZ = modifiers[7],
+                        Mass = modifiers[8],
+                        Weight = modifiers[9]
+                    };
+                    bhSurfProp.Fragments.Add(modifier);
                 }
 
                 propertyList.Add(bhSurfProp);
