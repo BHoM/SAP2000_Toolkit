@@ -20,7 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Reflection;
 using BH.Engine.SAP2000;
+using BH.oM.Geometry;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using SAP2000v1;
@@ -263,6 +265,93 @@ namespace BH.Adapter.SAP2000
 
             return true;
         }
+
+        /***************************************************/
+        /* JL CONTOUR LOAD */
+        private bool CreateLoad(ContourLoad bhLoad)
+        { 
+            string loadPat = bhLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            string name = bhLoad.Name;
+            double[] vals = bhLoad.Force.ToDoubleArray();
+            int[] dirs = null;
+
+            List<Point> points = bhLoad.Contour.ControlPoints.ToList();
+            double[] x_coords = new double[points.Count];
+            double[] y_coords = new double[points.Count];
+            double[] z_coords = new double[points.Count];
+
+            int point_index = 0;
+            foreach (Point bhPoint in points)
+            {
+                x_coords[point_index] = bhPoint.X;
+                y_coords[point_index] = bhPoint.Y;
+                z_coords[point_index] = bhPoint.Z;
+                point_index++;
+            }
+            
+            
+            switch (bhLoad.Axis)
+            {
+                case LoadAxis.Global:
+                    if (bhLoad.Projected)
+                    {
+                        dirs = new int[] { 7, 8, 9 };
+                    }
+                    else
+                    {
+                        dirs = new int[] { 4, 5, 6 };
+                    }
+                    break;
+                case LoadAxis.Local:
+                    dirs = new int[] { 1, 2, 3 };
+                    break;
+            }
+
+            if (m_model.AreaObj.AddByCoord(points.Count - 1, ref x_coords, ref y_coords, ref z_coords, ref name, "None") != 0)
+            {
+                CreateElementError("Contour Load", bhLoad.Name);
+            }
+            /*
+            bool replace = true;
+            string cSys = bhLoad.Axis.ToCSI();
+            eItemType type = eItemType.Objects;
+
+            foreach (Panel panel in panels)
+            {
+                string name = panel.CustomData[AdapterIdName].ToString();
+                string propName = "";
+                m_model.AreaObj.GetProperty(name, ref propName);
+                if (propName == "None")
+                {
+                    bool replaceNow = replace;
+                    for (int i = 0; i < dirs.Count(); i++)
+                    {
+                        if (vals[i] != 0)
+                        {
+                            if (m_model.AreaObj.SetLoadUniformToFrame(name, loadPat, vals[i], dirs[i], 2, replaceNow, cSys, type) != 0)
+                                Engine.Reflection.Compute.RecordWarning($"Could not assign an area load in direction {dirs[i]}");
+                            replaceNow = false;
+                        }
+                    }
+                }
+                else
+                {
+                    bool replaceNow = replace;
+                    for (int i = 0; i < dirs.Count(); i++)
+                    {
+                        if (vals[i] != 0)
+                        {
+                            if (m_model.AreaObj.SetLoadUniform(name, loadPat, vals[i], dirs[i], replaceNow, cSys, type) != 0)
+                                Engine.Reflection.Compute.RecordWarning($"Could not assign an area load in direction {dirs[i]}");
+                            replaceNow = false;
+                        }
+                    }
+                }
+            }
+            */
+            return true;
+        }
+
 
         /***************************************************/
 
