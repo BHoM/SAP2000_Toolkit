@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.Results;
-using BH.oM.Common;
+using BH.oM.Analytical.Results;
 using BH.oM.Structure.Requests;
 using BH.oM.Geometry;
 using BH.Engine.Geometry;
