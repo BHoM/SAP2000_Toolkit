@@ -25,7 +25,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.Results;
-using BH.oM.Common;
+using BH.oM.Analytical.Results;
 using BH.oM.Structure.Requests;
 using BH.oM.Adapter;
 using SAP2000v1;
