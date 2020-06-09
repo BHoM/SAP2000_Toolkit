@@ -110,18 +110,7 @@ namespace BH.Adapter.SAP2000
                 {
                     for (int j = 0; j < resultCount; j++)
                     {
-                        NodeDisplacement nd = new NodeDisplacement()
-                        {
-                            ResultCase = loadcaseNames[j],
-                            ObjectId = nodeIds[i],
-                            UX = ux[j],
-                            UY = uy[j],
-                            UZ = uz[j],
-                            RX = rx[j],
-                            RY = ry[j],
-                            RZ = rz[j],
-                            TimeStep = stepNum[j]
-                        };
+                        NodeDisplacement nd = new NodeDisplacement(nodeIds[i], loadcaseNames[j], -1, stepNum[j], oM.Geometry.Basis.XY, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
                         nodeDisplacements.Add(nd);
                     }
                 }
@@ -169,18 +158,7 @@ namespace BH.Adapter.SAP2000
                 {
                     for (int j = 0; j < resultCount; j++)
                     {
-                        NodeReaction nr = new NodeReaction()
-                        {
-                            ResultCase = loadcaseNames[j],
-                            ObjectId = nodeIds[i],
-                            MX = mx[j],
-                            MY = my[j],
-                            MZ = mz[j],
-                            FX = fx[j],
-                            FY = fy[j],
-                            FZ = fz[j],
-                            TimeStep = stepNum[j]
-                        };
+                        NodeReaction nr = new NodeReaction(nodeIds[i], loadcaseNames[j], -1, stepNum[j], oM.Geometry.Basis.XY, fx[j], fy[j], fz[j], mx[j], my[j], mz[j]);
                         nodeReactions.Add(nr);
                     }
                 }
