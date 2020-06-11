@@ -22,9 +22,13 @@
 
 using BH.Engine.Reflection;
 using BH.Engine.SAP2000;
+using BH.Engine.Structure;
+using BH.oM.Adapter.Commands;
 using BH.oM.Geometry;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
+using BH.oM.Structure.SectionProperties;
+using BH.oM.Structure.SurfaceProperties;
 using SAP2000v1;
 using System;
 using System.Collections.Generic;
@@ -202,6 +206,62 @@ namespace BH.Adapter.SAP2000
             return true;
         }
 
+
+        /***************************************************/
+        /* JL Bar Varying Load */
+        private bool CreateLoad(BarVaryingDistributedLoad bhLoad)
+        {
+            List<Bar> bars = bhLoad.Objects.Elements.ToList();
+            string loadPat = bhLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            double dist1 = 0;
+            double dist2 = 1;
+            int[] dirs = null;
+            double[] forceValsA = null;
+            double[] momentValsA = null;
+            double[] forceValsB = null;
+            double[] momentValsB = null;
+
+            switch (bhLoad.Axis)
+            {
+                case LoadAxis.Global:
+                    dirs = new int[] { 4, 5, 6 };
+                    forceValsA = bhLoad.ForceA.ToDoubleArray();
+                    momentValsA = bhLoad.MomentA.ToDoubleArray();
+                    forceValsB = bhLoad.ForceB.ToDoubleArray();
+                    momentValsB = bhLoad.MomentB.ToDoubleArray();
+                    break;
+                case LoadAxis.Local:
+                    dirs = new int[] { 1, 2, 3 };
+                    forceValsA = bhLoad.ForceA.BarLocalAxisToCSI().ToDoubleArray();
+                    momentValsA = bhLoad.MomentA.BarLocalAxisToCSI().ToDoubleArray();
+                    forceValsB = bhLoad.ForceB.BarLocalAxisToCSI().ToDoubleArray();
+                    momentValsB = bhLoad.MomentB.BarLocalAxisToCSI().ToDoubleArray();
+                    break;
+            }
+            bool relDist = true;
+            string cSys = bhLoad.Axis.ToCSI();
+            eItemType type = eItemType.Objects;
+            bool replace = true;
+
+
+            foreach (Bar bhBar in bars)
+            {
+                string name = bhBar.CustomData[AdapterIdName].ToString();
+                bool replaceNow = replace;
+                for (int i = 0; i < dirs.Count(); i++)
+                {
+                    if (m_model.FrameObj.SetLoadDistributed(name, loadPat, 1, dirs[i], dist1, dist2, forceValsA[i], forceValsB[i], cSys, relDist, replaceNow, type) != 0)
+                        CreateElementError("BarLoad", bhBar.Name + dirs[i]);
+                    replaceNow = false;
+                    if (m_model.FrameObj.SetLoadDistributed(name, loadPat, 2, dirs[i], dist1, dist2, momentValsA[i], momentValsB[i], cSys, relDist, replaceNow, type) != 0)
+                        CreateElementError("BarLoad", bhBar.Name + dirs[i]);
+                }
+            }
+
+            return true;
+        }
+
+
         /***************************************************/
 
         private bool CreateLoad(AreaUniformlyDistributedLoad bhLoad)
@@ -267,91 +327,51 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
-        /* JL CONTOUR LOAD */
+
         private bool CreateLoad(ContourLoad bhLoad)
         { 
-            string loadPat = bhLoad.Loadcase.CustomData[AdapterIdName].ToString();
-            string name = bhLoad.Name;
-            double[] vals = bhLoad.Force.ToDoubleArray();
-            int[] dirs = null;
+            double[] loadVals = bhLoad.Force.ToDoubleArray();
 
-            List<Point> points = bhLoad.Contour.ControlPoints.ToList();
-            double[] x_coords = new double[points.Count];
-            double[] y_coords = new double[points.Count];
-            double[] z_coords = new double[points.Count];
+            List<Opening> openingsList = new List<Opening>();
+            Panel loadPanel = Engine.Structure.Create.Panel(bhLoad.Contour as ICurve, openingsList);
+            CreateObject(loadPanel);
 
-            int point_index = 0;
-            foreach (Point bhPoint in points)
-            {
-                x_coords[point_index] = bhPoint.X;
-                y_coords[point_index] = bhPoint.Y;
-                z_coords[point_index] = bhPoint.Z;
-                point_index++;
-            }
-            
-            
-            switch (bhLoad.Axis)
-            {
-                case LoadAxis.Global:
-                    if (bhLoad.Projected)
-                    {
-                        dirs = new int[] { 7, 8, 9 };
-                    }
-                    else
-                    {
-                        dirs = new int[] { 4, 5, 6 };
-                    }
-                    break;
-                case LoadAxis.Local:
-                    dirs = new int[] { 1, 2, 3 };
-                    break;
-            }
+            List<Panel> panelsToLoad = new List<Panel>();
+            panelsToLoad.Add(loadPanel);
+            AreaUniformlyDistributedLoad contourLoadArea = Engine.Structure.Create.AreaUniformlyDistributedLoad(bhLoad.Loadcase, loadVals.ToVector(), panelsToLoad, 
+                                                                                                                bhLoad.Axis, bhLoad.Projected, bhLoad.Name);
+            CreateLoad(contourLoadArea);
 
-            if (m_model.AreaObj.AddByCoord(points.Count - 1, ref x_coords, ref y_coords, ref z_coords, ref name, "None") != 0)
-            {
-                CreateElementError("Contour Load", bhLoad.Name);
-            }
-            /*
-            bool replace = true;
-            string cSys = bhLoad.Axis.ToCSI();
-            eItemType type = eItemType.Objects;
-
-            foreach (Panel panel in panels)
-            {
-                string name = panel.CustomData[AdapterIdName].ToString();
-                string propName = "";
-                m_model.AreaObj.GetProperty(name, ref propName);
-                if (propName == "None")
-                {
-                    bool replaceNow = replace;
-                    for (int i = 0; i < dirs.Count(); i++)
-                    {
-                        if (vals[i] != 0)
-                        {
-                            if (m_model.AreaObj.SetLoadUniformToFrame(name, loadPat, vals[i], dirs[i], 2, replaceNow, cSys, type) != 0)
-                                Engine.Reflection.Compute.RecordWarning($"Could not assign an area load in direction {dirs[i]}");
-                            replaceNow = false;
-                        }
-                    }
-                }
-                else
-                {
-                    bool replaceNow = replace;
-                    for (int i = 0; i < dirs.Count(); i++)
-                    {
-                        if (vals[i] != 0)
-                        {
-                            if (m_model.AreaObj.SetLoadUniform(name, loadPat, vals[i], dirs[i], replaceNow, cSys, type) != 0)
-                                Engine.Reflection.Compute.RecordWarning($"Could not assign an area load in direction {dirs[i]}");
-                            replaceNow = false;
-                        }
-                    }
-                }
-            }
-            */
             return true;
         }
 
+        /***************************************************/
+        /* JL GEOMETRIC LINE LOAD */
+        private bool CreateLoad(GeometricalLineLoad bhLoad)
+        {
+            double distanceFromA = 0.0;
+            double distanceFromB = 0.0;
+            Vector forceA = Engine.Geometry.Create.Vector(bhLoad.ForceA.X, bhLoad.ForceA.Y, bhLoad.ForceA.Z);
+            Vector forceB = Engine.Geometry.Create.Vector(bhLoad.ForceB.X, bhLoad.ForceB.Y, bhLoad.ForceB.Z);
+            Vector momentA = Engine.Geometry.Create.Vector(bhLoad.MomentA.X, bhLoad.MomentA.Y, bhLoad.MomentA.Z);
+            Vector momentB = Engine.Geometry.Create.Vector(bhLoad.MomentB.X, bhLoad.MomentB.Y, bhLoad.MomentB.Z);
+
+            Node startNode = Engine.Structure.Create.Node(bhLoad.Location.Start);
+            Node endNode = Engine.Structure.Create.Node(bhLoad.Location.End);
+            CreateObject(startNode);
+            CreateObject(endNode);
+
+            Bar nullBar = Engine.Structure.Create.Bar(startNode, endNode);
+            CreateObject(nullBar);
+
+            List<Bar> barsToLoad = new List<Bar>();
+            barsToLoad.Add(nullBar);
+            BarVaryingDistributedLoad barVaryLoad = Engine.Structure.Create.BarVaryingDistributedLoad(bhLoad.Loadcase, barsToLoad, distanceFromA, forceA, momentA,
+                                                                                                        distanceFromB, forceB, momentB, bhLoad.Axis, bhLoad.Projected, bhLoad.Name);
+            CreateLoad(barVaryLoad);
+
+            return true;
+        }
 
         /***************************************************/
 
