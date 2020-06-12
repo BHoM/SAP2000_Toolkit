@@ -208,7 +208,7 @@ namespace BH.Adapter.SAP2000
 
 
         /***************************************************/
-        /* JL Bar Varying Load */
+
         private bool CreateLoad(BarVaryingDistributedLoad bhLoad)
         {
             List<Bar> bars = bhLoad.Objects.Elements.ToList();
@@ -346,7 +346,7 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
-        /* JL GEOMETRIC LINE LOAD */
+
         private bool CreateLoad(GeometricalLineLoad bhLoad)
         {
             double distanceFromA = 0.0;
@@ -375,7 +375,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        public void SetLoad(GravityLoad gravityLoad, bool replace)
+        private bool SetLoad(GravityLoad gravityLoad, bool replace)
         {
             double selfWeightExisting = 0;
             double selfWeightNew = -gravityLoad.GravityDirection.Z;
@@ -392,7 +392,9 @@ namespace BH.Adapter.SAP2000
             if (gravityLoad.GravityDirection.X != 0 || gravityLoad.GravityDirection.Y != 0)
                 Engine.Reflection.Compute.RecordError("SAP2000 can only handle gravity loads in global z direction");
 
-            BH.Engine.Reflection.Compute.RecordNote("SAP2000 handles gravity loads via loadcases, so only one gravity load per loadcase can be used. This gravity load will be applied to all objects");
+            BH.Engine.Reflection.Compute.RecordNote("SAP2000 handles gravity loads via loadcases, so only one gravity load per loadcase can be used. This gravity load will be applied to all objects.");
+
+            return true;
         }
 
         /***************************************************/
