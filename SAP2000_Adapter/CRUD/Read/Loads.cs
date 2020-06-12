@@ -397,5 +397,14 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
+
+        private List<ILoad> ReadGravityLoad(Loadcase bhLoadcase)
+        {
+            List<ILoad> loads = new List<ILoad>();
+
+
+
+            return loads;
+        }
     }
 }
