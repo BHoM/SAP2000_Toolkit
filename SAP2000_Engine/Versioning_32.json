@@ -1,0 +1,18 @@
+﻿{
+  "Namespace": {
+    "ToNew": {
+		"BH.Engine.SAP2000" : "BH.Engine.Adapters.SAP2000"
+    },
+    "ToOld": {
+	    "BH.Engine.Adapters.SAP2000" : "BH.Engine.SAP2000"
+    }
+  },
+  "Type": {
+    "ToNew": {
+
+    },
+    "ToOld": {
+
+    }
+  }
+} 

@@ -21,7 +21,7 @@
  */
 
 using BH.Engine.Reflection;
-using BH.Engine.SAP2000;
+
 using BH.Engine.Structure;
 using BH.oM.Adapter.Commands;
 using BH.oM.Geometry;

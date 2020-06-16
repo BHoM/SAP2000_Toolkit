@@ -20,7 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-namespace BH.Engine.SAP2000
+namespace BH.Engine.Adapters.SAP2000
 {
     public partial class Convert
     {

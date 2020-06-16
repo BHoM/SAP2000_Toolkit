@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.Constraints;
 
-namespace BH.Engine.SAP2000
+namespace BH.Engine.Adapters.SAP2000
 {
     public static partial class Query
     {

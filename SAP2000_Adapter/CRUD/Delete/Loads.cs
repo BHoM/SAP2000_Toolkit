@@ -20,7 +20,7 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.Engine.SAP2000;
+
 using BH.Engine.Structure;
 using BH.oM.Base;
 using BH.oM.Geometry;
