@@ -33,7 +33,7 @@ namespace BH.Adapter.SAP2000
 
         private bool CreateObject(RigidLink bhLink)
         {
-            List<RigidLink> subLinks = BH.Engine.SAP2000.Query.SplitRigidLink(bhLink);
+            List<RigidLink> subLinks = BH.Engine.Adapters.SAP2000.Query.SplitRigidLink(bhLink);
             List<string> linkIds = new List<string>();
 
             if (subLinks.Count > 1)

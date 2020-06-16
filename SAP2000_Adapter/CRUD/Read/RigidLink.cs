@@ -65,7 +65,7 @@ namespace BH.Adapter.SAP2000
                 linkList.Add(newLink);
             }
 
-            List<RigidLink> joinedList = BH.Engine.SAP2000.Query.JoinRigidLink(linkList);
+            List<RigidLink> joinedList = BH.Engine.Adapters.SAP2000.Query.JoinRigidLink(linkList);
 
             if (ids != null)
                 return joinedList.Where(x => ids.Contains(x.Name)).ToList();

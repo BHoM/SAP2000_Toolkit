@@ -22,7 +22,7 @@
 
 using BH.Engine.Structure;
 using BH.oM.Structure.Elements;
-using BH.Engine.SAP2000;
+
 
 namespace BH.Adapter.SAP2000
 {
