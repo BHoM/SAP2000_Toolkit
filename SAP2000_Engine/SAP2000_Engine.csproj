@@ -7,7 +7,7 @@
     <ProjectGuid>{4BB31AE9-B7CE-42C8-80A4-484389D23DE2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BH.Engine.SAP2000</RootNamespace>
+    <RootNamespace>BH.Engine.Adapters.SAP2000</RootNamespace>
     <AssemblyName>SAP2000_Engine</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
