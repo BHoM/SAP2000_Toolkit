@@ -112,7 +112,10 @@ namespace BH.Adapter.SAP2000
                     ref myPlVectOpt, ref myPlCSys, ref myPlDir, ref myPlPt, ref myPlVect);
 
                 if (myAxCSys != "GLOBAL" || myPlCSys != "GLOBAL")
-                    Engine.Reflection.Compute.RecordWarning("No support for reading node orientations not in Global Coordinates. Check results carefully");
+                {
+                    Engine.Reflection.Compute.RecordWarning("No support for reading node orientations not in Global Coordinates. Node orientation set to default");
+                    return basis;
+                }
 
                 Vector vec1 = null;
                 Vector vec2 = null;
