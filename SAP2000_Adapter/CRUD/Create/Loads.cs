@@ -375,7 +375,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetLoad(GravityLoad gravityLoad, bool replace)
+        private bool CreateLoad(GravityLoad gravityLoad)
         {
             double selfWeightExisting = 0;
             double selfWeightNew = -gravityLoad.GravityDirection.Z;
