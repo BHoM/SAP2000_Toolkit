@@ -136,6 +136,8 @@ namespace BH.Adapter.SAP2000
                 return ReadBarLoad();
             else if (type == typeof(AreaUniformlyDistributedLoad))
                 return ReadAreaLoad();
+            else if (type == typeof(AreaTemperatureLoad))
+                return ReadAreaTemperatureLoad();
             else if (type == typeof(PointDisplacement))
                 return ReadPointDispl();
             else
@@ -144,6 +146,7 @@ namespace BH.Adapter.SAP2000
                 loads.AddRange(ReadPointLoad());
                 loads.AddRange(ReadBarLoad());
                 loads.AddRange(ReadAreaLoad());
+                loads.AddRange(ReadAreaTemperatureLoad());
                 loads.AddRange(ReadPointDispl());
                 return loads;
             }
@@ -400,6 +403,53 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        
+        private List<ILoad> ReadAreaTemperatureLoad(List<string> ids = null)
+        {
+            List<ILoad> loads = new List<ILoad>();
+
+            Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
+            Dictionary<string, Panel> bhomPanels = ReadPanel().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+
+            int count = 0;
+            string[] areaNames = null;
+            string[] caseNames = null;
+            int[] loadType = null;
+            string[] jointPattern = null;
+            double[] val = null;
+
+            // GetLoadTemperature does not return 0 for some reason
+            if (m_model.AreaObj.GetLoadTemperature("All", ref count, ref areaNames, ref caseNames, ref loadType, ref val, ref jointPattern) == 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    Panel bhomPanel = bhomPanels[areaNames[i]];
+                    double tempForce = val[i];
+
+                    if (loadType[i] != 1)
+                    {
+                        try
+                        {
+                            double avgConstTemp = 0.5 * tempForce * bhomPanel.Property.IAverageThickness();
+                            tempForce = avgConstTemp;
+                        }
+                        catch { }
+                        
+                        Engine.Reflection.Compute.RecordWarning("Temperature gradient not currently implemented in the BHoM. An attempt has been made to convert SAP2000's gradient to a constant temperature change.");
+                    }
+
+                    loads.Add(new AreaTemperatureLoad()
+                    {
+                        TemperatureChange = tempForce,
+                        Loadcase = bhomCases[caseNames[i]],
+                        Objects = new BHoMGroup<IAreaElement>() { Elements = { bhomPanel as IAreaElement } },
+                        Axis = LoadAxis.Global
+                    });
+                }
+            }
+            return loads;
+        }
+
+        /***************************************************/
+
     }
 }
