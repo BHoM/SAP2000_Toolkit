@@ -330,6 +330,25 @@ namespace BH.Adapter.SAP2000
 
         private bool CreateLoad(AreaTemperatureLoad bhLoad)
         {
+            List<IAreaElement> panels = bhLoad.Objects.Elements.ToList();
+            string loadPat = bhLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            double vals = bhLoad.TemperatureChange;
+            int loadType = 1; // BHoM currently supports uniform temperature change, no support yet for temperature gradient
+            bool replace = true;
+
+            foreach (Panel panel in panels)
+            {
+                string name = panel.CustomData[AdapterIdName].ToString();
+                bool replaceNow = replace;
+                if (m_model.AreaObj.SetLoadTemperature(name, loadPat, loadType, vals, Replace:replaceNow) != 0)
+                {
+                    CreateElementError("AreaTemperatureLoad", bhLoad.Name);
+                }
+                
+            }
+
+            Engine.Reflection.Compute.RecordNote("SAP2000 includes functionality for temperature gradient application, but that feature is not yet supported here.");
+
             return true;
         }
 
