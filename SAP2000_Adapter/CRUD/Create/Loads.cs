@@ -328,6 +328,13 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
+        private bool CreateLoad(AreaTemperatureLoad bhLoad)
+        {
+            return true;
+        }
+
+        /***************************************************/
+
         private bool CreateLoad(ContourLoad bhLoad)
         { 
             double[] loadVals = bhLoad.Force.ToDoubleArray();
