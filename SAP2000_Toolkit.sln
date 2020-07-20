@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 14 for Windows Desktop
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAP2000_Adapter", "SAP2000_Adapter\SAP2000_Adapter.csproj", "{04E7E3BC-BD2F-47A4-B4F0-A9675F702CED}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -33,5 +33,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C9F58544-EC0D-415D-894F-3B0CF570DC3D}
 	EndGlobalSection
 EndGlobal

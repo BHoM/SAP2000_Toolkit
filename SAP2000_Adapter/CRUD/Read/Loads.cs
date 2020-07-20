@@ -417,8 +417,7 @@ namespace BH.Adapter.SAP2000
             string[] jointPattern = null;
             double[] val = null;
 
-            // GetLoadTemperature does not return 0 for some reason
-            if (m_model.AreaObj.GetLoadTemperature("All", ref count, ref areaNames, ref caseNames, ref loadType, ref val, ref jointPattern) == 0)
+            if (m_model.AreaObj.GetLoadTemperature("ALL", ref count, ref areaNames, ref caseNames, ref loadType, ref val, ref jointPattern, eItemType.Group) == 0)
             {
                 for (int i = 0; i < count; i++)
                 {
