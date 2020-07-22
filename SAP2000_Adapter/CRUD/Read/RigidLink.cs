@@ -62,6 +62,7 @@ namespace BH.Adapter.SAP2000
                 bhomLinkConstraints.TryGetValue(propName, out bhProp);
                 newLink.Constraint = bhProp;
 
+                // Get the groups the link is assigned to
                 int numGroups = 0;
                 string[] groupNames = new string[0];
                 if (m_model.LinkObj.GetGroupAssign(name, ref numGroups, ref groupNames) == 0)
