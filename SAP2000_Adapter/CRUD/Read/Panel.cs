@@ -87,6 +87,7 @@ namespace BH.Adapter.SAP2000
                     bhomPanel.Property = bhProp;
                 }
 
+                //Get the groups the panel is assigned to
                 int numGroups = 0;
                 string[] groupNames = new string[0];
                 if (m_model.AreaObj.GetGroupAssign(id, ref numGroups, ref groupNames) == 0)
