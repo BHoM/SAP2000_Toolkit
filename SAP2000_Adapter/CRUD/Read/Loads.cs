@@ -34,6 +34,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BH.Engine.Reflection;
+using System.Threading;
 
 namespace BH.Adapter.SAP2000
 {
@@ -140,6 +141,8 @@ namespace BH.Adapter.SAP2000
                 return ReadAreaTemperatureLoad();
             else if (type == typeof(PointDisplacement))
                 return ReadPointDispl();
+            else if (type == typeof(GravityLoad))
+                return ReadGravityLoad();
             else
             {
                 List<ILoad> loads = new List<ILoad>();
@@ -400,6 +403,40 @@ namespace BH.Adapter.SAP2000
             return loads;
         }
 
+        /***************************************************/
+
+        private List<ILoad> ReadGravityLoad(List<string> ids = null)
+        {
+            List<ILoad> loads = new List<ILoad>();
+
+            Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
+            
+            double selfWtMultiplier = 0;
+
+            foreach (Loadcase loadCase in bhomCases.Values)
+            {
+                if (m_model.LoadPatterns.GetSelfWTMultiplier(loadCase.Name.ToString(), ref selfWtMultiplier) == 0)
+                {
+                    if (selfWtMultiplier != 0)
+                    {
+                        loads.Add(new GravityLoad()
+                        {
+                            GravityDirection = Engine.Geometry.Create.Vector(0, 0, -selfWtMultiplier),
+                            Loadcase = loadCase,
+                            Axis = BH.oM.Structure.Loads.LoadAxis.Global,
+                        });
+
+                        BH.Engine.Reflection.Compute.RecordNote("SAP2000 can only handle gravity loads in the Z direction.");
+                        BH.Engine.Reflection.Compute.RecordNote("SAP2000 handles gravity loads via load patterns, " +
+                                                                "so the returned gravity loads correlate to load patterns. " +
+                                                                "Gravity loads are applied to all members.");
+                    }
+                }
+            }
+
+            return loads;
+
+        }
 
         /***************************************************/
 
@@ -449,6 +486,5 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
-
     }
 }
