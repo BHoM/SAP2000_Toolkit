@@ -134,7 +134,9 @@ namespace BH.Adapter.SAP2000
             if (type == typeof(PointLoad))
                 return ReadPointLoad();
             else if (type == typeof(BarUniformlyDistributedLoad))
-                return ReadBarLoad();
+                return ReadBarUniformDistributedLoad();
+            else if (type == typeof(BarVaryingDistributedLoad))
+                return ReadBarVaryingDistributedLoad();
             else if (type == typeof(AreaUniformlyDistributedLoad))
                 return ReadAreaLoad();
             else if (type == typeof(AreaTemperatureLoad))
@@ -147,7 +149,8 @@ namespace BH.Adapter.SAP2000
             {
                 List<ILoad> loads = new List<ILoad>();
                 loads.AddRange(ReadPointLoad());
-                loads.AddRange(ReadBarLoad());
+                loads.AddRange(ReadBarUniformDistributedLoad());
+                loads.AddRange(ReadBarVaryingDistributedLoad());
                 loads.AddRange(ReadAreaLoad());
                 loads.AddRange(ReadAreaTemperatureLoad());
                 loads.AddRange(ReadPointDispl());
@@ -243,7 +246,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private List<ILoad> ReadBarLoad(List<string> ids = null)
+        private List<ILoad> ReadBarUniformDistributedLoad(List<string> ids = null)
         {
             List<ILoad> loads = new List<ILoad>();
 
@@ -270,69 +273,185 @@ namespace BH.Adapter.SAP2000
                 {
                     Bar bhomBar = bhomBars[frameNames[i]];
 
-                    if (dist1[i] != 0 || rd1[i] != 0 || dist2[i] != bhomBar.Length() || rd2[i] != 1)
+                    if (dist1[i] != 0 || rd1[i] != 0 || dist2[i] != bhomBar.Length() || rd2[i] != 1 || val1[i] != val2[i])
                     {
-                        Engine.Reflection.Compute.RecordWarning("Partial distributed loads are not supported. Smearing load all over the bar like jelly.");
+                        // placeholder for potential action
                     }
-                    double val = ((val1[i] + val2[i]) / 2) * (dist2[i] - dist1[i]) / bhomBar.Length();
-                    Vector force = new Vector();
-                    LoadAxis axis = cSys[i].LoadAxisToBHoM();
+                    else
+                    {
+                        double val = val1[i];
+                        Vector force = new Vector();
+                        LoadAxis axis = cSys[i].LoadAxisToBHoM();
 
-                    switch (dir[i])
-                    {
-                        case 1:
-                            force.X = val;
-                            break;
-                        case 2:
-                            force.Z = val;
-                            break;
-                        case 3:
-                            force.Y = -val;
-                            break;
-                        case 4:
-                            force.X = val;
-                            break;
-                        case 5:
-                            force.Y = val;
-                            break;
-                        case 6:
-                            force.Z = val;
-                            break;
-                        case 10:
-                            force.Z = -val;
-                            break;
-                        default:
-                            Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
-                            break;
-                    }
-                    switch (myTypes[i])
-                    {
-                        case 1:
-                            loads.Add(new BarUniformlyDistributedLoad()
-                            {
-                                Force = force,
-                                Loadcase = bhomCases[caseNames[i]],
-                                Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
-                                Axis = axis
-                            });
-                            break;
-                        case 2:
-                            loads.Add(new BarUniformlyDistributedLoad()
-                            {
-                                Moment = force,
-                                Loadcase = bhomCases[caseNames[i]],
-                                Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
-                                Axis = axis
-                            });
-                            break;
-                        default:
-                            Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myTypes[i].ToString());
-                            break;
+                        switch (dir[i])
+                        {
+                            case 1:
+                                force.X = val;
+                                break;
+                            case 2:
+                                force.Z = val;
+                                break;
+                            case 3:
+                                force.Y = -val;
+                                break;
+                            case 4:
+                                force.X = val;
+                                break;
+                            case 5:
+                                force.Y = val;
+                                break;
+                            case 6:
+                                force.Z = val;
+                                break;
+                            case 10:
+                                force.Z = -val;
+                                break;
+                            default:
+                                Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
+                                break;
+                        }
+                        switch (myTypes[i])
+                        {
+                            case 1:
+                                loads.Add(new BarUniformlyDistributedLoad()
+                                {
+                                    Force = force,
+                                    Loadcase = bhomCases[caseNames[i]],
+                                    Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
+                                    Axis = axis
+                                });
+                                break;
+                            case 2:
+                                loads.Add(new BarUniformlyDistributedLoad()
+                                {
+                                    Moment = force,
+                                    Loadcase = bhomCases[caseNames[i]],
+                                    Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
+                                    Axis = axis
+                                });
+                                break;
+                            default:
+                                Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myTypes[i].ToString());
+                                break;
+                        }
                     }
                 }
             }
 
 
+            return loads;
+        }
+
+
+        /***************************************************/
+
+        private List<ILoad> ReadBarVaryingDistributedLoad(List<string> ids = null)
+        {
+            List<ILoad> loads = new List<ILoad>();
+
+            Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
+            Dictionary<string, Bar> bhomBars = ReadBars().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+
+            int count = 0;
+            string[] frameNames = null;
+            string[] caseNames = null;
+            int[] myTypes = null;
+            string[] cSys = null;
+            int[] dir = null;
+            double[] rd1 = null;
+            double[] rd2 = null;
+            double[] dist1 = null;
+            double[] dist2 = null;
+            double[] val1 = null;
+            double[] val2 = null;
+
+
+            if (m_model.FrameObj.GetLoadDistributed("All", ref count, ref frameNames, ref caseNames, ref myTypes, ref cSys, ref dir, ref rd1, ref rd2, ref dist1, ref dist2, ref val1, ref val2, eItemType.Group) == 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    Bar bhomBar = bhomBars[frameNames[i]];
+
+                    if (dist1[i] == 0 && rd1[i] == 0 && dist2[i] == bhomBar.Length() && rd2[i] == 1 && val1[i] == val2[i])
+                    {
+                        // placeholder for potential action
+                    }
+                    else
+                    {
+
+                        LoadAxis axis = cSys[i].LoadAxisToBHoM();
+
+                        Vector forceA = new Vector();
+                        Vector forceB = new Vector();
+
+                        switch (dir[i])
+                        {
+                            case 1:
+                                forceA.X = val1[i];
+                                forceB.X = val2[i];
+                                break;
+                            case 2:
+                                forceA.Y = val1[i];
+                                forceB.Y = val2[i];
+                                break;
+                            case 3:
+                                forceA.Z = -val1[i];
+                                forceB.Z = -val2[i];
+                                break;
+                            case 4:
+                                forceA.X = val1[i];
+                                forceB.X = val2[i];
+                                break;
+                            case 5:
+                                forceA.Y = val1[i];
+                                forceB.Y = val2[i];
+                                break;
+                            case 6:
+                                forceA.Z = val1[i];
+                                forceB.Z = val2[i];
+                                break;
+                            case 10:
+                                forceA.Z = -val1[i];
+                                forceB.Z = -val2[i];
+                                break;
+                            default:
+                                Engine.Reflection.Compute.RecordWarning("That load direction is not yet supported. Dir = " + dir[i].ToString());
+                                break;
+                        }
+
+                        switch (myTypes[i])
+                        {
+                            case 1:
+                                loads.Add(new BarVaryingDistributedLoad()
+                                {
+                                    DistanceFromA = dist1[i],
+                                    ForceA = forceA,
+                                    DistanceFromB = dist2[i],
+                                    ForceB = forceB,
+                                    Loadcase = bhomCases[caseNames[i]],
+                                    Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
+                                    Axis = axis
+                                });
+                                break;
+                            case 2:
+                                loads.Add(new BarVaryingDistributedLoad()
+                                {
+                                    DistanceFromA = dist1[i],
+                                    MomentA = forceA,
+                                    DistanceFromB = dist2[i],
+                                    MomentB = forceB,
+                                    Loadcase = bhomCases[caseNames[i]],
+                                    Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
+                                    Axis = axis
+                                });
+                                break;
+                            default:
+                                Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myTypes[i].ToString());
+                                break;
+                        }
+                    }
+                }
+            }
 
             return loads;
         }
