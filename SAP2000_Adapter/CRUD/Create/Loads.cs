@@ -213,8 +213,8 @@ namespace BH.Adapter.SAP2000
         {
             List<Bar> bars = bhLoad.Objects.Elements.ToList();
             string loadPat = bhLoad.Loadcase.CustomData[AdapterIdName].ToString();
-            double dist1 = 0;
-            double dist2 = 1;
+            double dist1 = bhLoad.DistanceFromA;
+            double dist2 = 1.0;
             int[] dirs = null;
             double[] forceValsA = null;
             double[] momentValsA = null;
@@ -238,7 +238,7 @@ namespace BH.Adapter.SAP2000
                     momentValsB = bhLoad.MomentB.BarLocalAxisToCSI().ToDoubleArray();
                     break;
             }
-            bool relDist = true;
+            bool relDist = false;
             string cSys = bhLoad.Axis.ToCSI();
             eItemType type = eItemType.Objects;
             bool replace = true;
@@ -247,6 +247,7 @@ namespace BH.Adapter.SAP2000
             foreach (Bar bhBar in bars)
             {
                 string name = bhBar.CustomData[AdapterIdName].ToString();
+                dist2 = bhBar.Length() - bhLoad.DistanceFromB;
                 bool replaceNow = replace;
                 for (int i = 0; i < dirs.Count(); i++)
                 {
