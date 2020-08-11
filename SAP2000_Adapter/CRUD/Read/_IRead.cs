@@ -32,6 +32,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Adapter;
+using BH.oM.Analytical.Results;
+using BH.oM.Structure.Results;
+using BH.oM.Structure.Requests;
 
 namespace BH.Adapter.SAP2000
 {
@@ -65,6 +68,11 @@ namespace BH.Adapter.SAP2000
                 return ReadRigidLink(ids as dynamic);
             else if (type == typeof(LinkConstraint))
                 return ReadLinkConstraints(ids as dynamic);
+            else if (typeof(IResult).IsAssignableFrom(type))
+            {
+                Modules.Structure.ErrorMessages.ReadResultsError(type);
+                return null;
+            }
 
 
             return null;
