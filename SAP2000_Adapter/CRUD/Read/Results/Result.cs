@@ -11,16 +11,8 @@ namespace BH.Adapter.SAP2000
 {
     public partial class SAP2000Adapter : BHoMAdapter
     {
-        protected override IEnumerable<IResult> ReadResults(Type type, IList ids = null, IList cases = null, int divisions = 5, ActionConfig actionConfig = null)
-        {
-            IResultRequest request = Engine.Structure.Create.IResultRequest(type, ids?.Cast<object>(), cases?.Cast<object>(), divisions);
-
-            if (request != null)
-                return this.ReadResults(request as dynamic);
-            else
-                return new List<IResult>();
-        }
-
+        /***************************************************/
+        /**** Private Methods                           ****/
         /***************************************************/
 
         private List<string> CheckAndSetUpCases(IResultRequest request)
