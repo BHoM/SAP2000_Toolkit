@@ -38,16 +38,16 @@ namespace BH.Engine.Adapters.SAP2000
         {
             List<RigidLink> singleLinks = new List<RigidLink>();
 
-            if (link.SlaveNodes.Count() <= 1)
+            if (link.SecondaryNodes.Count() <= 1)
             {
                 singleLinks.Add(link);
             }
             else
             {
-                for (int i = 0; i < link.SlaveNodes.Count(); i++)
+                for (int i = 0; i < link.SecondaryNodes.Count(); i++)
                 {
                     RigidLink subLink = BH.Engine.Base.Query.ShallowClone(link);
-                    subLink.SlaveNodes = new List<Node> { link.SlaveNodes[i] };
+                    subLink.SecondaryNodes = new List<Node> { link.SecondaryNodes[i] };
                     if (link.Name != "")
                     {
                         subLink.Name = $"{link.Name}:::{i}";

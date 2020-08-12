@@ -48,7 +48,7 @@ namespace BH.Engine.Adapters.SAP2000
                     string JoinedName = nameParts[0];
                     if (joinedList.ContainsKey(JoinedName))
                     {
-                        joinedList[JoinedName].SlaveNodes.Add(link.SlaveNodes[0]);
+                        joinedList[JoinedName].SecondaryNodes.Add(link.SecondaryNodes[0]);
                     }
                     else
                     {
