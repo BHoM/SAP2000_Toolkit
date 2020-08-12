@@ -50,12 +50,12 @@ namespace BH.Adapter.SAP2000
 
                 newLink.CustomData[AdapterIdName] = newLink.Name = name;
 
-                string masterId = "";
-                string SlaveId = "";
+                string primaryId = "";
+                string secondaryId = "";
                 string propName = "";
-                m_model.LinkObj.GetPoints(name, ref masterId, ref SlaveId);
-                newLink.MasterNode = bhomNodes[masterId];
-                newLink.SlaveNodes = new List<Node> { bhomNodes[SlaveId] };
+                m_model.LinkObj.GetPoints(name, ref primaryId, ref secondaryId);
+                newLink.PrimaryNode = bhomNodes[primaryId];
+                newLink.SecondaryNodes = new List<Node> { bhomNodes[secondaryId] };
 
                 m_model.LinkObj.GetProperty(name, ref propName);
                 LinkConstraint bhProp = new LinkConstraint();
