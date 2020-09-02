@@ -63,7 +63,17 @@ namespace BH.Adapter.SAP2000
 
                 bhNode.Support = ReadNodeSupport(id);
 
-                nodeList.Add(bhNode);                
+                // Get the groups the node is assigned to
+                int numGroups = 0;
+                string[] groupNames = new string[0];
+                if (m_model.PointObj.GetGroupAssign(id, ref numGroups, ref groupNames) == 0)
+                {
+                    foreach (string grpName in groupNames)
+                        bhNode.Tags.Add(grpName);
+                }
+
+                nodeList.Add(bhNode); 
+                
             }
 
             return nodeList;

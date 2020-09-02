@@ -42,10 +42,10 @@ namespace BH.Adapter.SAP2000
             foreach (RigidLink subLink in subLinks)
             {
                 string name = "";
-                string masterNode = subLink.MasterNode.CustomData[AdapterIdName].ToString();
-                string slaveNode = subLink.SlaveNodes[0].CustomData[AdapterIdName].ToString();
+                string primaryNode = subLink.PrimaryNode.CustomData[AdapterIdName].ToString();
+                string secondaryNode = subLink.SecondaryNodes[0].CustomData[AdapterIdName].ToString();
 
-                if (m_model.LinkObj.AddByPoint(masterNode, slaveNode, ref name, false, "Default", subLink.Name) == 0)
+                if (m_model.LinkObj.AddByPoint(primaryNode, secondaryNode, ref name, false, "Default", subLink.Name) == 0)
                 {
                     //Check if SAP respected the link name.
                     if (subLink.Name != "" && subLink.Name != name)

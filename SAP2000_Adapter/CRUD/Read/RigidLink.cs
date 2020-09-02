@@ -50,18 +50,26 @@ namespace BH.Adapter.SAP2000
 
                 newLink.CustomData[AdapterIdName] = newLink.Name = name;
 
-                string masterId = "";
-                string SlaveId = "";
+                string primaryId = "";
+                string secondaryId = "";
                 string propName = "";
-                m_model.LinkObj.GetPoints(name, ref masterId, ref SlaveId);
-                newLink.MasterNode = bhomNodes[masterId];
-                newLink.SlaveNodes = new List<Node> { bhomNodes[SlaveId] };
+                m_model.LinkObj.GetPoints(name, ref primaryId, ref secondaryId);
+                newLink.PrimaryNode = bhomNodes[primaryId];
+                newLink.SecondaryNodes = new List<Node> { bhomNodes[secondaryId] };
 
                 m_model.LinkObj.GetProperty(name, ref propName);
                 LinkConstraint bhProp = new LinkConstraint();
                 bhomLinkConstraints.TryGetValue(propName, out bhProp);
                 newLink.Constraint = bhProp;
 
+                // Get the groups the link is assigned to
+                int numGroups = 0;
+                string[] groupNames = new string[0];
+                if (m_model.LinkObj.GetGroupAssign(name, ref numGroups, ref groupNames) == 0)
+                {
+                    foreach (string grpName in groupNames)
+                        newLink.Tags.Add(grpName);
+                }
                 linkList.Add(newLink);
             }
 
