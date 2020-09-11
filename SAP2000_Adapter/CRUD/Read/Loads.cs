@@ -349,7 +349,7 @@ namespace BH.Adapter.SAP2000
         {
             List<ILoad> loads = new List<ILoad>();
 
-
+            Engine.Reflection.Compute.RecordError("SAP2000 does not support prestress type loads for frames. For frame elements, try pulling (axial) point loads. Tendon elements have extended prestress capabilities if desired.");
 
             return loads;
         }
