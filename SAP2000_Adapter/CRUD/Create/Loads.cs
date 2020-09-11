@@ -425,6 +425,13 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
-        
+
+        private bool CreateLoad(BarPrestressLoad bhLoad)
+        {
+
+            return true;
+        }
+
+        /***************************************************/
     }
 }

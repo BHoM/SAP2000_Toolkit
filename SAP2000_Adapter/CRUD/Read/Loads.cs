@@ -345,6 +345,18 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
+        private List<ILoad> ReadBarPrestressLoad(List<string> ids = null)
+        {
+            List<ILoad> loads = new List<ILoad>();
+
+
+
+            return loads;
+        }
+
+
+        /***************************************************/
+
         private List<ILoad> ReadBarVaryingDistributedLoad(List<string> ids = null)
         {
             List<ILoad> loads = new List<ILoad>();
