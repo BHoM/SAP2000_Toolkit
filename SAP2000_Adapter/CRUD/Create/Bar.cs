@@ -67,12 +67,14 @@ namespace BH.Adapter.SAP2000
                     bool[] restraintEnd = null;
                     double[] springEnd = null;
 
-                    bhBar.GetSAPBarRelease(ref restraintStart, ref springStart, ref restraintEnd, ref springEnd);
-
-                    if (m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd) != 0)
+                    if (bhBar.Release.ToSAP(ref restraintStart, ref springStart, ref restraintEnd, ref springEnd))
                     {
-                        CreatePropertyWarning("Release", "Bar", name);
+                        if (m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd) != 0)
+                        {
+                            CreatePropertyWarning("Release", "Bar", name);
+                        }
                     }
+
                 }
 
                 if (bhBar.Offset != null)
