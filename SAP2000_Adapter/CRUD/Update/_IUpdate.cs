@@ -32,6 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Adapter;
+using System.Reflection;
 
 namespace BH.Adapter.SAP2000
 {
@@ -40,33 +41,11 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
         /**** Adapter overload method                   ****/
         /***************************************************/
-        
-        protected override int IDelete(Type type, IEnumerable<object> ids, ActionConfig actionConfig = null)
+
+        protected override bool IUpdate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
         {
-            List<string> idString = ids.Cast<string>().ToList();
-
-            if (type == typeof(Node))
-                return DeleteNodes(idString);
-            else if (type == typeof(Bar))
-                return DeleteBars(idString);
-            else if (type == typeof(ISectionProperty) || type.GetInterfaces().Contains(typeof(ISectionProperty)))
-                return DeleteSectionProperties(idString);
-            else if (type == typeof(IMaterialFragment) || type.GetInterfaces().Contains(typeof(IMaterialFragment)))
-                return DeleteMaterial(idString);
-            else if (type == typeof(Panel))
-                return DeletePanel(idString);
-            else if (type == typeof(ISurfaceProperty))
-                return DeleteSurfaceProperty(idString);
-            else if (type == typeof(LoadCombination))
-                return DeleteLoadCombination(idString);
-            else if (type == typeof(Loadcase))
-                return DeleteLoadcase(idString);
-            else if (type == typeof(RigidLink))
-                return DeleteRigidLink(idString);
-            else if (type == typeof(LinkConstraint))
-                return DeleteLinkConstraints(idString);
-
-            return 0;
+            Engine.Reflection.Compute.RecordWarning($"Update was called for type {typeof(T).Name}. Update is not implemented");
+            return false;
         }
 
         /***************************************************/
