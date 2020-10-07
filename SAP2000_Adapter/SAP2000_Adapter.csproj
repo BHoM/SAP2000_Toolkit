@@ -148,6 +148,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdapterActions\Execute.cs" />
     <Compile Include="Convert\AdapterIdName.cs" />
     <Compile Include="Convert\ToBHoM\Bar.cs" />
     <Compile Include="Convert\ToBHoM\Constraint.cs" />

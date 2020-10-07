@@ -221,5 +221,13 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
+
+        private bool SetProfile(GenericSection bhomProfile, string sectionName, string matName)
+        {
+            //Not implemented
+            return false;
+        }
+
+        /***************************************************/
     }
 }

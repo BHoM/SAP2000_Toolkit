@@ -163,7 +163,10 @@ namespace BH.Adapter.SAP2000
                 }
 
                 IMaterialFragment material = null;
-                bhomMaterials.TryGetValue(materialName, out material);                
+                if (!bhomMaterials.TryGetValue(materialName, out material))
+                {
+                    Engine.Reflection.Compute.RecordWarning($"Could not get material for SectionProperty {id}. A generic has been returned.");
+                }                
 
                 if (bhomProfile == null)
                 {
@@ -191,31 +194,10 @@ namespace BH.Adapter.SAP2000
                         };
                         break;
                     case "standard":
-                        if (material is Steel)
-                        {
-                            bhomProperty = BH.Engine.Structure.Create.SteelSectionFromProfile(bhomProfile);
-                        }
-                        if (material is Aluminium)
-                        {
-                            bhomProperty = BH.Engine.Structure.Create.AluminiumSectionFromProfile(bhomProfile);
-                        }
-                        else if (material is Concrete)
-                        {
-                            bhomProperty = BH.Engine.Structure.Create.ConcreteSectionFromProfile(bhomProfile);
-                        }
-                        else if (material is Timber)
-                        {
-                            bhomProperty = BH.Engine.Structure.Create.TimberSectionFromProfile(bhomProfile);
-                        }
-                        else
-                        {
-                            bhomProperty = BH.Engine.Structure.Create.GenericSectionFromProfile(bhomProfile);
-                        }
+                        bhomProperty = BH.Engine.Structure.Create.SectionPropertyFromProfile(bhomProfile, material, id);
                         break;
                 }
 
-                bhomProperty.Material = material;
-                bhomProperty.Name = id;
                 bhomProperty.CustomData[AdapterIdName] = id;
 
                 propList.Add(bhomProperty);
