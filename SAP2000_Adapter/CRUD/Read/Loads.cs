@@ -484,7 +484,8 @@ namespace BH.Adapter.SAP2000
                     double tempChange = val[i];
 
                     if (loadType[i] != 1)
-                        Engine.Reflection.Compute.RecordError("The BHoM currently only supports uniform temperature changes applied to bars, not temperature gradients across the local 2 or 3 axes (SAP2000 convention).");
+                        Engine.Reflection.Compute.RecordError("The BHoM currently only supports uniform temperature changes applied to bars, not temperature gradients across the local 2 or 3 axes (SAP2000 convention)." +
+                            "\nApplied SAP2000 gradients will be pulled as single temperature value into the BHoM.");
 
                     loads.Add(new BarTemperatureLoad()
                     {

@@ -439,8 +439,7 @@ namespace BH.Adapter.SAP2000
             foreach (Bar bar in bars)
             {
                 string name = bar.CustomData[AdapterIdName].ToString();
-                bool replaceNow = replace;
-                if (m_model.FrameObj.SetLoadTemperature(name, loadPat, loadType, tempChange, Replace: replaceNow) != 0)
+                if (m_model.FrameObj.SetLoadTemperature(name, loadPat, loadType, tempChange, Replace: replace) != 0)
                     CreateElementError("BarTemperatureLoad", bhLoad.Name);
             }
 
