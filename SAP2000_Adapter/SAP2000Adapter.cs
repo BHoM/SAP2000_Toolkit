@@ -23,6 +23,8 @@
 using SAP2000v1;
 using System;
 using BH.oM.Adapters.SAP2000;
+using BH.oM.Adapter.Commands;
+using BH.Engine.Adapter;
 
 namespace BH.Adapter.SAP2000
 {
@@ -53,16 +55,20 @@ namespace BH.Adapter.SAP2000
                 string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 21\SAP2000.exe";
                 cHelper helper = new Helper();
 
-                object runningInstance = null;
+                Open openCommand = new Open();
+                if (System.IO.File.Exists(filePath))
+                    openCommand.FileName = filePath;
+
                 if (System.Diagnostics.Process.GetProcessesByName("SAP2000").Length > 0)
                 {
-                    runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.SAP2000.API.SAPObject");
+                    object runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.SAP2000.API.SAPObject");
 
                     m_app = (cOAPI)runningInstance;
                     m_model = m_app.SapModel;
-                    if (System.IO.File.Exists(filePath))
-                        m_model.File.OpenFile(filePath);
-                    m_model.SetPresentUnits(eUnits.N_m_C);
+                    if (openCommand.FileName != null)
+                        RunCommand(openCommand);
+                    else
+                        RunCommand(new NewModel());
                 }
                 else 
                 {
@@ -72,11 +78,10 @@ namespace BH.Adapter.SAP2000
                         m_app = helper.CreateObject(pathToSAP);
                         m_app.ApplicationStart();
                         m_model = m_app.SapModel;
-                        m_model.InitializeNewModel(eUnits.N_m_C);
-                        if (System.IO.File.Exists(filePath))
-                            m_model.File.OpenFile(filePath);
+                        if (openCommand.FileName != null)
+                            RunCommand(openCommand);
                         else
-                            m_model.File.NewBlank();
+                            RunCommand(new NewModel() );
                     }
                     catch
                     {
