@@ -24,7 +24,6 @@ using BH.oM.Physical.Materials;
 using BH.Engine.Structure;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.Constraints;
-using BH.oM.Geometry.ShapeProfiles;
 using System;
 
 
