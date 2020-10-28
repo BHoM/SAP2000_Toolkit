@@ -20,6 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Adapter;
+using BH.oM.Adapters.SAP2000;
 using BH.oM.Structure.Elements;
 using System.Collections.Generic;
 
@@ -35,6 +37,7 @@ namespace BH.Adapter.SAP2000
         {
             List<RigidLink> subLinks = BH.Engine.Adapters.SAP2000.Query.SplitRigidLink(bhLink);
             List<string> linkIds = new List<string>();
+            SAP2000Id sap2000id = new SAP2000Id();
 
             if (subLinks.Count > 1)
                 Engine.Reflection.Compute.RecordNote($"The RigidLink {bhLink.Name} was split into {subLinks.Count} separate links. They will be added to a new group called \"BHoM_Link_{bhLink.Name}\"");
@@ -42,24 +45,28 @@ namespace BH.Adapter.SAP2000
             foreach (RigidLink subLink in subLinks)
             {
                 string name = "";
-                string primaryNode = subLink.PrimaryNode.CustomData[AdapterIdName].ToString();
-                string secondaryNode = subLink.SecondaryNodes[0].CustomData[AdapterIdName].ToString();
+
+                //string primaryNode = subLink.PrimaryNode.CustomData[AdapterIdName].ToString();
+                string primaryNode = GetAdapterId<string>(subLink.PrimaryNode);
+                //string secondaryNode = subLink.SecondaryNodes[0].CustomData[AdapterIdName].ToString();
+                string secondaryNode = GetAdapterId<string>(subLink.SecondaryNodes[0]);
+
 
                 if (m_model.LinkObj.AddByPoint(primaryNode, secondaryNode, ref name, false, "Default", subLink.Name) == 0)
                 {
                     //Check if SAP respected the link name.
                     if (subLink.Name != "" && subLink.Name != name)
-                        Engine.Reflection.Compute.RecordNote($"RigidLink {bhLink.Name} was assigned SAP id of {name}");
-
+                        Engine.Reflection.Compute.RecordNote($"RigidLink {bhLink.Name} was assigned SAP2000_id of {name}");
+                    
                     //Attempt to set property (if property has been pushed)
-                    object propName;
-                    if (subLink.Constraint.CustomData.TryGetValue(AdapterIdName, out propName))
-                    {
-                        if (m_model.LinkObj.SetProperty(name, propName.ToString()) != 0)
-                            CreatePropertyWarning("LinkConstraint", "RigidLink", bhLink.Name);
-                    }
-                    else
-                        CreatePropertyWarning("LinkConstraint", "RigidLink", bhLink.Name);
+                    //object propName;
+                   // if (subLink.Constraint.CustomData.TryGetValue(AdapterIdName, out propName))
+                    //{
+                    //    if (m_model.LinkObj.SetProperty(name, propName.ToString()) != 0)
+                    //        CreatePropertyWarning("LinkConstraint", "RigidLink", bhLink.Name);
+                    //}
+                    //else
+                     //   CreatePropertyWarning("LinkConstraint", "RigidLink", bhLink.Name);
 
 
                     //Add to groups per tags. For links that have been split, the original name will be tagged
@@ -82,7 +89,8 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
-            bhLink.CustomData[AdapterIdName] = linkIds;
+            sap2000id.Id = linkIds;
+            bhLink.SetAdapterId(sap2000id);
 
             return true;
         }

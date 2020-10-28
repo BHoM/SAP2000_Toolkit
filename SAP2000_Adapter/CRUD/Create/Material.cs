@@ -29,6 +29,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BH.Engine.Structure;
+using BH.oM.Adapters.SAP2000;
 
 namespace BH.Adapter.SAP2000
 {
@@ -43,17 +44,18 @@ namespace BH.Adapter.SAP2000
             eMatType matType = material.GetMaterialType();
             string bhName = material.DescriptionOrName();
             int color = 0;
-            string guid = "";
+            string guid = null;
             string notes = "";
             string name = "";
+            SAP2000Id sap2000id = new SAP2000Id();
 
             if (m_model.PropMaterial.AddMaterial(ref name, matType, "United States", bhName, bhName, guid) == 0) //try to get the material from a dataset
             {
-                material.CustomData[AdapterIdName] = name;
+                sap2000id.Id = name;
             }
             else if (m_model.PropMaterial.SetMaterial(bhName, matType, color, notes, guid) == 0) //create the material
             {
-                material.CustomData[AdapterIdName] = bhName;
+                sap2000id.Id = bhName;
 
                 if (material is IIsotropic)
                 {
@@ -80,6 +82,7 @@ namespace BH.Adapter.SAP2000
             {
                 CreateElementError("Material", bhName);
             }
+            SetAdapterId(material, sap2000id);
 
             return true;
         }

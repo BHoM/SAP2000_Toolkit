@@ -26,6 +26,7 @@ using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.MaterialFragments;
 using BH.Engine.Structure;
 using BH.oM.Structure.Fragments;
+using BH.oM.Adapters.SAP2000;
 
 namespace BH.Adapter.SAP2000
 {
@@ -39,7 +40,7 @@ namespace BH.Adapter.SAP2000
         {
             List<ISurfaceProperty> propertyList = new List<ISurfaceProperty>();
 
-            Dictionary<string, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+            Dictionary<string, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => GetAdapterId<string>(x));
 
             int nameCount = 0;
             string[] nameArr = { };
@@ -60,7 +61,9 @@ namespace BH.Adapter.SAP2000
                 double bending = 0;
                 int color = 0;
                 string notes = "";
-                string guid = "";
+                string guid = null;
+                SAP2000Id sap2000id = new SAP2000Id();
+                sap2000id.Id = id;
 
 
                 if (m_model.PropArea.GetShell_1(id, ref shellType, ref includeDrillingDOF, ref materialName, ref matAng, ref thickness, ref bending, ref color, ref notes, ref guid) != 0)
@@ -68,7 +71,6 @@ namespace BH.Adapter.SAP2000
                               
                 ConstantThickness bhSurfProp = new ConstantThickness();
 
-                bhSurfProp.CustomData[AdapterIdName] = id;
                 bhSurfProp.Name = id;
                 bhSurfProp.Thickness = thickness;
                 bhSurfProp.CustomData.Add("MaterialAngle", matAng);
@@ -101,6 +103,7 @@ namespace BH.Adapter.SAP2000
                     bhSurfProp.Fragments.Add(modifier);
                 }
 
+                SetAdapterId(bhSurfProp, sap2000id);
                 propertyList.Add(bhSurfProp);
             }
 

@@ -57,7 +57,7 @@ namespace BH.Adapter.SAP2000
             m_model.LoadCases.StaticLinear.SetCase(loadcase.Name);
             m_model.LoadCases.StaticLinear.SetLoads(loadcase.Name, 1, ref loadTypes, ref loadNames, ref loadFactors);
 
-            loadcase.CustomData[AdapterIdName] = loadcase.Name;
+            SetAdapterId(loadcase, loadcase.Name);
             loadcase.Number = m_model.LoadPatterns.Count();
             
             return true;
@@ -70,15 +70,15 @@ namespace BH.Adapter.SAP2000
             eCNameType nameType = eCNameType.LoadCase;
             if (m_model.RespCombo.Add(loadcombination.Name, 0) == 0)
             {
-                loadcombination.CustomData[AdapterIdName] = loadcombination.Name;
+                SetAdapterId(loadcombination, loadcombination.Name);
                 foreach (Tuple<double, ICase> comboCase in loadcombination.LoadCases)
                 {
                     double factor = comboCase.Item1;
                     ICase bhomCase = comboCase.Item2;
-                    if (!bhomCase.CustomData.ContainsKey(AdapterIdName))
-                        Engine.Reflection.Compute.RecordWarning($"case {bhomCase.Name} has no {AdapterIdName}. Try pushing the loadcase and using the result of that push to build the combo.");
+                    //if (!bhomCase.CustomData.ContainsKey(AdapterIdName))
+                    //    Engine.Reflection.Compute.RecordWarning($"case {bhomCase.Name} has no SAP2000_id. Try pushing the loadcase and using the result of that push to build the combo.");
 
-                    if (m_model.RespCombo.SetCaseList(loadcombination.Name, ref nameType, bhomCase.CustomData[AdapterIdName].ToString(), factor) != 0)
+                    if (m_model.RespCombo.SetCaseList(loadcombination.Name, ref nameType, GetAdapterId<string>(bhomCase), factor) != 0)
                             Engine.Reflection.Compute.RecordWarning("Could not add case " + bhomCase.Name + " to combo " + loadcombination.Name);
                 }
             }
@@ -102,7 +102,7 @@ namespace BH.Adapter.SAP2000
         private bool CreateLoad(PointLoad bhLoad)
         {
             List<Node> nodes = bhLoad.Objects.Elements.ToList();
-            string loadPat = bhLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            string loadPat = GetAdapterId<string>(bhLoad.Loadcase);
             string cSys = bhLoad.Axis.ToCSI();
             double[] val = 
             {
@@ -118,7 +118,7 @@ namespace BH.Adapter.SAP2000
 
             foreach (Node bhNode in nodes)
             {
-                if (m_model.PointObj.SetLoadForce(bhNode.CustomData[AdapterIdName].ToString(), loadPat, ref val, replace, cSys, eItemType.Objects) != 0)
+                if (m_model.PointObj.SetLoadForce(GetAdapterId<string>(bhNode), loadPat, ref val, replace, cSys, eItemType.Objects) != 0)
                 {
                     CreateElementError("Point Load", bhLoad.Name);
                 }
@@ -133,7 +133,7 @@ namespace BH.Adapter.SAP2000
         private bool CreateLoad(PointDisplacement bhLoad)
         {
             List<Node> nodes = bhLoad.Objects.Elements.ToList();
-            string loadPat = bhLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            string loadPat = GetAdapterId<string>(bhLoad.Loadcase);
             string cSys = bhLoad.Axis.ToCSI();
             double[] val =
             {
@@ -149,7 +149,7 @@ namespace BH.Adapter.SAP2000
 
             foreach (Node bhNode in nodes)
             {
-                if (m_model.PointObj.SetLoadDispl(bhNode.CustomData[AdapterIdName].ToString(), loadPat, ref val, replace, cSys, eItemType.Objects) != 0)
+                if (m_model.PointObj.SetLoadDispl(GetAdapterId<string>(bhNode), loadPat, ref val, replace, cSys, eItemType.Objects) != 0)
                 {
                     CreateElementError("Point Displacement", bhLoad.Name);
                 }
@@ -164,7 +164,7 @@ namespace BH.Adapter.SAP2000
         private bool CreateLoad(BarUniformlyDistributedLoad bhLoad)
         {
             List<Bar> bars = bhLoad.Objects.Elements.ToList();
-            string loadPat = bhLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            string loadPat = GetAdapterId<string>(bhLoad.Loadcase);
             double dist1 = 0;
             double dist2 = 1;
             int[] dirs = null;
@@ -191,7 +191,7 @@ namespace BH.Adapter.SAP2000
 
             foreach (Bar bhBar in bars)
             {
-                string name = bhBar.CustomData[AdapterIdName].ToString();
+                string name = GetAdapterId<string>(bhBar);
                 bool replaceNow = replace;
                 for (int i = 0; i < dirs.Count(); i++)
                 {
@@ -212,7 +212,7 @@ namespace BH.Adapter.SAP2000
         private bool CreateLoad(BarVaryingDistributedLoad bhLoad)
         {
             List<Bar> bars = bhLoad.Objects.Elements.ToList();
-            string loadPat = bhLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            string loadPat = GetAdapterId<string>(bhLoad.Loadcase);
             double dist1 = bhLoad.DistanceFromA;
             double dist2 = 1.0;
             int[] dirs = null;
@@ -246,7 +246,7 @@ namespace BH.Adapter.SAP2000
 
             foreach (Bar bhBar in bars)
             {
-                string name = bhBar.CustomData[AdapterIdName].ToString();
+                string name = GetAdapterId<string>(bhBar);
                 dist2 = bhBar.Length() - bhLoad.DistanceFromB;
                 bool replaceNow = replace;
                 for (int i = 0; i < dirs.Count(); i++)
@@ -268,7 +268,7 @@ namespace BH.Adapter.SAP2000
         private bool CreateLoad(AreaUniformlyDistributedLoad bhLoad)
         {
             List<IAreaElement> panels = bhLoad.Objects.Elements.ToList();
-            string loadPat = bhLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            string loadPat = GetAdapterId<string>(bhLoad.Loadcase); 
             double[] vals = bhLoad.Pressure.ToDoubleArray();
             int[] dirs = null;
             switch (bhLoad.Axis)
@@ -293,7 +293,7 @@ namespace BH.Adapter.SAP2000
 
             foreach (Panel panel in panels)
             {
-                string name = panel.CustomData[AdapterIdName].ToString();
+                string name = GetAdapterId<string>(panel);
                 string propName = "";
                 m_model.AreaObj.GetProperty(name, ref propName);
                 if (propName == "None")
@@ -332,14 +332,14 @@ namespace BH.Adapter.SAP2000
         private bool CreateLoad(AreaTemperatureLoad bhLoad)
         {
             List<IAreaElement> panels = bhLoad.Objects.Elements.ToList();
-            string loadPat = bhLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            string loadPat = GetAdapterId<string>(bhLoad.Loadcase);
             double vals = bhLoad.TemperatureChange;
             int loadType = 1; // BHoM currently supports uniform temperature change, no support yet for temperature gradient
             bool replace = true;
 
             foreach (Panel panel in panels)
             {
-                string name = panel.CustomData[AdapterIdName].ToString();
+                string name = GetAdapterId<string>(panel);
                 bool replaceNow = replace;
                 if (m_model.AreaObj.SetLoadTemperature(name, loadPat, loadType, vals, Replace:replaceNow) != 0)
                 {
@@ -407,7 +407,7 @@ namespace BH.Adapter.SAP2000
             double selfWeightExisting = 0;
             double selfWeightNew = -gravityLoad.GravityDirection.Z;
 
-            string caseName = gravityLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            string caseName = GetAdapterId<string>(gravityLoad.Loadcase);
 
             m_model.LoadPatterns.GetSelfWTMultiplier(caseName, ref selfWeightExisting);
 

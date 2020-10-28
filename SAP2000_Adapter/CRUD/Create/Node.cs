@@ -20,7 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Adapter;
 using BH.Engine.Structure;
+using BH.oM.Adapters.SAP2000;
 using BH.oM.Structure.Elements;
 
 
@@ -36,12 +38,14 @@ namespace BH.Adapter.SAP2000
         {
 
             string name = "";
+            SAP2000Id sap2000id = new SAP2000Id();
 
             if (m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name, bhNode.Name.ToString()) == 0)
             {
                 if (name != bhNode.Name & bhNode.Name != "")
-                    Engine.Reflection.Compute.RecordNote($"Node {bhNode.Name} was assigned {AdapterIdName} of {name}");
-                bhNode.CustomData[AdapterIdName] = name;
+                    Engine.Reflection.Compute.RecordNote($"Node {bhNode.Name} was assigned SAP2000_id of {name}");
+
+                sap2000id.Id = name;
 
                 if (! bhNode.Orientation.Equals(BH.oM.Geometry.Basis.XY))
                 {
@@ -82,6 +86,13 @@ namespace BH.Adapter.SAP2000
                         m_model.PointObj.SetGroupAssign(name, groupName);
                     }
                 }
+
+                string guid = null;
+                if (m_model.PointObj.GetGUID(name, ref guid) == 0)
+                    sap2000id.PersistentId = guid;
+
+                bhNode.SetAdapterId(sap2000id);
+
             }
 
             return true;

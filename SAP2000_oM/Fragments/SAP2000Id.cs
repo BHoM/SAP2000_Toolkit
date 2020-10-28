@@ -20,45 +20,21 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Physical.Materials;
-using BH.oM.Adapters.SAP2000;
-using BH.Engine.Structure;
-using BH.oM.Structure.MaterialFragments;
-using BH.oM.Structure.Constraints;
-using System;
+using BH.oM.Base;
+using System.ComponentModel;
 
-
-namespace BH.Adapter.SAP2000
+namespace BH.oM.Adapters.SAP2000
 {
-    public partial class SAP2000Adapter
+    public class SAP2000Id : IAdapterId, IPersistentAdapterId
     {
         /***************************************************/
-        /**** Private Methods                            ****/
+        /**** Public Properties                         ****/
         /***************************************************/
 
-        private bool CreateObject(LinkConstraint bhLinkConstraint)
-        {
-            string name = bhLinkConstraint.DescriptionOrName();
-            bool[] dof;
-            bool[] fix;
-            double[] stiff;
-            double[] damp;
-            double dj2;
-            double dj3;
+        [Description("Id or multi-ids of the element as assigned in SAP2000")]
+        public virtual object Id { get; set; }
 
-            bhLinkConstraint.ToSAP2000(out dof, out fix, out stiff, out damp, out dj2, out dj3);
-
-            if (m_model.PropLink.SetLinear(name, ref dof, ref fix, ref stiff, ref damp, dj2, dj3) != 0)
-                Engine.Reflection.Compute.RecordWarning($"SAP returned an error pushing LinkConstraint {name}. Check results.");
-
-            SetAdapterId(bhLinkConstraint, name);
-            
-            return false;
-        }
-
-        /***************************************************/
-        /**** Set Property                              ****/
-        /***************************************************/
-
+        [Description("Persistent GUID assigned by SAP2000 upon element creation. This does not vary when the element is modified. Only populated for Element-type objects")]
+        public virtual object PersistentId { get; set; }
     }
 }

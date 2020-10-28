@@ -44,10 +44,10 @@ namespace BH.Adapter.SAP2000
         {
 
             //Initialization
-            AdapterIdName = Adapter.SAP2000.Convert.AdapterIdName;
             Modules.Structure.ModuleLoader.LoadModules(this);
             SetupComparers();
             SetupDependencies();
+            AdapterIdFragmentType = typeof(SAP2000Id);
             m_AdapterSettings.DefaultPushType = oM.Adapter.PushType.CreateNonExisting;
 
             if (active)

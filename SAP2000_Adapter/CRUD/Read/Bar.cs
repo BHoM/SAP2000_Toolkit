@@ -25,6 +25,9 @@ using BH.oM.Structure.Constraints;
 using BH.oM.Structure.SectionProperties;
 using System.Collections.Generic;
 using System.Linq;
+using BH.oM.Adapters.SAP2000;
+using BH.Engine.Adapter;
+using System;
 
 namespace BH.Adapter.SAP2000
 {
@@ -38,8 +41,8 @@ namespace BH.Adapter.SAP2000
         {
 
             List<Bar> bhomBars = new List<Bar>();
-            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
-            Dictionary<string, ISectionProperty> bhomSections = ReadSectionProperties().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => GetAdapterId<string>(x));
+            Dictionary<string, ISectionProperty> bhomSections = ReadSectionProperties().ToDictionary(x => GetAdapterId<string>(x));
 
             int nameCount = 0;
             string[] names = { };
@@ -52,11 +55,12 @@ namespace BH.Adapter.SAP2000
             
             foreach (string id in ids)
             {
-                Bar bhomBar = new Bar();
+                SAP2000Id sap2000id = new SAP2000Id();
+                sap2000id.Id = id; 
 
                 try
                 {
-                    bhomBar.CustomData[AdapterIdName] = id;
+                    Bar bhomBar = new Bar();
                     string startId = "";
                     string endId = "";
                     m_model.FrameObj.GetPoints(id, ref startId, ref endId);
@@ -103,6 +107,7 @@ namespace BH.Adapter.SAP2000
                     }
 
                     // Get the groups the bar is assigned to
+                    string guid = null; 
                     int numGroups = 0;
                     string[] groupNames = new string[0];
                     if (m_model.FrameObj.GetGroupAssign(id, ref numGroups, ref groupNames) == 0)
@@ -111,13 +116,19 @@ namespace BH.Adapter.SAP2000
                             bhomBar.Tags.Add(grpName);
                     }
 
+                    if (m_model.FrameObj.GetGUID(id, ref guid) == 0)
+                    {
+                        sap2000id.PersistentId = guid;
+                    }
+
+                    bhomBar.SetAdapterId(sap2000id);
+                    bhomBars.Add(bhomBar);
+
                 }
                 catch
                 {
                     ReadElementError("Bar", id.ToString());
                 }
-
-                bhomBars.Add(bhomBar);
             }
             return bhomBars;
         }

@@ -26,6 +26,8 @@ using BH.oM.Structure.Elements;
 using BH.oM.Geometry;
 using System.Collections.Generic;
 using System.Linq;
+using BH.oM.Adapters.SAP2000;
+using BH.Engine.Adapter;
 
 namespace BH.Adapter.SAP2000
 {
@@ -46,16 +48,19 @@ namespace BH.Adapter.SAP2000
             double[] z = boundaryPoints.Select(item => item.Z).ToArray();
 
             string name = "";
+            string guid = null;
+            SAP2000Id sap2000id = new SAP2000Id();
 
             if (m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, "None", bhPanel.Name.ToString()) == 0)
             {
                 if (name != bhPanel.Name & bhPanel.Name != "")
-                    Engine.Reflection.Compute.RecordNote($"Panel {bhPanel.Name} was assigned {AdapterIdName} of {name}");
-                bhPanel.CustomData[AdapterIdName] = name;
+                    Engine.Reflection.Compute.RecordNote($"Panel {bhPanel.Name} was assigned SAP2000_id of {name}");
+
+                sap2000id.Id = name;
 
                 if (bhPanel.Property != null)
                 {
-                    string propName = bhPanel.Property.CustomData[AdapterIdName].ToString();
+                    string propName = GetAdapterId<string>(bhPanel.Property);
                     if (m_model.AreaObj.SetProperty(name, propName, 0) != 0)
                         CreatePropertyError("Surface Property", "Panel", name);
                 }
@@ -72,6 +77,11 @@ namespace BH.Adapter.SAP2000
                     m_model.AreaObj.SetGroupAssign(name, groupName);
                 }
             }
+
+            if (m_model.AreaObj.GetGUID(name, ref guid) == 0)
+                sap2000id.PersistentId = guid;
+
+            bhPanel.SetAdapterId(sap2000id);
 
             return true;
         }
