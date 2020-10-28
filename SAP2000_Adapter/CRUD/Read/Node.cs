@@ -24,9 +24,11 @@ using BH.oM.Structure.Elements;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Geometry;
+using BH.oM.Adapters.SAP2000;
 using BH.oM.Geometry.CoordinateSystem;
 using BH.Engine.Geometry;
 using BH.oM.Structure.Constraints;
+using System;
 
 namespace BH.Adapter.SAP2000
 {
@@ -54,8 +56,9 @@ namespace BH.Adapter.SAP2000
             foreach (string id in ids)
             {
                 Node bhNode = new Node();
-
-                bhNode.CustomData[AdapterIdName] = id;
+                string guid = null;
+                SAP2000Id sap2000id = new SAP2000Id();
+                sap2000id.Id = id;
 
                 bhNode.Position = ReadNodeCoordinates(id);
 
@@ -72,6 +75,9 @@ namespace BH.Adapter.SAP2000
                         bhNode.Tags.Add(grpName);
                 }
 
+                if (m_model.PointObj.GetGUID(id, ref guid) == 0)
+                    sap2000id.PersistentId = guid;
+                SetAdapterId(bhNode, sap2000id);
                 nodeList.Add(bhNode); 
                 
             }

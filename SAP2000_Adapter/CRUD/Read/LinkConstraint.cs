@@ -20,6 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Adapter;
+using BH.oM.Adapters.SAP2000;
 using BH.oM.Structure.Constraints;
 using SAP2000v1;
 using System;
@@ -55,7 +57,9 @@ namespace BH.Adapter.SAP2000
 
                 LinkConstraint constr = new LinkConstraint();
 
-                constr.CustomData[AdapterIdName] = id;
+                SAP2000Id sap2000id = new SAP2000Id();
+                sap2000id.Id = id;
+                constr.SetAdapterId(sap2000id);
 
                 switch (linkType)
                 {
@@ -101,7 +105,8 @@ namespace BH.Adapter.SAP2000
             m_model.PropLink.GetLinear(name, ref dof, ref fix, ref stiff, ref damp, ref dj2, ref dj3, ref stiffCoupled, ref dampCoupled, ref notes, ref guid);
             
             constraint.Name = name;
-            constraint.CustomData[AdapterIdName] = name;
+            SetAdapterId(constraint, constraint.Name);
+
             constraint.XtoX = fix[0];
             constraint.ZtoZ = fix[1];
             constraint.YtoY = fix[2];

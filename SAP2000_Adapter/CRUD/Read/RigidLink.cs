@@ -24,6 +24,9 @@ using BH.oM.Structure.Elements;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.Constraints;
+using System;
+using BH.oM.Adapters.SAP2000;
+using BH.Engine.Adapter;
 
 namespace BH.Adapter.SAP2000
 {
@@ -36,8 +39,8 @@ namespace BH.Adapter.SAP2000
         private List<RigidLink> ReadRigidLink(List<string> ids = null)
         {
             List<RigidLink> linkList = new List<RigidLink>();
-            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
-            Dictionary<string, LinkConstraint> bhomLinkConstraints = ReadLinkConstraints().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => GetAdapterId<string>(x));
+            Dictionary<string, LinkConstraint> bhomLinkConstraints = ReadLinkConstraints().ToDictionary(x => GetAdapterId<string>(x));
 
             //Read all links, filter by id at end, so that we can join multi-links.
             int nameCount = 0;
@@ -47,8 +50,10 @@ namespace BH.Adapter.SAP2000
             foreach (string name in names)
             {
                 RigidLink newLink = new RigidLink();
+                SAP2000Id sap2000id = new SAP2000Id();
+                string guid = null;
 
-                newLink.CustomData[AdapterIdName] = newLink.Name = name;
+                sap2000id.Id = name;
 
                 string primaryId = "";
                 string secondaryId = "";
@@ -70,6 +75,11 @@ namespace BH.Adapter.SAP2000
                     foreach (string grpName in groupNames)
                         newLink.Tags.Add(grpName);
                 }
+
+                if (m_model.LinkObj.GetGUID(name, ref guid) == 0)
+                    sap2000id.PersistentId = guid;
+
+                newLink.SetAdapterId(sap2000id);
                 linkList.Add(newLink);
             }
 

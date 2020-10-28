@@ -24,7 +24,9 @@ using BH.Engine.Structure;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Offsets;
 using BH.oM.Structure.Constraints;
-
+using BH.oM.Adapters.SAP2000;
+using BH.Engine.Adapter;
+using System;
 
 namespace BH.Adapter.SAP2000
 {
@@ -39,15 +41,15 @@ namespace BH.Adapter.SAP2000
             string name = "";
 
 
-            if (m_model.FrameObj.AddByPoint(bhBar.StartNode.CustomData[AdapterIdName].ToString(), bhBar.EndNode.CustomData[AdapterIdName].ToString(), ref name, "Default", bhBar.Name.ToString()) == 0)
+            if (m_model.FrameObj.AddByPoint(GetAdapterId<string>(bhBar.StartNode), GetAdapterId<string>(bhBar.EndNode), ref name, "Default", bhBar.Name.ToString()) == 0)
             {
                 if (name != bhBar.Name & bhBar.Name != "")
-                    Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} was assigned {AdapterIdName} of {name}");
-                bhBar.CustomData[AdapterIdName] = name;
+                    Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} was assigned SAP2000_id of {name}");
 
-                string barProp = bhBar.SectionProperty != null ? bhBar.SectionProperty.CustomData[AdapterIdName].ToString() : "None";
+                SAP2000Id sap2000IdFragment = new SAP2000Id { Id = name };
+                string guid = null;
 
-                if (m_model.FrameObj.SetSection(name, barProp) != 0)
+                if (m_model.FrameObj.SetSection(name, GetAdapterId<string>(bhBar.SectionProperty)) != 0)
                 {
                     CreatePropertyWarning("SectionProperty", "Bar", name);
                 }
@@ -85,6 +87,11 @@ namespace BH.Adapter.SAP2000
                     }
                 }
 
+                if (m_model.FrameObj.GetGUID(name, ref guid) == 0)
+                {
+                    sap2000IdFragment.PersistentId = guid;
+                }
+
                 foreach (string gName in bhBar.Tags)
                 {
                     string groupName = gName.ToString();
@@ -94,6 +101,8 @@ namespace BH.Adapter.SAP2000
                         m_model.FrameObj.SetGroupAssign(name, groupName);
                     }
                 }
+
+                bhBar.SetAdapterId(sap2000IdFragment);
             }
             else
             {

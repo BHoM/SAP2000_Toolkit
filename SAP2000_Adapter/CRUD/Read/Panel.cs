@@ -27,6 +27,9 @@ using BH.Engine.Geometry;
 using BH.oM.Dimensional;
 using System.Collections.Generic;
 using System.Linq;
+using BH.oM.Adapters.SAP2000;
+using BH.Engine.Adapter;
+using System;
 
 namespace BH.Adapter.SAP2000
 {
@@ -40,8 +43,8 @@ namespace BH.Adapter.SAP2000
         {
             List<Panel> bhomPanels = new List<Panel>();
 
-            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
-            Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => GetAdapterId<string>(x));
+            Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => GetAdapterId<string>(x));
             
             if (ids == null)
             {
@@ -54,9 +57,11 @@ namespace BH.Adapter.SAP2000
             foreach (string id in ids)
             {
                 Panel bhomPanel = new Panel();
+                SAP2000Id sap2000id = new SAP2000Id();
+                string guid = null;
 
                 //Set the Adapter ID
-                bhomPanel.CustomData[AdapterIdName] = id;
+                sap2000id.Id = id;
 
                 //Get outline of panel
                 string[] pointNames = null;
@@ -96,6 +101,10 @@ namespace BH.Adapter.SAP2000
                         bhomPanel.Tags.Add(grpName);
                 }
 
+                if (m_model.AreaObj.GetGUID(id, ref guid) == 0)
+                    sap2000id.PersistentId = guid;
+
+                bhomPanel.SetAdapterId(sap2000id);
                 //Add the panel to the list
                 bhomPanels.Add(bhomPanel);
             }

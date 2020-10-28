@@ -24,6 +24,8 @@ using BH.Engine.Structure;
 using BH.oM.Structure.SurfaceProperties;
 using BH.oM.Structure.Fragments;
 using BH.Engine.Base;
+using BH.oM.Adapters.SAP2000;
+using BH.Engine.Adapter;
 
 namespace BH.Adapter.SAP2000
 {
@@ -35,8 +37,9 @@ namespace BH.Adapter.SAP2000
         private bool CreateObject(ISurfaceProperty surfaceProperty)
         {
             string propName = surfaceProperty.DescriptionOrName();
-            string matName = surfaceProperty.Material.CustomData[AdapterIdName].ToString();
-
+            string matName = GetAdapterId<string>(surfaceProperty.Material);
+            SAP2000Id sap2000id = new SAP2000Id();
+            
             if (surfaceProperty.GetType() == typeof(Waffle))
             {
                 // not implemented!
@@ -61,7 +64,10 @@ namespace BH.Adapter.SAP2000
                     CreatePropertyError("ConstantThickness", "SurfaceProperty", propName);
             }
 
-            surfaceProperty.CustomData[AdapterIdName] = propName;
+            sap2000id.Id = propName;
+            surfaceProperty.SetAdapterId(sap2000id);
+            //surfaceProperty.CustomData[AdapterIdName] = propName;
+
 
             SurfacePropertyModifier modifier = surfaceProperty.FindFragment<SurfacePropertyModifier>();
             if (modifier != null)

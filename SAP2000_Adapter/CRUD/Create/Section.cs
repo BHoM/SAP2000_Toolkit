@@ -40,7 +40,9 @@ namespace BH.Adapter.SAP2000
         {
             if (SetSection(bhomSection as dynamic))
             {
-                bhomSection.CustomData[AdapterIdName] = bhomSection.DescriptionOrName();
+                string propertyName = bhomSection.DescriptionOrName();
+                SetAdapterId(bhomSection, propertyName);
+
                 return true;
             }
             else { return false; }
@@ -53,7 +55,8 @@ namespace BH.Adapter.SAP2000
         private bool SetSection(CableSection bhomSection)
         {
             string name = bhomSection.DescriptionOrName();
-            string matName = bhomSection.Material.CustomData[AdapterIdName].ToString();
+            // string matName = bhomSection.Material.CustomData[AdapterIdName].ToString();
+            string matName = GetAdapterId<string>(bhomSection.Material); 
             if (m_model.PropCable.SetProp(name, matName, bhomSection.Area) != 0)
                 Engine.Reflection.Compute.RecordError($"Could not create Cable section with name {name}");
             return false;
@@ -70,35 +73,35 @@ namespace BH.Adapter.SAP2000
 
         private bool SetSection(ConcreteSection bhomSection)
         {
-            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), bhomSection.Material.CustomData[AdapterIdName].ToString());
+            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), GetAdapterId<string>(bhomSection.Material));
         }
 
         /***************************************************/
 
         private bool SetSection(TimberSection bhomSection)
         {
-            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), bhomSection.Material.CustomData[AdapterIdName].ToString());
+            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), GetAdapterId<string>(bhomSection.Material));
         }
 
         /***************************************************/
 
         private bool SetSection(SteelSection bhomSection)
         {
-            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), bhomSection.Material.CustomData[AdapterIdName].ToString());
+            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), GetAdapterId<string>(bhomSection.Material));
         }
 
         /***************************************************/
 
         private bool SetSection(AluminiumSection bhomSection)
         {
-            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), bhomSection.Material.CustomData[AdapterIdName].ToString());
+            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), GetAdapterId<string>(bhomSection.Material));
         }
 
         /***************************************************/
 
         private bool SetSection(ExplicitSection bhomSection)
         {
-            string matName = bhomSection.Material.CustomData[AdapterIdName].ToString();
+            string matName = GetAdapterId<string>(bhomSection.Material);
             int ret = m_model.PropFrame.SetGeneral(bhomSection.DescriptionOrName(), matName, bhomSection.CentreZ * 2, 
                 bhomSection.CentreY * 2, bhomSection.Area, bhomSection.Asy, bhomSection.Asz, bhomSection.J, 
                 bhomSection.Iy, bhomSection.Iz, bhomSection.Wply, bhomSection.Wplz, bhomSection.Wely, 
