@@ -29,6 +29,7 @@ using BH.oM.Geometry.CoordinateSystem;
 using BH.Engine.Geometry;
 using BH.oM.Structure.Constraints;
 using System;
+using BH.Engine.Adapter;
 
 namespace BH.Adapter.SAP2000
 {
@@ -77,7 +78,7 @@ namespace BH.Adapter.SAP2000
 
                 if (m_model.PointObj.GetGUID(id, ref guid) == 0)
                     sap2000id.PersistentId = guid;
-                SetAdapterId(bhNode, sap2000id);
+                bhNode.SetAdapterId(sap2000id);
                 nodeList.Add(bhNode); 
                 
             }

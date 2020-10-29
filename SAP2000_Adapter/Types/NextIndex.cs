@@ -32,11 +32,12 @@ namespace BH.Adapter.SAP2000
 {
     public partial class SAP2000Adapter : BHoMAdapter
     {
+
         protected override object NextFreeId(Type objectType, bool refresh)
         {
             return -1;
         }
-
     }
 }
+
 

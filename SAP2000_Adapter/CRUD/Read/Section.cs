@@ -203,7 +203,7 @@ namespace BH.Adapter.SAP2000
                         break;
                 }
 
-                SetAdapterId(bhomProperty, sap2000id);
+                bhomProperty.SetAdapterId(sap2000id);
                 propList.Add(bhomProperty);
             }
             return propList;

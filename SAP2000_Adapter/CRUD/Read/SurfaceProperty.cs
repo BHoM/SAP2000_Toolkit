@@ -27,6 +27,7 @@ using BH.oM.Structure.MaterialFragments;
 using BH.Engine.Structure;
 using BH.oM.Structure.Fragments;
 using BH.oM.Adapters.SAP2000;
+using BH.Engine.Adapter;
 
 namespace BH.Adapter.SAP2000
 {
@@ -103,7 +104,7 @@ namespace BH.Adapter.SAP2000
                     bhSurfProp.Fragments.Add(modifier);
                 }
 
-                SetAdapterId(bhSurfProp, sap2000id);
+                bhSurfProp.SetAdapterId(sap2000id);
                 propertyList.Add(bhSurfProp);
             }
 
