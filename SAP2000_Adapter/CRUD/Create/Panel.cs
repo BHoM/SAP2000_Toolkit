@@ -60,8 +60,7 @@ namespace BH.Adapter.SAP2000
 
                 if (bhPanel.Property != null)
                 {
-                    string propName = GetAdapterId<string>(bhPanel.Property);
-                    if (m_model.AreaObj.SetProperty(name, propName, 0) != 0)
+                    if (m_model.AreaObj.SetProperty(name, GetAdapterId<string>(bhPanel.Property), 0) != 0)
                         CreatePropertyError("Surface Property", "Panel", name);
                 }
             }

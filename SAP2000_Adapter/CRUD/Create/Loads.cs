@@ -20,10 +20,12 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.Engine.Adapter;
 using BH.Engine.Reflection;
 
 using BH.Engine.Structure;
 using BH.oM.Adapter.Commands;
+using BH.oM.Adapters.SAP2000;
 using BH.oM.Geometry;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
@@ -75,8 +77,8 @@ namespace BH.Adapter.SAP2000
                 {
                     double factor = comboCase.Item1;
                     ICase bhomCase = comboCase.Item2;
-                    //if (!bhomCase.CustomData.ContainsKey(AdapterIdName))
-                    //    Engine.Reflection.Compute.RecordWarning($"case {bhomCase.Name} has no SAP2000_id. Try pushing the loadcase and using the result of that push to build the combo.");
+                    if (!bhomCase.HasAdapterIdFragment(typeof(SAP2000Id)))
+                        Engine.Reflection.Compute.RecordWarning($"case {bhomCase.Name} has no SAP2000_id. Try pushing the loadcase and using the result of that push to build the combo.");
 
                     if (m_model.RespCombo.SetCaseList(loadcombination.Name, ref nameType, GetAdapterId<string>(bhomCase), factor) != 0)
                             Engine.Reflection.Compute.RecordWarning("Could not add case " + bhomCase.Name + " to combo " + loadcombination.Name);
