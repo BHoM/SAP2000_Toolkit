@@ -46,9 +46,7 @@ namespace BH.Adapter.SAP2000
             {
                 string name = "";
 
-                //string primaryNode = subLink.PrimaryNode.CustomData[AdapterIdName].ToString();
                 string primaryNode = GetAdapterId<string>(subLink.PrimaryNode);
-                //string secondaryNode = subLink.SecondaryNodes[0].CustomData[AdapterIdName].ToString();
                 string secondaryNode = GetAdapterId<string>(subLink.SecondaryNodes[0]);
 
 
@@ -59,14 +57,16 @@ namespace BH.Adapter.SAP2000
                         Engine.Reflection.Compute.RecordNote($"RigidLink {bhLink.Name} was assigned SAP2000_id of {name}");
                     
                     //Attempt to set property (if property has been pushed)
-                    //object propName;
-                   // if (subLink.Constraint.CustomData.TryGetValue(AdapterIdName, out propName))
-                    //{
-                    //    if (m_model.LinkObj.SetProperty(name, propName.ToString()) != 0)
-                    //        CreatePropertyWarning("LinkConstraint", "RigidLink", bhLink.Name);
-                    //}
-                    //else
-                     //   CreatePropertyWarning("LinkConstraint", "RigidLink", bhLink.Name);
+                    object propName;
+                    /***
+                    if (subLink.Constraint.CustomData.TryGetValue(AdapterIdName, out propName))
+                    {
+                        if (m_model.LinkObj.SetProperty(name, propName.ToString()) != 0)
+                            CreatePropertyWarning("LinkConstraint", "RigidLink", bhLink.Name);
+                    }
+                    else
+                        CreatePropertyWarning("LinkConstraint", "RigidLink", bhLink.Name);
+                    **/
 
 
                     //Add to groups per tags. For links that have been split, the original name will be tagged

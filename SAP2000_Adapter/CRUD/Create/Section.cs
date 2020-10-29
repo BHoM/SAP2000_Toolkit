@@ -55,7 +55,6 @@ namespace BH.Adapter.SAP2000
         private bool SetSection(CableSection bhomSection)
         {
             string name = bhomSection.DescriptionOrName();
-            // string matName = bhomSection.Material.CustomData[AdapterIdName].ToString();
             string matName = GetAdapterId<string>(bhomSection.Material); 
             if (m_model.PropCable.SetProp(name, matName, bhomSection.Area) != 0)
                 Engine.Reflection.Compute.RecordError($"Could not create Cable section with name {name}");

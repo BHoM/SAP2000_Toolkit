@@ -66,8 +66,6 @@ namespace BH.Adapter.SAP2000
 
             sap2000id.Id = propName;
             surfaceProperty.SetAdapterId(sap2000id);
-            //surfaceProperty.CustomData[AdapterIdName] = propName;
-
 
             SurfacePropertyModifier modifier = surfaceProperty.FindFragment<SurfacePropertyModifier>();
             if (modifier != null)
