@@ -57,16 +57,13 @@ namespace BH.Adapter.SAP2000
                         Engine.Reflection.Compute.RecordNote($"RigidLink {bhLink.Name} was assigned SAP2000_id of {name}");
                     
                     //Attempt to set property (if property has been pushed)
-                    object propName;
-                    /***
-                    if (subLink.Constraint.CustomData.TryGetValue(AdapterIdName, out propName))
+                    if(subLink.Constraint != null)
                     {
-                        if (m_model.LinkObj.SetProperty(name, propName.ToString()) != 0)
+                        if (m_model.LinkObj.SetProperty(name, GetAdapterId<string>(subLink.Constraint)) != 0)
                             CreatePropertyWarning("LinkConstraint", "RigidLink", bhLink.Name);
                     }
                     else
-                        CreatePropertyWarning("LinkConstraint", "RigidLink", bhLink.Name);
-                    **/
+                        CreatePropertyWarning("LinkConstraint", "RigidLink", bhLink.Name);                   
 
 
                     //Add to groups per tags. For links that have been split, the original name will be tagged

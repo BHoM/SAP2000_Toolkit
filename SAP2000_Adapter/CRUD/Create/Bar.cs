@@ -41,7 +41,7 @@ namespace BH.Adapter.SAP2000
             string name = "";
 
 
-            if (m_model.FrameObj.AddByPoint(GetAdapterId<string>(bhBar.StartNode), GetAdapterId<string>(bhBar.EndNode), ref name, "Default", bhBar.Name.ToString()) == 0)
+            if (m_model.FrameObj.AddByPoint(GetAdapterId<string>(bhBar.StartNode), GetAdapterId<string>(bhBar.EndNode), ref name, "None", bhBar.Name.ToString()) == 0)
             {
                 if (name != bhBar.Name & bhBar.Name != "")
                     Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} was assigned SAP2000_id of {name}");
@@ -49,9 +49,12 @@ namespace BH.Adapter.SAP2000
                 SAP2000Id sap2000IdFragment = new SAP2000Id { Id = name };
                 string guid = null;
 
-                if (m_model.FrameObj.SetSection(name, GetAdapterId<string>(bhBar.SectionProperty)) != 0)
+                if (bhBar.SectionProperty != null)
                 {
-                    CreatePropertyWarning("SectionProperty", "Bar", name);
+                    if (m_model.FrameObj.SetSection(name, GetAdapterId<string>(bhBar.SectionProperty)) != 0)
+                    {
+                        CreatePropertyWarning("SectionProperty", "Bar", name);
+                    }
                 }
 
                 if (bhBar.OrientationAngle != 0)
