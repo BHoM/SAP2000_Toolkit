@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 namespace BH.Adapter.SAP2000
 {
-    public partial class SAP2000Adapter
+    public partial class SAP2000Adapter : BHoMAdapter
     {
         /***************************************************/
         /**** Protected Methods                         ****/
