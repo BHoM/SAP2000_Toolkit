@@ -589,7 +589,7 @@ namespace BH.Adapter.SAP2000
                             tempForce = avgConstTemp;
                         }
                         catch { }
-                        
+
                         Engine.Reflection.Compute.RecordWarning("Temperature gradient not currently implemented in the BHoM. An attempt has been made to convert SAP2000's gradient to a constant temperature change.");
                     }
 
