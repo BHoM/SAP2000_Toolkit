@@ -431,14 +431,14 @@ namespace BH.Adapter.SAP2000
         private bool CreateLoad(BarTemperatureLoad bhLoad)
         {
             List<Bar> bars = bhLoad.Objects.Elements.ToList();
-            string loadPat = bhLoad.Loadcase.CustomData[AdapterIdName].ToString();
+            string loadPat = GetAdapterId<string>(bhLoad.Loadcase);
             double tempChange = bhLoad.TemperatureChange;
             int loadType = 1; // BHoM currently only supports uniform temperature change (=1); SAP supports gradients in local 2 and 3 axes (=2 and =3).
             bool replace = true;
             
             foreach (Bar bar in bars)
             {
-                string name = bar.CustomData[AdapterIdName].ToString();
+                string name = GetAdapterId<string>(bar);
                 if (m_model.FrameObj.SetLoadTemperature(name, loadPat, loadType, tempChange, Replace: replace) != 0)
                     CreateElementError("BarTemperatureLoad", bhLoad.Name);
             }

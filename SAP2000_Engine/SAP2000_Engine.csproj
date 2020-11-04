@@ -117,7 +117,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdapterIdName.cs" />
     <Compile Include="Query\SplitRigidLink.cs" />
     <Compile Include="Query\JoinRigidLink.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

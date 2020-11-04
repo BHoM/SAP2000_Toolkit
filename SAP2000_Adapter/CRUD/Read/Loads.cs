@@ -467,7 +467,7 @@ namespace BH.Adapter.SAP2000
             List<ILoad> loads = new List<ILoad>();
 
             Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
-            Dictionary<string, Bar> bhomBars = ReadBars().ToDictionary(x => x.CustomData[AdapterIdName].ToString());
+            Dictionary<string, Bar> bhomBars = ReadBars().ToDictionary(x => GetAdapterId<string>(x));
 
             int count = 0;
             string[] barNames = null;
