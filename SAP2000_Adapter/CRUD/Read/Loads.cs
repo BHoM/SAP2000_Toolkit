@@ -36,6 +36,8 @@ using System.Threading.Tasks;
 using BH.Engine.Reflection;
 using System.Threading;
 using BH.Engine.Adapter;
+using System.IO;
+using System.ComponentModel.Design;
 
 namespace BH.Adapter.SAP2000
 {
@@ -138,6 +140,8 @@ namespace BH.Adapter.SAP2000
                 return ReadBarUniformDistributedLoad();
             else if (type == typeof(BarVaryingDistributedLoad))
                 return ReadBarVaryingDistributedLoad();
+            else if (type == typeof(BarTemperatureLoad))
+                return ReadBarTemperatureLoad();
             else if (type == typeof(AreaUniformlyDistributedLoad))
                 return ReadAreaLoad();
             else if (type == typeof(AreaTemperatureLoad))
@@ -152,6 +156,7 @@ namespace BH.Adapter.SAP2000
                 loads.AddRange(ReadPointLoad());
                 loads.AddRange(ReadBarUniformDistributedLoad());
                 loads.AddRange(ReadBarVaryingDistributedLoad());
+                loads.AddRange(ReadBarTemperatureLoad());
                 loads.AddRange(ReadAreaLoad());
                 loads.AddRange(ReadAreaTemperatureLoad());
                 loads.AddRange(ReadPointDispl());
@@ -457,6 +462,46 @@ namespace BH.Adapter.SAP2000
             return loads;
         }
 
+        /***************************************************/
+
+        private List<ILoad> ReadBarTemperatureLoad(List<string> id = null)
+        {
+            List<ILoad> loads = new List<ILoad>();
+
+            Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
+            Dictionary<string, Bar> bhomBars = ReadBars().ToDictionary(x => GetAdapterId<string>(x));
+
+            int count = 0;
+            string[] barNames = null;
+            string[] caseNames = null;
+            int[] loadType = null;
+            string[] jointPattern = null;
+            double[] val = null;
+
+            if (m_model.FrameObj.GetLoadTemperature("ALL", ref count, ref barNames, ref caseNames, ref loadType, ref val, ref jointPattern, eItemType.Group) == 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    Bar bhomBar = bhomBars[barNames[i]];
+                    double tempChange = val[i];
+
+                    if (loadType[i] != 1)
+                        Engine.Reflection.Compute.RecordError("The BHoM currently only supports uniform temperature changes applied to bars, not temperature gradients across t" +
+                            "\nApplied SAP2000 gradients will be pulled as single temperature value into the BHoM.");
+
+                    loads.Add(new BarTemperatureLoad()
+                    {
+                        TemperatureChange = tempChange,
+                        Loadcase = bhomCases[caseNames[i]],
+                        Objects = new BHoMGroup<Bar> { Elements = { bhomBar } },
+                        Axis = LoadAxis.Global,
+                        Projected = false,
+                    });
+                }
+            }
+
+            return loads;
+        }
         /***************************************************/
 
         private List<ILoad> ReadAreaLoad(List<string> ids = null)
