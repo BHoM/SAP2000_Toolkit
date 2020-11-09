@@ -48,7 +48,7 @@ namespace BH.Adapter.SAP2000
             {
                 string name = GetAdapterId<string>(bhNode);
 
-                SetObject(bhNode, name);
+                SetObject(bhNode);
 
                 double x = 0;
                 double y = 0;

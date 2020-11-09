@@ -49,52 +49,13 @@ namespace BH.Adapter.SAP2000
 
                 sap2000id.Id = name;
 
-                if (! bhNode.Orientation.Equals(BH.oM.Geometry.Basis.XY))
-                {
-                    int myVectOpt = 3; //specify orientation by vectors
-                    string globalCSys = "GLOBAL"; //specify point orientation relative to the global coordinate system
-                    int[] myDir = { 1, 2 }; //not used for VecOpt = 3
-                    string[] noPts = { "None", "None" }; //not used for VecOpt = 3
-                    int myPlane2 = 12; //specify point orientation by local 1(X) and 2(Y) vectors
-                    double[] myAxVect = bhNode.Orientation.X.ToDoubleArray();
-                    double[] myPlVect = bhNode.Orientation.Y.ToDoubleArray();
-
-                    if (m_model.PointObj.SetLocalAxesAdvanced(name, true, 
-                            myVectOpt, globalCSys, ref myDir, ref noPts, ref myAxVect, myPlane2, 
-                            myVectOpt, globalCSys, ref myDir, ref noPts, ref myPlVect) != 0)
-                        CreatePropertyWarning("Node Local Axes", "Node", name);
-                }
-
-
-                if (bhNode.Support != null)
-                {
-                    bool[] restraint = new bool[6];
-                    double[] spring = new double[6];
-                    
-                    bhNode.GetSAPConstraint(ref restraint, ref spring);
-
-                    if (m_model.PointObj.SetRestraint(name, ref restraint) != 0)
-                        CreatePropertyWarning("Node Restraint", "Node", name);
-                    if (m_model.PointObj.SetSpring(name, ref spring) != 0)
-                        CreatePropertyWarning("Node Spring", "Node", name);
-                }
-
-                foreach (string gName in bhNode.Tags)
-                {
-                    string groupName = gName.ToString();
-                    if (m_model.PointObj.SetGroupAssign(name, groupName) != 0)
-                    {
-                        m_model.GroupDef.SetGroup(groupName);
-                        m_model.PointObj.SetGroupAssign(name, groupName);
-                    }
-                }
-
                 string guid = null;
                 if (m_model.PointObj.GetGUID(name, ref guid) == 0)
                     sap2000id.PersistentId = guid;
 
                 bhNode.SetAdapterId(sap2000id);
 
+                SetObject(bhNode);
             }
 
             return true;
@@ -102,8 +63,10 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetObject(Node bhNode, string name)
+        private bool SetObject(Node bhNode)
         {
+            string name = GetAdapterId<string>(bhNode);
+
             if (bhNode.Support != null)
             {
                 bool[] restraint = new bool[6];
@@ -137,6 +100,16 @@ namespace BH.Adapter.SAP2000
                         myVectOpt, globalCSys, ref myDir, ref noPts, ref myAxVect, myPlane2,
                         myVectOpt, globalCSys, ref myDir, ref noPts, ref myPlVect) != 0)
                     CreatePropertyWarning("Node Local Axes", "Node", name);
+            }
+
+            foreach (string gName in bhNode.Tags)
+            {
+                string groupName = gName.ToString();
+                if (m_model.PointObj.SetGroupAssign(name, groupName) != 0)
+                {
+                    m_model.GroupDef.SetGroup(groupName);
+                    m_model.PointObj.SetGroupAssign(name, groupName);
+                }
             }
 
             return true;
