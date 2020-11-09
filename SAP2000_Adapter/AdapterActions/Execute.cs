@@ -31,6 +31,7 @@ namespace BH.Adapter.SAP2000
         {
             bool success = m_model.InitializeNewModel(eUnits.N_m_C) == 0;
             success &= m_model.File.NewBlank() == 0;
+            success &= m_model.SetModelIsLocked(false) == 0;
             return success;
         }
 
