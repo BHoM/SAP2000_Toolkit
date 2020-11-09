@@ -20,41 +20,60 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Base;
-using BH.oM.Structure.Elements;
-using BH.oM.Structure.Loads;
-using BH.oM.Structure.Constraints;
-using BH.oM.Structure.SectionProperties;
-using BH.oM.Structure.SurfaceProperties;
-using BH.oM.Structure.MaterialFragments;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BH.oM.Adapter;
-using System.Reflection;
-using System.Security.AccessControl;
+using BH.Engine.Adapter;
+using BH.oM.Adapters.SAP2000;
+using BH.oM.Structure.Elements;
+using BH.oM.Structure.Constraints;
+using BH.Engine.Adapters.SAP2000;
+using System.Runtime.Remoting.Messaging;
 
 namespace BH.Adapter.SAP2000
 {
     public partial class SAP2000Adapter : BHoMAdapter
     {
         /***************************************************/
-        /**** Adapter overload method                   ****/
+        /**** Update Node                               ****/
         /***************************************************/
 
-        protected override bool IUpdate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
+        private bool UpdateObjects(IEnumerable<Node> nodes)
         {
-            return UpdateObjects(objects as dynamic);
+            bool success = true;
+            m_model.SelectObj.ClearSelection();
+
+            Engine.Structure.NodeDistanceComparer comparer = AdapterComparers[typeof(Node)] as Engine.Structure.NodeDistanceComparer;
+
+            foreach (Node bhNode in nodes)
+            {
+                string name = GetAdapterId<string>(bhNode);
+
+                SetObject(bhNode, name);
+
+                double x = 0;
+                double y = 0;
+                double z = 0;
+
+                if (m_model.PointObj.GetCoordCartesian(name, ref x, ref y, ref z) == 0)
+                {
+                    oM.Geometry.Point p = new oM.Geometry.Point() { X = x, Y = y, Z = z };
+
+                    if (!comparer.Equals(bhNode, (Node)p))
+                    {
+                        x = bhNode.Position.X - x;
+                        y = bhNode.Position.Y - y;
+                        z = bhNode.Position.Z - z;
+
+                        m_model.PointObj.SetSelected(name, true);
+                        m_model.EditGeneral.Move(x, y, z);
+                        m_model.PointObj.SetSelected(name, false);
+                    }
+                }
+            }
+
+            return success;
+
         }
 
-        /***************************************************/
-
-        private bool UpdateObjects(IEnumerable<IBHoMObject> objects)
-        {
-            return base.IUpdate(objects, null);
-        }
-
-        /***************************************************/
     }
 }

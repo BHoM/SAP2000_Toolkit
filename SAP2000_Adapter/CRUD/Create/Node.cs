@@ -21,8 +21,10 @@
  */
 
 using BH.Engine.Adapter;
+using BH.Engine.Geometry;
 using BH.Engine.Structure;
 using BH.oM.Adapters.SAP2000;
+using BH.oM.Geometry;
 using BH.oM.Structure.Elements;
 
 
@@ -99,5 +101,45 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
+
+        private bool SetObject(Node bhNode, string name)
+        {
+            if (bhNode.Support != null)
+            {
+                bool[] restraint = new bool[6];
+                double[] spring = new double[6];
+
+                bhNode.GetSAPConstraint(ref restraint, ref spring);
+
+                if (m_model.PointObj.SetRestraint(name, ref restraint) == 0) { }
+                else
+                {
+                    CreatePropertyWarning("Node Restraint", "Node", name);
+                }
+                if (m_model.PointObj.SetSpring(name, ref spring) == 0) { }
+                else
+                {
+                    CreatePropertyWarning("Node Spring", "Node", name);
+                }
+            }
+
+            if (!bhNode.Orientation.Equals(BH.oM.Geometry.Basis.XY))
+            {
+                int myVectOpt = 3; //specify orientation by vectors
+                string globalCSys = "GLOBAL"; //specify point orientation relative to the global coordinate system
+                int[] myDir = { 1, 2 }; //not used for VecOpt = 3
+                string[] noPts = { "None", "None" }; //not used for VecOpt = 3
+                int myPlane2 = 12; //specify point orientation by local 1(X) and 2(Y) vectors
+                double[] myAxVect = bhNode.Orientation.X.ToDoubleArray();
+                double[] myPlVect = bhNode.Orientation.Y.ToDoubleArray();
+
+                if (m_model.PointObj.SetLocalAxesAdvanced(name, true,
+                        myVectOpt, globalCSys, ref myDir, ref noPts, ref myAxVect, myPlane2,
+                        myVectOpt, globalCSys, ref myDir, ref noPts, ref myPlVect) != 0)
+                    CreatePropertyWarning("Node Local Axes", "Node", name);
+            }
+
+            return true;
+        }
     }
 }

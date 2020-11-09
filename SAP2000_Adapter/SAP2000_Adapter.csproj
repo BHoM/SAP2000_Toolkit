@@ -202,6 +202,7 @@
     <Compile Include="CRUD\Read\RigidLink.cs" />
     <Compile Include="CRUD\Read\Section.cs" />
     <Compile Include="CRUD\Read\SurfaceProperty.cs" />
+    <Compile Include="CRUD\Update\Node.cs" />
     <Compile Include="CRUD\Update\_IUpdate.cs" />
     <Compile Include="SAP2000Adapter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
