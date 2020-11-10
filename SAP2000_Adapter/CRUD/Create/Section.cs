@@ -38,14 +38,19 @@ namespace BH.Adapter.SAP2000
 
         private bool CreateObject(ISectionProperty bhomSection)
         {
-            if (SetSection(bhomSection as dynamic))
+            if (bhomSection.Material != null)
             {
-                string propertyName = bhomSection.DescriptionOrName();
-                SetAdapterId(bhomSection, propertyName);
+                if (SetSection(bhomSection as dynamic))
+                {
+                    string propertyName = bhomSection.DescriptionOrName();
+                    SetAdapterId(bhomSection, propertyName);
 
-                return true;
+                    return true;
+                }
             }
-            else { return false; }
+            Engine.Reflection.Compute.RecordWarning($"Could not create section {bhomSection.DescriptionOrName()}. Check your inputs.");
+            SetAdapterId(bhomSection, "None");
+            return true;
         }
 
         /***************************************************/
@@ -72,28 +77,48 @@ namespace BH.Adapter.SAP2000
 
         private bool SetSection(ConcreteSection bhomSection)
         {
-            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), GetAdapterId<string>(bhomSection.Material));
+            if (bhomSection.SectionProfile != null)
+            {
+                return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), GetAdapterId<string>(bhomSection.Material));
+            }
+            Engine.Reflection.Compute.RecordWarning($"Profile for {bhomSection.Name} is null. Section was not created");
+            return false;
         }
 
         /***************************************************/
 
         private bool SetSection(TimberSection bhomSection)
         {
-            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), GetAdapterId<string>(bhomSection.Material));
+            if (bhomSection.SectionProfile != null)
+            {
+                return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), GetAdapterId<string>(bhomSection.Material));
+            }
+            Engine.Reflection.Compute.RecordWarning($"Profile for {bhomSection.Name} is null. Section was not created");
+            return false;
         }
 
         /***************************************************/
 
         private bool SetSection(SteelSection bhomSection)
         {
-            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), GetAdapterId<string>(bhomSection.Material));
+            if (bhomSection.SectionProfile != null)
+            {
+                return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), GetAdapterId<string>(bhomSection.Material));
+            }
+            Engine.Reflection.Compute.RecordWarning($"Profile for {bhomSection.Name} is null. Section was not created");
+            return false;
         }
 
         /***************************************************/
 
         private bool SetSection(AluminiumSection bhomSection)
         {
-            return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), GetAdapterId<string>(bhomSection.Material));
+            if (bhomSection.SectionProfile != null)
+            {
+                return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), GetAdapterId<string>(bhomSection.Material));
+            }
+            Engine.Reflection.Compute.RecordWarning($"Profile for {bhomSection.Name} is null.");
+            return false;
         }
 
         /***************************************************/
@@ -106,6 +131,18 @@ namespace BH.Adapter.SAP2000
                 bhomSection.Iy, bhomSection.Iz, bhomSection.Wply, bhomSection.Wplz, bhomSection.Wely, 
                 bhomSection.Wely, bhomSection.Rgy, bhomSection.Rgz);
             return ret == 0;
+        }
+
+        /***************************************************/
+
+        private bool SetSection(GenericSection bhomSection)
+        {
+            if (bhomSection.SectionProfile != null)
+            {
+                return SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), GetAdapterId<string>(bhomSection.Material));
+            }
+            Engine.Reflection.Compute.RecordWarning($"Profile for {bhomSection.Name} is null. Section was not created");
+            return false;
         }
 
         /***************************************************/
@@ -225,6 +262,14 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
 
         private bool SetProfile(GenericSection bhomProfile, string sectionName, string matName)
+        {
+            //Not implemented
+            return false;
+        }
+
+        /***************************************************/
+
+        private bool SetProfile(TaperedProfile bhomProfile, string sectionName, string matName)
         {
             //Not implemented
             return false;

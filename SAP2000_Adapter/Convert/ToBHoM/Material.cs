@@ -55,7 +55,7 @@ namespace BH.Adapter.SAP2000
 
         public static double[] ToDoubleArray(this Vector v)
         {
-            return new double[] { v.X, v.Y, v.Z };
+            return (v != null ? new double[] { v.X, v.Y, v.Z } : new double[3]);
         }
 
         /***************************************************/
