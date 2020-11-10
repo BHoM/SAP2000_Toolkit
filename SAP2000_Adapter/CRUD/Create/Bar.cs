@@ -40,81 +40,90 @@ namespace BH.Adapter.SAP2000
         {
             string name = "";
 
+            // Check for dealbreaking BHoM validity
+            //if this is Bad
+            //  CreateInvalidElementError    
+            //  return true
 
-            if (m_model.FrameObj.AddByPoint(GetAdapterId<string>(bhBar.StartNode), GetAdapterId<string>(bhBar.EndNode), ref name, "None", bhBar.Name.ToString()) == 0)
-            {
-                if (name != bhBar.Name & bhBar.Name != "")
-                    Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} was assigned SAP2000_id of {name}");
-
-                SAP2000Id sap2000IdFragment = new SAP2000Id { Id = name };
-                string guid = null;
-
-                if (bhBar.SectionProperty != null)
-                {
-                    if (m_model.FrameObj.SetSection(name, GetAdapterId<string>(bhBar.SectionProperty)) != 0)
-                    {
-                        CreatePropertyWarning("SectionProperty", "Bar", name);
-                    }
-                }
-
-                if (bhBar.OrientationAngle != 0)
-                {
-                    if (m_model.FrameObj.SetLocalAxes(name, bhBar.OrientationAngle * 180 / System.Math.PI) != 0)
-                    {
-                        CreatePropertyWarning("Orientation angle", "Bar", name);
-                    }
-                }
-
-                if (bhBar.Release != null)
-                {
-                    bool[] restraintStart = null;
-                    double[] springStart = null;
-                    bool[] restraintEnd = null;
-                    double[] springEnd = null;
-
-                    if (bhBar.Release.ToSAP(ref restraintStart, ref springStart, ref restraintEnd, ref springEnd))
-                    {
-                        if (m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd) != 0)
-                        {
-                            CreatePropertyWarning("Release", "Bar", name);
-                        }
-                    }
-
-                }
-
-                if (bhBar.Offset != null)
-                {
-                    if (m_model.FrameObj.SetEndLengthOffset(name, false, -1 * (bhBar.Offset.Start.X), bhBar.Offset.End.X, 1) != 0)
-                    {
-                        CreatePropertyWarning("Length offset", "Bar", name);
-                    }
-                }
-
-                if (m_model.FrameObj.GetGUID(name, ref guid) == 0)
-                {
-                    sap2000IdFragment.PersistentId = guid;
-                }
-
-                foreach (string gName in bhBar.Tags)
-                {
-                    string groupName = gName.ToString();
-                    if (m_model.FrameObj.SetGroupAssign(name, groupName) != 0)
-                    {
-                        m_model.GroupDef.SetGroup(groupName);
-                        m_model.FrameObj.SetGroupAssign(name, groupName);
-                    }
-                }
-
-                bhBar.SetAdapterId(sap2000IdFragment);
-            }
-            else
+            // Create Geometry in SAP
+            if (m_model.FrameObj.AddByPoint(GetAdapterId<string>(bhBar.StartNode), GetAdapterId<string>(bhBar.EndNode), ref name, "None", bhBar.Name.ToString()) != 0)
             {
                 CreateElementError("Bar", name);
+                return true;
             }
+
+            if (name != bhBar.Name & bhBar.Name != "")
+                Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} was assigned SAP2000_id of {name}");
+
+            string guid = null;
+            m_model.FrameObj.GetGUID(name, ref guid);
+
+            SAP2000Id sap2000IdFragment = new SAP2000Id { Id = name, PersistentId = guid };
+            bhBar.SetAdapterId(sap2000IdFragment);
+
+            SetObject(bhBar);
 
             return true;
         }
 
         /***************************************************/
+
+        private bool SetObject(Bar bhBar)
+        {
+            string name = GetAdapterId<string>(bhBar);
+
+            if (bhBar.SectionProperty != null)
+            {
+                if (m_model.FrameObj.SetSection(name, GetAdapterId<string>(bhBar.SectionProperty)) != 0)
+                {
+                    CreatePropertyWarning("SectionProperty", "Bar", name);
+                }
+            }
+
+            if (bhBar.OrientationAngle != 0)
+            {
+                if (m_model.FrameObj.SetLocalAxes(name, bhBar.OrientationAngle * 180 / System.Math.PI) != 0)
+                {
+                    CreatePropertyWarning("Orientation angle", "Bar", name);
+                }
+            }
+
+            if (bhBar.Release != null)
+            {
+                bool[] restraintStart = null;
+                double[] springStart = null;
+                bool[] restraintEnd = null;
+                double[] springEnd = null;
+
+                if (bhBar.Release.ToSAP(ref restraintStart, ref springStart, ref restraintEnd, ref springEnd))
+                {
+                    if (m_model.FrameObj.SetReleases(name, ref restraintStart, ref restraintEnd, ref springStart, ref springEnd) != 0)
+                    {
+                        CreatePropertyWarning("Release", "Bar", name);
+                    }
+                }
+
+            }
+
+            if (bhBar.Offset != null)
+            {
+                if (m_model.FrameObj.SetEndLengthOffset(name, false, -1 * (bhBar.Offset.Start.X), bhBar.Offset.End.X, 1) != 0)
+                {
+                    CreatePropertyWarning("Length offset", "Bar", name);
+                }
+            }
+
+            foreach (string gName in bhBar.Tags)
+            {
+                string groupName = gName.ToString();
+                if (m_model.FrameObj.SetGroupAssign(name, groupName) != 0)
+                {
+                    m_model.GroupDef.SetGroup(groupName);
+                    m_model.FrameObj.SetGroupAssign(name, groupName);
+                }
+            }
+
+            return true;
+        }
     }
 }
