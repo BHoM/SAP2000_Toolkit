@@ -37,7 +37,13 @@ namespace BH.Adapter.SAP2000
         private bool CreateObject(ISurfaceProperty surfaceProperty)
         {
             string propName = surfaceProperty.DescriptionOrName();
-            string matName = GetAdapterId<string>(surfaceProperty.Material);
+            string matName = "Default";
+            if (surfaceProperty.Material != null)
+            {
+                matName = GetAdapterId<string>(surfaceProperty.Material);
+            }
+            else Engine.Reflection.Compute.RecordWarning($"SurfaceProperty {propName} had no material defined. Using a default material.");
+
             SAP2000Id sap2000id = new SAP2000Id();
             
             if (surfaceProperty.GetType() == typeof(Waffle))

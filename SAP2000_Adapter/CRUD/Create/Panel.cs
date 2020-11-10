@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Adapters.SAP2000;
 using BH.Engine.Adapter;
+using System.Reflection;
 
 namespace BH.Adapter.SAP2000
 {
@@ -38,8 +39,20 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
 
         private bool CreateObject(Panel bhPanel)
-        {                        
-            List<Point> boundaryPoints = bhPanel.ExternalElementCurves().Select( item => item.IStartPoint()).ToList();
+        {
+            double mergeTol = 1E-6;
+
+            List<Point> boundaryPoints = null;
+
+            try
+            { 
+                boundaryPoints = bhPanel.ControlPoints(true).CullDuplicates(mergeTol);
+            }
+            catch
+            {
+                Engine.Reflection.Compute.RecordError($"Panel {bhPanel.Name} could not be created, because its geometry could not be determined");
+                return false;
+            }
 
             int segmentCount = boundaryPoints.Count();
 

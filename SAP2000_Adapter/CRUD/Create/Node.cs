@@ -42,6 +42,12 @@ namespace BH.Adapter.SAP2000
             string name = "";
             SAP2000Id sap2000id = new SAP2000Id();
 
+            if (bhNode.Position == null)
+            {
+                Engine.Reflection.Compute.RecordError($"Node {bhNode.Name} has no position. Nothing was created.");
+                return false;
+            }
+
             if (m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name, bhNode.Name.ToString()) == 0)
             {
                 if (name != bhNode.Name & bhNode.Name != "")
@@ -58,7 +64,7 @@ namespace BH.Adapter.SAP2000
                 SetObject(bhNode);
             }
 
-            return true;
+            return true;            
         }
 
         /***************************************************/
