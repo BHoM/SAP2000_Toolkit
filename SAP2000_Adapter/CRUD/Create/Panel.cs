@@ -61,24 +61,39 @@ namespace BH.Adapter.SAP2000
             double[] z = boundaryPoints.Select(item => item.Z).ToArray();
 
             string name = "";
-            string guid = null;
-            SAP2000Id sap2000id = new SAP2000Id();
 
-            if (m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, "None", bhPanel.Name.ToString()) == 0)
+            // Create Geometry in SAP
+            if (m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, "None", bhPanel.Name.ToString()) != 0)
             {
-                if (name != bhPanel.Name & bhPanel.Name != "")
-                    Engine.Reflection.Compute.RecordNote($"Panel {bhPanel.Name} was assigned SAP2000_id of {name}");
-
-                sap2000id.Id = name;
-
-                if (bhPanel.Property != null)
-                {
-                    if (m_model.AreaObj.SetProperty(name, GetAdapterId<string>(bhPanel.Property), 0) != 0)
-                        CreatePropertyError("Surface Property", "Panel", name);
-                }
-            }
-            else
                 CreateElementError("Panel", bhPanel.Name);
+            }
+
+            // Set AdapterID
+            if (name != bhPanel.Name & bhPanel.Name != "")
+                Engine.Reflection.Compute.RecordNote($"Panel {bhPanel.Name} was assigned SAP2000_id of {name}");
+
+            string guid = null;
+            m_model.AreaObj.GetGUID(name, ref guid);
+
+            SAP2000Id sap2000IdFragment = new SAP2000Id { Id = name, PersistentId = guid };
+            bhPanel.SetAdapterId(sap2000IdFragment);
+
+            SetObject(bhPanel);
+
+            return true;
+        }
+
+        /***************************************************/
+
+        private bool SetObject(Panel bhPanel)
+        {
+            string name = GetAdapterId<string>(bhPanel);
+
+            if (bhPanel.Property != null)
+            {
+                if (m_model.AreaObj.SetProperty(name, GetAdapterId<string>(bhPanel.Property), 0) != 0)
+                    CreatePropertyError("Surface Property", "Panel", name);
+            }
 
             foreach (string gName in bhPanel.Tags)
             {
@@ -90,14 +105,7 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
-            if (m_model.AreaObj.GetGUID(name, ref guid) == 0)
-                sap2000id.PersistentId = guid;
-
-            bhPanel.SetAdapterId(sap2000id);
-
             return true;
         }
-
-        /***************************************************/
     }
 }
