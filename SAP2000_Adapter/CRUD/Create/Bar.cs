@@ -52,6 +52,7 @@ namespace BH.Adapter.SAP2000
                 return true;
             }
 
+            // Set AdapterID
             if (name != bhBar.Name & bhBar.Name != "")
                 Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} was assigned SAP2000_id of {name}");
 
@@ -61,6 +62,7 @@ namespace BH.Adapter.SAP2000
             SAP2000Id sap2000IdFragment = new SAP2000Id { Id = name, PersistentId = guid };
             bhBar.SetAdapterId(sap2000IdFragment);
 
+            // Set Properties
             SetObject(bhBar);
 
             return true;

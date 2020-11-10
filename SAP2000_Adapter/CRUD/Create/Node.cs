@@ -40,29 +40,33 @@ namespace BH.Adapter.SAP2000
         {
 
             string name = "";
-            SAP2000Id sap2000id = new SAP2000Id();
 
+            //Check for dealbreaking validity problems
             if (bhNode.Position == null)
             {
                 Engine.Reflection.Compute.RecordError($"Node {bhNode.Name} has no position. Nothing was created.");
-                return false;
+                return true;
             }
 
-            if (m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name, bhNode.Name.ToString()) == 0)
+            // Create geometry in SAP
+            if (m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name, bhNode.Name.ToString()) != 0)
             {
-                if (name != bhNode.Name & bhNode.Name != "")
-                    Engine.Reflection.Compute.RecordNote($"Node {bhNode.Name} was assigned SAP2000_id of {name}");
-
-                sap2000id.Id = name;
-
-                string guid = null;
-                if (m_model.PointObj.GetGUID(name, ref guid) == 0)
-                    sap2000id.PersistentId = guid;
-
-                bhNode.SetAdapterId(sap2000id);
-
-                SetObject(bhNode);
+                CreateElementError("Node", bhNode.Name);
+                return true;
             }
+
+            // Set Adapter ID
+            if (name != bhNode.Name & bhNode.Name != "")
+                Engine.Reflection.Compute.RecordNote($"Node {bhNode.Name} was assigned SAP2000_id of {name}");
+
+            string guid = null;
+            m_model.PointObj.GetGUID(name, ref guid);
+
+            SAP2000Id sap2000IdFragment = new SAP2000Id { Id = name, PersistentId = guid };
+            bhNode.SetAdapterId(sap2000IdFragment);
+
+            // Set Properties
+            SetObject(bhNode);            
 
             return true;            
         }
