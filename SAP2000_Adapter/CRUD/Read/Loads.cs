@@ -140,12 +140,12 @@ namespace BH.Adapter.SAP2000
                 return ReadBarUniformDistributedLoad();
             else if (type == typeof(BarVaryingDistributedLoad))
                 return ReadBarVaryingDistributedLoad();
-            else if (type == typeof(BarTemperatureLoad))
-                return ReadBarTemperatureLoad();
+            else if (type == typeof(BarUniformTemperatureLoad))
+                return ReadBarUniformTemperatureLoad();
             else if (type == typeof(AreaUniformlyDistributedLoad))
                 return ReadAreaLoad();
-            else if (type == typeof(AreaTemperatureLoad))
-                return ReadAreaTemperatureLoad();
+            else if (type == typeof(AreaUniformTemperatureLoad))
+                return ReadAreaUniformTemperatureLoad();
             else if (type == typeof(PointDisplacement))
                 return ReadPointDispl();
             else if (type == typeof(GravityLoad))
@@ -156,9 +156,9 @@ namespace BH.Adapter.SAP2000
                 loads.AddRange(ReadPointLoad());
                 loads.AddRange(ReadBarUniformDistributedLoad());
                 loads.AddRange(ReadBarVaryingDistributedLoad());
-                loads.AddRange(ReadBarTemperatureLoad());
+                loads.AddRange(ReadBarUniformTemperatureLoad());
                 loads.AddRange(ReadAreaLoad());
-                loads.AddRange(ReadAreaTemperatureLoad());
+                loads.AddRange(ReadAreaUniformTemperatureLoad());
                 loads.AddRange(ReadPointDispl());
                 return loads;
             }
@@ -464,7 +464,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private List<ILoad> ReadBarTemperatureLoad(List<string> id = null)
+        private List<ILoad> ReadBarUniformTemperatureLoad(List<string> id = null)
         {
             List<ILoad> loads = new List<ILoad>();
 
@@ -489,7 +489,7 @@ namespace BH.Adapter.SAP2000
                         Engine.Reflection.Compute.RecordError("The BHoM currently only supports uniform temperature changes applied to bars, not temperature gradients across t" +
                             "\nApplied SAP2000 gradients will be pulled as single temperature value into the BHoM.");
 
-                    loads.Add(new BarTemperatureLoad()
+                    loads.Add(new BarUniformTemperatureLoad()
                     {
                         TemperatureChange = tempChange,
                         Loadcase = bhomCases[caseNames[i]],
@@ -605,7 +605,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private List<ILoad> ReadAreaTemperatureLoad(List<string> ids = null)
+        private List<ILoad> ReadAreaUniformTemperatureLoad(List<string> ids = null)
         {
             List<ILoad> loads = new List<ILoad>();
 
@@ -638,7 +638,7 @@ namespace BH.Adapter.SAP2000
                         Engine.Reflection.Compute.RecordWarning("Temperature gradient not currently implemented in the BHoM. An attempt has been made to convert SAP2000's gradient to a constant temperature change.");
                     }
 
-                    loads.Add(new AreaTemperatureLoad()
+                    loads.Add(new AreaUniformTemperatureLoad()
                     {
                         TemperatureChange = tempForce,
                         Loadcase = bhomCases[caseNames[i]],
