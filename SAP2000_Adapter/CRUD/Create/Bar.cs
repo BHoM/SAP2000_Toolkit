@@ -41,16 +41,18 @@ namespace BH.Adapter.SAP2000
         private bool CreateObject(Bar bhBar)
         {
             string name = "";
-            string startId;
-            string endId;
 
             // Check for dealbreaking BHoM validity
-            try
+            if (bhBar.StartNode == null || bhBar.EndNode == null)
             {
-                startId = GetAdapterId<string>(bhBar.StartNode);
-                endId = GetAdapterId<string>(bhBar.EndNode);
+                Engine.Reflection.Compute.RecordError($"Bar {bhBar.Name} failed to push because its nodes are null");
+                return true;
             }
-            catch
+
+            string startId = GetAdapterId<string>(bhBar.StartNode);
+            string endId = GetAdapterId<string>(bhBar.EndNode);
+
+            if (startId == null || endId == null)
             {
                 Engine.Reflection.Compute.RecordError($"Bar {bhBar.Name} failed to push because its nodes were not found in SAP2000. Check that geometry is valid.");
                 return true;
@@ -87,9 +89,13 @@ namespace BH.Adapter.SAP2000
 
             if (bhBar.SectionProperty != null)
             {
-                if (m_model.FrameObj.SetSection(name, GetAdapterId<string>(bhBar.SectionProperty)) != 0)
+                string propId = GetAdapterId<string>(bhBar.SectionProperty);
+                if (propId != null)
                 {
-                    CreatePropertyWarning("SectionProperty", "Bar", name);
+                    if (m_model.FrameObj.SetSection(name, propId) != 0)
+                    {
+                        CreatePropertyWarning("SectionProperty", "Bar", name);
+                    }
                 }
             }
 
