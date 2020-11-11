@@ -44,6 +44,7 @@ namespace BH.Adapter.SAP2000
 
             List<Point> boundaryPoints = null;
 
+            //Check for dealbreaking BHoM invalidity
             try
             { 
                 boundaryPoints = bhPanel.ControlPoints(true).CullDuplicates(mergeTol);
@@ -51,7 +52,7 @@ namespace BH.Adapter.SAP2000
             catch
             {
                 Engine.Reflection.Compute.RecordError($"Panel {bhPanel.Name} could not be created, because its geometry could not be determined");
-                return false;
+                return true;
             }
 
             int segmentCount = boundaryPoints.Count();
@@ -78,6 +79,7 @@ namespace BH.Adapter.SAP2000
             SAP2000Id sap2000IdFragment = new SAP2000Id { Id = name, PersistentId = guid };
             bhPanel.SetAdapterId(sap2000IdFragment);
 
+            // Set Properties
             SetObject(bhPanel);
 
             return true;

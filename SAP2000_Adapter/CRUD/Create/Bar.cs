@@ -26,7 +26,9 @@ using BH.oM.Structure.Offsets;
 using BH.oM.Structure.Constraints;
 using BH.oM.Adapters.SAP2000;
 using BH.Engine.Adapter;
+using BH.Engine.Base;
 using System;
+using BH.oM.Base;
 
 namespace BH.Adapter.SAP2000
 {
@@ -39,14 +41,23 @@ namespace BH.Adapter.SAP2000
         private bool CreateObject(Bar bhBar)
         {
             string name = "";
+            string startId;
+            string endId;
 
             // Check for dealbreaking BHoM validity
-            //if this is Bad
-            //  CreateInvalidElementError    
-            //  return true
+            try
+            {
+                startId = GetAdapterId<string>(bhBar.StartNode);
+                endId = GetAdapterId<string>(bhBar.EndNode);
+            }
+            catch
+            {
+                Engine.Reflection.Compute.RecordError($"Bar {bhBar.Name} failed to push because its nodes were not found in SAP2000. Check that geometry is valid.");
+                return true;
+            }
 
             // Create Geometry in SAP
-            if (m_model.FrameObj.AddByPoint(GetAdapterId<string>(bhBar.StartNode), GetAdapterId<string>(bhBar.EndNode), ref name, "None", bhBar.Name.ToString()) != 0)
+            if (m_model.FrameObj.AddByPoint(startId, endId, ref name, "None", bhBar.Name.ToString()) != 0)
             {
                 CreateElementError("Bar", name);
                 return true;
@@ -109,9 +120,12 @@ namespace BH.Adapter.SAP2000
 
             if (bhBar.Offset != null)
             {
-                if (m_model.FrameObj.SetEndLengthOffset(name, false, -1 * (bhBar.Offset.Start.X), bhBar.Offset.End.X, 1) != 0)
+                if (bhBar.Offset.Start != null && bhBar.Offset.End != null)
                 {
-                    CreatePropertyWarning("Length offset", "Bar", name);
+                    if (m_model.FrameObj.SetEndLengthOffset(name, false, -1 * (bhBar.Offset.Start.X), bhBar.Offset.End.X, 1) != 0)
+                    {
+                        CreatePropertyWarning("Length offset", "Bar", name);
+                    }
                 }
             }
 
