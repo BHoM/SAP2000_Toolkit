@@ -331,7 +331,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool CreateLoad(AreaTemperatureLoad bhLoad)
+        private bool CreateLoad(AreaUniformTemperatureLoad bhLoad)
         {
             List<IAreaElement> panels = bhLoad.Objects.Elements.ToList();
             string loadPat = GetAdapterId<string>(bhLoad.Loadcase);
@@ -345,7 +345,7 @@ namespace BH.Adapter.SAP2000
                 bool replaceNow = replace;
                 if (m_model.AreaObj.SetLoadTemperature(name, loadPat, loadType, vals, Replace:replaceNow) != 0)
                 {
-                    CreateElementError("AreaTemperatureLoad", bhLoad.Name);
+                    CreateElementError("AreaUniformTemperatureLoad", bhLoad.Name);
                 }
                 
             }
@@ -428,7 +428,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool CreateLoad(BarTemperatureLoad bhLoad)
+        private bool CreateLoad(BarUniformTemperatureLoad bhLoad)
         {
             List<Bar> bars = bhLoad.Objects.Elements.ToList();
             string loadPat = GetAdapterId<string>(bhLoad.Loadcase);
@@ -440,7 +440,7 @@ namespace BH.Adapter.SAP2000
             {
                 string name = GetAdapterId<string>(bar);
                 if (m_model.FrameObj.SetLoadTemperature(name, loadPat, loadType, tempChange, Replace: replace) != 0)
-                    CreateElementError("BarTemperatureLoad", bhLoad.Name);
+                    CreateElementError("BarUniformTemperatureLoad", bhLoad.Name);
             }
 
             Engine.Reflection.Compute.RecordNote("SAP2000 includes functionality for temperature gradient in 2 and 3 local bar axes, but the BHoM currently only supports uniform temperature changes.");
