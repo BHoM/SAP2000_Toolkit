@@ -72,5 +72,12 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
+        private bool CreateObject(IBHoMObject obj)
+        {
+            Engine.Reflection.Compute.RecordWarning($"Objects of type {obj.GetType()} are not supported by the SAP2000 Adapter");
+            return false;
+        }
+
+        /***************************************************/
     }
 }
