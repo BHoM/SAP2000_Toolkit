@@ -502,6 +502,101 @@ namespace BH.Adapter.SAP2000
 
             return loads;
         }
+
+        /***************************************************/
+
+        private List<ILoad> ReadBarPointLoad(List<string> ids = null)
+        {
+            List<ILoad> loads = new List<ILoad>();
+
+            Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
+            Dictionary<string, Bar> bhomBars = ReadBars().ToDictionary(x => GetAdapterId<string>(x));
+
+            int count = 0;
+            string[] frameNames = null;
+            string[] caseNames = null;
+            int[] loadTypes = null;
+            string[] cSys = null;
+            int[] dir = null;
+            double[] relDis = null;
+            double[] dist = null;
+            double[] val = null;
+
+            if (m_model.FrameObj.GetLoadPoint("All", ref count, ref frameNames, ref caseNames, ref loadTypes, ref cSys, ref dir, ref relDis, ref dist, ref val, eItemType.Group) == 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    Vector force = new Vector();
+                    LoadAxis axis = cSys[i].LoadAxisToBHoM();
+
+                    switch (dir[i])
+                    {
+                        case 1:
+                            force.X = val[i];
+                            break;
+                        case 2:
+                            force.Y = val[i];
+                            break;
+                        case 3:
+                            force.Z = -val[i];
+                            break;
+                        case 4:
+                            force.X = val[i];
+                            break;
+                        case 5:
+                            force.Y = val[i];
+                            break;
+                        case 6:
+                            force.Z = val[i];
+                            break;
+                        case 10:
+                            force.Z = -val[i];
+                            break;
+                        default:
+                            Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
+                            break;
+                    }
+                    switch (loadTypes[i])
+                    {
+                        case 1:
+                            loads.Add(new BarPointLoad()
+                            {
+                                DistanceFromA = relDis[i],
+                                Force = force,
+                                Loadcase = bhomCases[caseNames[i]],
+                                Objects = new BHoMGroup<Bar>() { Elements = { bhomBars[frameNames[i]] } },
+                                Axis = axis
+                            });
+                            break;
+                        case 2:
+                            loads.Add(new BarPointLoad()
+                            {
+                                DistanceFromA = relDis[i],
+                                Moment = force,
+                                Loadcase = bhomCases[caseNames[i]],
+                                Objects = new BHoMGroup<Bar>() { Elements = { bhomBars[frameNames[i]] } },
+                                Axis = axis
+                            });
+                            break;
+                        default:
+                            Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + loadTypes[i].ToString());
+                            break;
+                    }
+                }
+            }
+
+            return loads;
+        }
+
+        /***************************************************/
+
+        private List<ILoad> ReadBarPrestressLoad(List<string> ids = null)
+        {
+            List<ILoad> loads = new List<ILoad>();
+            
+            return loads;
+        }
+
         /***************************************************/
 
         private List<ILoad> ReadAreaLoad(List<string> ids = null)
