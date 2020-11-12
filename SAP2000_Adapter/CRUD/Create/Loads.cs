@@ -451,5 +451,58 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
+        private bool CreateLoad(BarPointLoad bhLoad)
+        {
+            List<Bar> bars = bhLoad.Objects.Elements.ToList();
+            string loadPat = GetAdapterId<string>(bhLoad.Loadcase);
+            int loadType = 0;
+            int[] dirs = null;
+            double[] forceVals = null;
+            double[] momentVals = null;
+            double dist = bhLoad.DistanceFromA;
+            if (dist > 1.0)
+                Engine.Reflection.Compute.RecordWarning("Please provide DistanceFromA as a relative distance (decimal between 0 and 1.0).");
+            bool relDist = true;
+
+            // Determine coordinate system (local vs global) and set directions vector for CSI protocol
+            switch (bhLoad.Axis)
+            {
+                case LoadAxis.Global:
+                    dirs = new int[] { 4, 5, 6 };
+                    forceVals = bhLoad.Force.ToDoubleArray();
+                    momentVals = bhLoad.Moment.ToDoubleArray();
+                    break;
+                case LoadAxis.Local:
+                    dirs = new int[] { 1, 2, 3 };
+                    forceVals = bhLoad.Force.BarLocalAxisToCSI().ToDoubleArray();
+                    momentVals = bhLoad.Moment.BarLocalAxisToCSI().ToDoubleArray();
+                    break;
+            }
+
+            // Loop through bars and set point loads
+            string cSys = bhLoad.Axis.ToCSI();
+            bool replace = true;
+            eItemType type = eItemType.Objects;
+            foreach (Bar bar in bars)
+            {
+                string barName = GetAdapterId<string>(bar);
+                bool replaceNow = replace;
+
+                for (int i = 0; i < dirs.Count(); i++)
+                {
+                    loadType = 1; // handle forces first
+                    if (m_model.FrameObj.SetLoadPoint(barName, loadPat, loadType, dirs[i], dist, forceVals[i], cSys, relDist, replaceNow, type) != 0)
+                        CreateElementError("BarPointLoad-Force", bar.Name + dirs[i]);
+                    replaceNow = false;
+                    loadType = 2; // handle moments second
+                    if (m_model.FrameObj.SetLoadPoint(barName, loadPat, loadType, dirs[i], dist, momentVals[i], cSys, relDist, replaceNow, type) != 0)
+                        CreateElementError("BarPointLoad-Moment", bar.Name + dirs[i]);
+                }
+
+            }
+
+            return true;
+        }
+
     }
 }
