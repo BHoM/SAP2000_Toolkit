@@ -504,5 +504,33 @@ namespace BH.Adapter.SAP2000
             return true;
         }
 
+        /***************************************************/
+
+        private bool CreateLoad(BarPrestressLoad bhLoad)
+        {
+            List<Bar> bars = bhLoad.Objects.Elements.ToList();
+            string loadPat = GetAdapterId<string>(bhLoad.Loadcase);
+            bool[] targetForceBooleanByDOF = new bool[6];
+            double[] targetForceValuesByDOF = new double[6];
+            double[] relativeDistByDOF = new double[6];
+            eItemType type = eItemType.Objects;
+
+            // Loop through bars and set Target Force for each bar
+            foreach (Bar bar in bars)
+            {
+                string barName = GetAdapterId<string>(bar);
+
+                // Generic BooleanByDOF array allows for future prestressing moment to be implemented
+                targetForceBooleanByDOF[0] = true;
+                targetForceValuesByDOF[0] = bhLoad.Prestress;
+                relativeDistByDOF[0] = 0.5;
+
+                if (m_model.FrameObj.SetLoadTargetForce(barName, loadPat, ref targetForceBooleanByDOF, ref targetForceValuesByDOF, ref relativeDistByDOF, type) != 0)
+                    CreateElementError("BarPrestressLoad", bar.Name);
+                BH.Engine.Reflection.Compute.RecordWarning($"Target Force load case must be nonlinear static. Verify {loadPat} prior to running analysis.");
+            }
+
+            return true;
+        }
     }
 }
