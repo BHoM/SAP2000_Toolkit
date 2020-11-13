@@ -21,7 +21,7 @@
  */
 
 using BH.Engine.Geometry;
-using BH.Engine.Structure;
+using BH.Engine.Spatial;
 using BH.oM.Structure.Elements;
 using BH.oM.Geometry;
 using System.Collections.Generic;
@@ -39,7 +39,7 @@ namespace BH.Adapter.SAP2000
 
         private bool CreateObject(Panel bhPanel)
         {                        
-            List<Point> boundaryPoints = bhPanel.ExternalEdgeCurves().Select( item => item.IStartPoint()).ToList();
+            List<Point> boundaryPoints = bhPanel.ExternalElementCurves().Select( item => item.IStartPoint()).ToList();
 
             int segmentCount = boundaryPoints.Count();
 
