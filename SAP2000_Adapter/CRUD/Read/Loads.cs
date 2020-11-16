@@ -136,12 +136,16 @@ namespace BH.Adapter.SAP2000
 
             if (type == typeof(PointLoad))
                 return ReadPointLoad();
+            else if (type == typeof(BarPointLoad))
+                return ReadBarPointLoad();
             else if (type == typeof(BarUniformlyDistributedLoad))
                 return ReadBarUniformDistributedLoad();
             else if (type == typeof(BarVaryingDistributedLoad))
                 return ReadBarVaryingDistributedLoad();
             else if (type == typeof(BarUniformTemperatureLoad))
                 return ReadBarUniformTemperatureLoad();
+            else if (type == typeof(BarPrestressLoad))
+                return ReadBarPrestressLoad();
             else if (type == typeof(AreaUniformlyDistributedLoad))
                 return ReadAreaLoad();
             else if (type == typeof(AreaUniformTemperatureLoad))
@@ -593,6 +597,56 @@ namespace BH.Adapter.SAP2000
         private List<ILoad> ReadBarPrestressLoad(List<string> ids = null)
         {
             List<ILoad> loads = new List<ILoad>();
+
+            Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
+            Dictionary<string, Bar> bhomBars = ReadBars().ToDictionary(x => GetAdapterId<string>(x));
+
+            int count = 0;
+            string[] frameNames = null;
+            string[] caseNames = null;
+
+            // Arrays of booleans indicating if the DOF has a target force assignment
+            bool[] pBool = null;
+            bool[] v2Bool = null;
+            bool[] v3Bool = null;
+            bool[] tBool = null;
+            bool[] m2Bool = null;
+            bool[] m3Bool = null;
+            // Arrays of target force values for each DOF above
+            double[] pVal = null;
+            double[] v2Val = null;
+            double[] v3Val = null;
+            double[] tVal = null;
+            double[] m2Val = null;
+            double[] m3Val = null;
+            // Arrays of relative distances along frame objects where target force values apply
+            double[] pRelDis = null;
+            double[] v2RelDis = null;
+            double[] v3RelDis = null;
+            double[] tRelDis = null;
+            double[] m2RelDis = null;
+            double[] m3RelDis = null;
+
+
+            if (m_model.FrameObj.GetLoadTargetForce("All", ref count, ref frameNames, ref caseNames,
+                                                    ref pBool, ref v2Bool, ref v3Bool, ref tBool, ref m2Bool, ref m3Bool,
+                                                    ref pVal, ref v2Val, ref v3Val, ref tVal, ref m2Val, ref m3Val,
+                                                    ref pRelDis, ref v2RelDis, ref v3RelDis, ref tRelDis, ref m2RelDis, ref m3RelDis,
+                                                    eItemType.Group) == 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    loads.Add(new BarPrestressLoad()
+                    {
+                        Prestress = pVal[i],
+                        Loadcase = bhomCases[caseNames[i]],
+                        Objects = new BHoMGroup<Bar>() { Elements = { bhomBars[frameNames[i]] } },
+                        Axis = LoadAxis.Local,
+                        Projected = false
+                    });
+                    
+                }
+            }
             
             return loads;
         }
