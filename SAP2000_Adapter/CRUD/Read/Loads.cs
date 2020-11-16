@@ -435,10 +435,10 @@ namespace BH.Adapter.SAP2000
                             case 1:
                                 loads.Add(new BarVaryingDistributedLoad()
                                 {
-                                    DistanceFromA = dist1[i],
-                                    ForceA = forceA,
-                                    DistanceFromB = dist2[i],
-                                    ForceB = forceB,
+                                    StartPosition = dist1[i],
+                                    ForceAtStart = forceA,
+                                    EndPosition = dist2[i],
+                                    ForceAtEnd = forceB,
                                     Loadcase = bhomCases[caseNames[i]],
                                     Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
                                     Axis = axis
@@ -447,10 +447,10 @@ namespace BH.Adapter.SAP2000
                             case 2:
                                 loads.Add(new BarVaryingDistributedLoad()
                                 {
-                                    DistanceFromA = dist1[i],
-                                    MomentA = forceA,
-                                    DistanceFromB = dist2[i],
-                                    MomentB = forceB,
+                                    StartPosition = dist1[i],
+                                    MomentAtStart = forceA,
+                                    EndPosition = dist2[i],
+                                    MomentAtEnd = forceB,
                                     Loadcase = bhomCases[caseNames[i]],
                                     Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
                                     Axis = axis

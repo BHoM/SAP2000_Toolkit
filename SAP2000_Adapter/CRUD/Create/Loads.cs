@@ -216,7 +216,7 @@ namespace BH.Adapter.SAP2000
         {
             List<Bar> bars = bhLoad.Objects.Elements.ToList();
             string loadPat = GetAdapterId<string>(bhLoad.Loadcase);
-            double dist1 = bhLoad.DistanceFromA;
+            double dist1 = bhLoad.StartPosition;
             double dist2 = 1.0;
             int[] dirs = null;
             double[] forceValsA = null;
@@ -228,20 +228,20 @@ namespace BH.Adapter.SAP2000
             {
                 case LoadAxis.Global:
                     dirs = new int[] { 4, 5, 6 };
-                    forceValsA = bhLoad.ForceA.ToDoubleArray();
-                    momentValsA = bhLoad.MomentA.ToDoubleArray();
-                    forceValsB = bhLoad.ForceB.ToDoubleArray();
-                    momentValsB = bhLoad.MomentB.ToDoubleArray();
+                    forceValsA = bhLoad.ForceAtStart.ToDoubleArray();
+                    momentValsA = bhLoad.MomentAtStart.ToDoubleArray();
+                    forceValsB = bhLoad.ForceAtEnd.ToDoubleArray();
+                    momentValsB = bhLoad.MomentAtEnd.ToDoubleArray();
                     break;
                 case LoadAxis.Local:
                     dirs = new int[] { 1, 2, 3 };
-                    forceValsA = bhLoad.ForceA.BarLocalAxisToCSI().ToDoubleArray();
-                    momentValsA = bhLoad.MomentA.BarLocalAxisToCSI().ToDoubleArray();
-                    forceValsB = bhLoad.ForceB.BarLocalAxisToCSI().ToDoubleArray();
-                    momentValsB = bhLoad.MomentB.BarLocalAxisToCSI().ToDoubleArray();
+                    forceValsA = bhLoad.ForceAtStart.BarLocalAxisToCSI().ToDoubleArray();
+                    momentValsA = bhLoad.MomentAtStart.BarLocalAxisToCSI().ToDoubleArray();
+                    forceValsB = bhLoad.ForceAtEnd.BarLocalAxisToCSI().ToDoubleArray();
+                    momentValsB = bhLoad.MomentAtEnd.BarLocalAxisToCSI().ToDoubleArray();
                     break;
             }
-            bool relDist = false;
+            bool relDist = bhLoad.RelativePositions;
             string cSys = bhLoad.Axis.ToCSI();
             eItemType type = eItemType.Objects;
             bool replace = true;
@@ -250,7 +250,7 @@ namespace BH.Adapter.SAP2000
             foreach (Bar bhBar in bars)
             {
                 string name = GetAdapterId<string>(bhBar);
-                dist2 = bhBar.Length() - bhLoad.DistanceFromB;
+                dist2 = bhLoad.EndPosition;
                 bool replaceNow = replace;
                 for (int i = 0; i < dirs.Count(); i++)
                 {
@@ -397,7 +397,7 @@ namespace BH.Adapter.SAP2000
             List<Bar> barsToLoad = new List<Bar>();
             barsToLoad.Add(nullBar);
             BarVaryingDistributedLoad barVaryLoad = Engine.Structure.Create.BarVaryingDistributedLoad(bhLoad.Loadcase, barsToLoad, distanceFromA, forceA, momentA,
-                                                                                                        distanceFromB, forceB, momentB, bhLoad.Axis, bhLoad.Projected, bhLoad.Name);
+                                                                                                        distanceFromB, forceB, momentB, false, bhLoad.Axis, bhLoad.Projected, bhLoad.Name);
             CreateLoad(barVaryLoad);
 
             return true;
