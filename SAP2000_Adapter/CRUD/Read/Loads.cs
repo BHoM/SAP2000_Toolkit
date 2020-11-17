@@ -22,6 +22,7 @@
 
 
 using BH.Engine.Structure;
+using BH.Engine.Spatial;
 using BH.oM.Base;
 using BH.oM.Geometry;
 using BH.oM.Dimensional;
