@@ -46,7 +46,7 @@ namespace BH.Adapter.SAP2000
             if (bhBar.StartNode == null || bhBar.EndNode == null)
             {
                 Engine.Reflection.Compute.RecordError($"Bar {bhBar.Name} failed to push because its nodes are null");
-                return true;
+                return false;
             }
 
             string startId = GetAdapterId<string>(bhBar.StartNode);
@@ -55,14 +55,14 @@ namespace BH.Adapter.SAP2000
             if (startId == null || endId == null)
             {
                 Engine.Reflection.Compute.RecordError($"Bar {bhBar.Name} failed to push because its nodes were not found in SAP2000. Check that geometry is valid.");
-                return true;
+                return false;
             }
 
             // Create Geometry in SAP
             if (m_model.FrameObj.AddByPoint(startId, endId, ref name, "None", bhBar.Name.ToString()) != 0)
             {
                 CreateElementError("Bar", name);
-                return true;
+                return false;
             }
 
             // Set AdapterID

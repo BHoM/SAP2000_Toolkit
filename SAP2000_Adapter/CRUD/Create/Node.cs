@@ -45,14 +45,14 @@ namespace BH.Adapter.SAP2000
             if (bhNode.Position == null)
             {
                 Engine.Reflection.Compute.RecordError($"Node {bhNode.Name} has no position. Nothing was created.");
-                return true;
+                return false;
             }
 
             // Create geometry in SAP
             if (m_model.PointObj.AddCartesian(bhNode.Position.X, bhNode.Position.Y, bhNode.Position.Z, ref name, bhNode.Name.ToString()) != 0)
             {
                 CreateElementError("Node", bhNode.Name);
-                return true;
+                return false;
             }
 
             // Set Adapter ID
