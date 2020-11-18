@@ -52,7 +52,7 @@ namespace BH.Adapter.SAP2000
             catch
             {
                 Engine.Reflection.Compute.RecordError($"Panel {bhPanel.Name} could not be created, because its geometry could not be determined");
-                return true;
+                return false;
             }
 
             int segmentCount = boundaryPoints.Count();
@@ -67,6 +67,7 @@ namespace BH.Adapter.SAP2000
             if (m_model.AreaObj.AddByCoord(segmentCount, ref x, ref y, ref z, ref name, "None", bhPanel.Name.ToString()) != 0)
             {
                 CreateElementError("Panel", bhPanel.Name);
+                return false;
             }
 
             // Set AdapterID
