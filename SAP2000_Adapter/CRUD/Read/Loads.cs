@@ -441,7 +441,8 @@ namespace BH.Adapter.SAP2000
                                     ForceAtEnd = forceB,
                                     Loadcase = bhomCases[caseNames[i]],
                                     Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
-                                    Axis = axis
+                                    Axis = axis,
+                                    RelativePositions = false
                                 });
                                 break;
                             case 2:
@@ -453,7 +454,8 @@ namespace BH.Adapter.SAP2000
                                     MomentAtEnd = forceB,
                                     Loadcase = bhomCases[caseNames[i]],
                                     Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
-                                    Axis = axis
+                                    Axis = axis,
+                                    RelativePositions = false
                                 });
                                 break;
                             default:
