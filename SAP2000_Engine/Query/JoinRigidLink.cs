@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.Constraints;
+using BH.Engine.Base;
 
 namespace BH.Engine.Adapters.SAP2000
 {
@@ -52,7 +53,7 @@ namespace BH.Engine.Adapters.SAP2000
                     }
                     else
                     {
-                        RigidLink newJoinedLink = (RigidLink)link.GetShallowClone();
+                        RigidLink newJoinedLink = link.ShallowClone();
                         newJoinedLink.Name = JoinedName;
                         joinedList.Add(JoinedName, newJoinedLink);
                     }
