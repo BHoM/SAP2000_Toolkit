@@ -176,7 +176,14 @@ namespace BH.Adapter.SAP2000
             switch (bhLoad.Axis)
             {
                 case LoadAxis.Global:
-                    dirs = new int[] { 4, 5, 6 };
+                    if (bhLoad.Projected)
+                    {
+                        dirs = new int[] { 7, 8, 9};
+                    }
+                    else
+                    {
+                        dirs = new int[] { 4, 5, 6 };
+                    }
                     forceVals = bhLoad.Force.ToDoubleArray();
                     momentVals = bhLoad.Moment.ToDoubleArray();
                     break;
@@ -227,7 +234,14 @@ namespace BH.Adapter.SAP2000
             switch (bhLoad.Axis)
             {
                 case LoadAxis.Global:
-                    dirs = new int[] { 4, 5, 6 };
+                    if (bhLoad.Projected)
+                    {
+                        dirs = new int[] { 7, 8, 9 };
+                    }
+                    else
+                    {
+                        dirs = new int[] { 4, 5, 6 };
+                    }
                     forceValsA = bhLoad.ForceAtStart.ToDoubleArray();
                     momentValsA = bhLoad.MomentAtStart.ToDoubleArray();
                     forceValsB = bhLoad.ForceAtEnd.ToDoubleArray();
