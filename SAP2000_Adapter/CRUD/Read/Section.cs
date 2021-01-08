@@ -47,14 +47,11 @@ namespace BH.Adapter.SAP2000
             Dictionary<string, IMaterialFragment> bhomMaterials = ReadMaterial().ToDictionary(x => GetAdapterId<string>(x));
 
             int nameCount = 0;
-            string[] names = { };
-            m_model.PropFrame.GetNameList(ref nameCount, ref names);
+            string[] nameArr = { };
+            m_model.PropFrame.GetNameList(ref nameCount, ref nameArr);
 
-            if (ids == null)
-            {
-                ids = names.ToList();
-            }
-            
+            ids = FilterIds(ids, nameArr);
+
             foreach (string id in ids)
             {
                 eFramePropType propertyType = eFramePropType.General;

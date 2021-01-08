@@ -35,6 +35,7 @@ using BH.oM.Adapter;
 using BH.oM.Analytical.Results;
 using BH.oM.Structure.Results;
 using BH.oM.Structure.Requests;
+using System.ComponentModel;
 
 namespace BH.Adapter.SAP2000
 {
@@ -43,31 +44,36 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
         /**** Adapter overload method                   ****/
         /***************************************************/
-        
+
         protected override IEnumerable<IBHoMObject> IRead(Type type, IList ids, ActionConfig actionConfig = null)
         {
+
+            List<string> listIds = null;
+            if (ids != null && ids.Count != 0)
+                listIds = ids.Cast<string>().ToList();
+
             if (type == typeof(Node))
-                return ReadNodes(ids as dynamic);
+                return ReadNodes(listIds);
             else if (type == typeof(Bar))
-                return ReadBars(ids as dynamic);
+                return ReadBars(listIds);
             else if (type == typeof(ISectionProperty) || type.GetInterfaces().Contains(typeof(ISectionProperty)))
-                return ReadSectionProperties(ids as dynamic);
+                return ReadSectionProperties(listIds);
             else if (type == typeof(IMaterialFragment) || type.GetInterfaces().Contains(typeof(IMaterialFragment)))
-                return ReadMaterial(ids as dynamic);
+                return ReadMaterial(listIds);
             else if (type == typeof(Panel))
-                return ReadPanel(ids as dynamic);
+                return ReadPanel(listIds);
             else if (type == typeof(ISurfaceProperty) || type.GetInterfaces().Contains(typeof(ISurfaceProperty)))
-                return ReadSurfaceProperty(ids as dynamic);
+                return ReadSurfaceProperty(listIds);
             else if (type == typeof(LoadCombination))
-                return ReadLoadCombination(ids as dynamic);
+                return ReadLoadCombination(listIds);
             else if (type == typeof(Loadcase))
-                return ReadLoadcase(ids as dynamic);
+                return ReadLoadcase(listIds);
             else if (type == typeof(ILoad) || type.GetInterfaces().Contains(typeof(ILoad)))
-                return ReadLoad(type, ids as dynamic);
+                return ReadLoad(type, listIds);
             else if (type == typeof(RigidLink))
-                return ReadRigidLink(ids as dynamic);
+                return ReadRigidLink(listIds);
             else if (type == typeof(LinkConstraint))
-                return ReadLinkConstraints(ids as dynamic);
+                return ReadLinkConstraints(listIds);
             else if (typeof(IResult).IsAssignableFrom(type))
             {
                 Modules.Structure.ErrorMessages.ReadResultsError(type);
@@ -75,10 +81,28 @@ namespace BH.Adapter.SAP2000
             }
 
 
-            return null;
-        }
+            return new List<IBHoMObject>();
 
-        /***************************************************/
+        }
+            /***************************************************/
+
+            [Description("Ensures that all elements in the first list are present in the second list, warning if not, and returns the second list if the first list is empty.")]
+            private static List<string> FilterIds(IEnumerable<string> ids, IEnumerable<string> sapIds)
+            {
+                if (ids == null || ids.Count() == 0)
+                {
+                    return sapIds.ToList();
+                }
+                else
+                {
+                    List<string> result = ids.Intersect(sapIds).ToList();
+                    if (result.Count() != ids.Count())
+                        Engine.Reflection.Compute.RecordWarning("Some requested SAP2000 ids were not present in the model.");
+                    return result;
+                }
+            }
+
+            /***************************************************/
+        }
     }
-}
 
