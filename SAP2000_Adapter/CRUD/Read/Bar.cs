@@ -132,7 +132,7 @@ namespace BH.Adapter.SAP2000
                     m_model.FrameObj.GetAutoMesh(id, ref autoMesh, ref autoMeshAtPoints, ref autoMeshAtLines, ref numSegs, ref autoMeshMaxLength);
                     if (autoMesh)
                     {
-                        bhomBar.SetAutoMesh(autoMesh, autoMeshAtPoints, autoMeshAtLines, numSegs, autoMeshMaxLength);
+                        bhomBar = bhomBar.SetAutoMesh(autoMesh, autoMeshAtPoints, autoMeshAtLines, numSegs, autoMeshMaxLength);
                     }
 
                     bhomBars.Add(bhomBar);
