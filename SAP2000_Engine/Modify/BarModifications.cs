@@ -11,7 +11,7 @@ namespace BH.Engine.Adapters.SAP2000
 {
     public static partial class Modify
     {
-        public static Bar SetAutoMesh(this Bar bar, bool autoMesh, bool autoMeshAtPoints, bool autoMeshAtLines, int numSegs, double autoMeshMaxLength)
+        public static Bar SetAutoMesh(this Bar bar, bool autoMesh = false, bool autoMeshAtPoints = false, bool autoMeshAtLines = false, int numSegs = 0, double autoMeshMaxLength = 0.0)
         {
             if (numSegs < 0)
             {
