@@ -21,18 +21,21 @@
  */
 
 using BH.Engine.Structure;
+using BH.Engine.Adapters.SAP2000;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Offsets;
 using BH.oM.Structure.Constraints;
 using BH.oM.Adapters.SAP2000;
+using BH.oM.Adapters.SAP2000.Elements;
 using BH.Engine.Adapter;
 using BH.Engine.Base;
 using System;
 using BH.oM.Base;
 
+
 namespace BH.Adapter.SAP2000
 {
-    public partial class SAP2000Adapter
+    public partial class SAP2000Adapter : BHoMAdapter
     {
         /***************************************************/
         /**** Private Methods                            ****/
@@ -122,6 +125,22 @@ namespace BH.Adapter.SAP2000
                     }
                 }
 
+            }
+
+            BarAutoMesh barAutoMesh = bhBar.BarAutoMesh();
+
+            if (barAutoMesh != null)
+            {
+                bool autoMesh = barAutoMesh.AutoMesh;
+                bool autoMeshAtPoints = barAutoMesh.AutoMeshAtPoints;
+                bool autoMeshAtLines = barAutoMesh.AutoMeshAtLines;
+                int numSegs = barAutoMesh.NumSegs;
+                double autoMeshMaxLength = barAutoMesh.AutoMeshMaxLength;
+
+                if (m_model.FrameObj.SetAutoMesh(name, autoMesh, autoMeshAtPoints, autoMeshAtLines, numSegs, autoMeshMaxLength) != 0)
+                {
+                    CreatePropertyWarning("AutoMesh", "Bar", name);
+                }
             }
 
             if (bhBar.Offset != null)
