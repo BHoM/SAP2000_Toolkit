@@ -48,4 +48,13 @@ namespace BH.oM.Adapters.SAP2000.Elements
 
         /***************************************************/
     }
+
+    public class BarDesignProcedure : IFragment
+    {
+        public virtual int MyType { get; set; } = 1;
+
+        public virtual int ItemType { get; set; } = 0;
+
+    }
+
 }
