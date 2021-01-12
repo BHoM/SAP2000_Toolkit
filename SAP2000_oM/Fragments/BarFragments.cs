@@ -35,15 +35,15 @@ namespace BH.oM.Adapters.SAP2000.Elements
         /***************************************************/
         /**** Public Properties                         ****/
         /***************************************************/
-
+        [Description("True if the frame object is to be automatically meshed by the program when the SAP analysis model is created.")]
         public virtual bool AutoMesh { get; set; } = false;
-
+        [Description("If AutoMesh is True, the frame object is automatically meshed at intermediate joints along its length.")]
         public virtual bool AutoMeshAtPoints { get; set; } = false;
-
+        [Description("If AutoMesh is True, the frame object is automatically meshed at intersections with other frames, area object edges, and solid object edges.")]
         public virtual bool AutoMeshAtLines { get; set; } = false;
-
+        [Description("If AutoMesh is True, the minimum number of elements into which the frame object is automatically meshed. If zero, the number of elements is not checked when the automatic meshing is done.")]
         public virtual int NumSegs { get; set; } = 0;
-
+        [Description("If AutoMesh is True, the maximum length of auto meshed frame elements. If zero, the element length is not checked when automatic meshing is done.")]
         public virtual double AutoMeshMaxLength { get; set; } = 0.0;
 
         /***************************************************/
