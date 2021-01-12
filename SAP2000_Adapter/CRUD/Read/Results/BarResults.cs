@@ -27,6 +27,8 @@ using BH.oM.Structure.Results;
 using BH.oM.Analytical.Results;
 using BH.oM.Structure.Requests;
 using BH.oM.Geometry;
+using BH.oM.Base;
+using BH.Engine.Base;
 using BH.Engine.Geometry;
 using BH.oM.Adapter;
 using SAP2000v1;
@@ -40,7 +42,7 @@ namespace BH.Adapter.SAP2000
         /**** Public method - Read override             ****/
         /***************************************************/
 
-        public IEnumerable<IResult> ReadResults(BarResultRequest request,
+        public IEnumerable<IObject> ReadResults(BarResultRequest request,
                                                 ActionConfig actionConfig = null)
         {
             CheckAndSetUpCases(request);
@@ -58,6 +60,8 @@ namespace BH.Adapter.SAP2000
                     return new List<IResult>();
                 case BarResultType.BarStrain:
                 case BarResultType.BarStress:
+                case BarResultType.BarModeShape:
+                    return ReadBarUtilization(barIds);
                 default:
                     Engine.Reflection.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
@@ -233,6 +237,63 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
+
+        private List<CustomObject> ReadBarUtilization(List<string> barIds = null)
+        {
+            List<BH.oM.Base.CustomObject> barUtilizations = new List<BH.oM.Base.CustomObject>();
+
+            int tableId = 2; //Per table number in SAP, 2 corresponds to "Steel Design 2 - PMM Details"
+            List<string> fieldNamesVal = new List<string>() { "TotalRatio", "PRatio", "MMajRatio", "MMinRatio", "VMajRatio", "VMinRatio", "TorRatio" };
+            List<string> fieldNamesText = new List<string>() { "DesignSect", "DesignType", "Combo" };
+
+            int numberItems = 0;
+            string[] frameNames = null;
+            double[] resultValues = null;
+            string[] resultTextVals = null;
+
+            for (int i = 0; i < barIds.Count; i++)
+            {
+                Dictionary<string, object> dict = new Dictionary<string, object>();
+                foreach (string fieldNameVal in fieldNamesVal)
+                {
+                    int ret = m_model.DesignSteel.GetDetailResultsValue(barIds[i],
+                                                       eItemType.Objects,
+                                                       tableId,
+                                                       fieldNameVal,
+                                                       ref numberItems,
+                                                       ref frameNames,
+                                                       ref resultValues);
+                    if (ret == 0)
+                    {
+                        dict.Add(fieldNameVal, resultValues[0]);
+                    }
+
+                }
+                foreach (string fieldNameText in fieldNamesText)
+                {
+                    int ret = m_model.DesignSteel.GetDetailResultsText(barIds[i],
+                                                       eItemType.Objects,
+                                                       tableId,
+                                                       fieldNameText,
+                                                       ref numberItems,
+                                                       ref frameNames,
+                                                       ref resultTextVals);
+                    if (ret == 0)
+                    {
+                        dict.Add(fieldNameText, resultTextVals[0]);
+                    }
+
+                }
+                CustomObject bu = BH.Engine.Base.Create.CustomObject(dict, barIds[i]);
+                barUtilizations.Add(bu);
+            }
+
+            return barUtilizations;
+        }
+
+        /***************************************************/
+
+        /***************************************************/
         /**** Private method - Extraction methods       ****/
         /***************************************************/
 
@@ -247,7 +308,8 @@ namespace BH.Adapter.SAP2000
                 int bars = 0;
                 string[] names = null;
                 m_model.FrameObj.GetNameList(ref bars, ref names);
-                barIds = names.ToList();
+                names = names ?? new string[]{};
+                barIds = names?.ToList();
             }
             else
             {
