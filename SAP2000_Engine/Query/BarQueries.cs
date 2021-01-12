@@ -37,5 +37,6 @@ namespace BH.Engine.Adapters.SAP2000
         {
             return bar.FindFragment<BarAutoMesh>();
         }
+
     }
 }

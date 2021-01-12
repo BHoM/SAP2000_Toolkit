@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Adapters.SAP2000;
 using BH.Engine.Adapter;
+using BH.Engine.Adapters.SAP2000;
 using System;
 
 namespace BH.Adapter.SAP2000
@@ -119,8 +120,22 @@ namespace BH.Adapter.SAP2000
                     }
 
                     bhomBar.SetAdapterId(sap2000id);
-                    bhomBars.Add(bhomBar);
 
+                    // SAP2000 Fragments
+
+                    bool autoMesh = false;
+                    bool autoMeshAtPoints = false;
+                    bool autoMeshAtLines = false;
+                    int numSegs = 0;
+                    double autoMeshMaxLength = 0.0;
+
+                    m_model.FrameObj.GetAutoMesh(id, ref autoMesh, ref autoMeshAtPoints, ref autoMeshAtLines, ref numSegs, ref autoMeshMaxLength);
+                    if (autoMesh)
+                    {
+                        bhomBar.SetAutoMesh(autoMesh, autoMeshAtPoints, autoMeshAtLines, numSegs, autoMeshMaxLength);
+                    }
+
+                    bhomBars.Add(bhomBar);
                 }
                 catch
                 {

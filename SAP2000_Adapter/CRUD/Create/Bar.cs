@@ -127,21 +127,7 @@ namespace BH.Adapter.SAP2000
 
             }
 
-            BarAutoMesh barAutoMesh = bhBar.BarAutoMesh();
 
-            if (barAutoMesh != null)
-            {
-                bool autoMesh = barAutoMesh.AutoMesh;
-                bool autoMeshAtPoints = barAutoMesh.AutoMeshAtPoints;
-                bool autoMeshAtLines = barAutoMesh.AutoMeshAtLines;
-                int numSegs = barAutoMesh.NumSegs;
-                double autoMeshMaxLength = barAutoMesh.AutoMeshMaxLength;
-
-                if (m_model.FrameObj.SetAutoMesh(name, autoMesh, autoMeshAtPoints, autoMeshAtLines, numSegs, autoMeshMaxLength) != 0)
-                {
-                    CreatePropertyWarning("AutoMesh", "Bar", name);
-                }
-            }
 
             if (bhBar.Offset != null)
             {
@@ -163,6 +149,28 @@ namespace BH.Adapter.SAP2000
                     m_model.FrameObj.SetGroupAssign(name, groupName);
                 }
             }
+
+            /***************************************************/
+            /* SAP Fragments                                   */
+            /***************************************************/
+
+            BarAutoMesh barAutoMesh = bhBar.BarAutoMesh();
+
+            if (barAutoMesh != null)
+            {
+                bool autoMesh = barAutoMesh.AutoMesh;
+                bool autoMeshAtPoints = barAutoMesh.AutoMeshAtPoints;
+                bool autoMeshAtLines = barAutoMesh.AutoMeshAtLines;
+                int numSegs = barAutoMesh.NumSegs;
+                double autoMeshMaxLength = barAutoMesh.AutoMeshMaxLength;
+
+                if (m_model.FrameObj.SetAutoMesh(name, autoMesh, autoMeshAtPoints, autoMeshAtLines, numSegs, autoMeshMaxLength) != 0)
+                {
+                    CreatePropertyWarning("AutoMesh", "Bar", name);
+                }
+            }
+
+
 
             return true;
         }
