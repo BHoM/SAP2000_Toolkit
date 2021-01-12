@@ -127,7 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterIdName.cs" />
-    <Compile Include="Modify\BarModifications.cs" />
+    <Compile Include="Modify\BarModifiers.cs" />
     <Compile Include="Query\BarQueries.cs" />
     <Compile Include="Query\SplitRigidLink.cs" />
     <Compile Include="Query\JoinRigidLink.cs" />
