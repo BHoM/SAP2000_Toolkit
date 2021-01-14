@@ -25,35 +25,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Structure.Elements;
-using BH.oM.Adapters.SAP2000.Elements;
-using BH.oM.Adapters.SAP2000;
-using BH.Engine.Base;
 
-namespace BH.Engine.Adapters.SAP2000
+namespace BH.oM.Adapters.SAP2000
 {
-    public static partial class Modify
+    public enum DesignProcedureType
     {
-        public static Bar SetAutoMesh(this Bar bar, bool autoMesh = false, bool autoMeshAtPoints = false, bool autoMeshAtLines = false, int numSegs = 0, double autoMeshMaxLength = 0.0)
-        {
-            if (numSegs < 0)
-            {
-                numSegs = 0;
-                Engine.Reflection.Compute.RecordWarning("Number of segments must be positive or zero. If zero, number of elements is not checked when automatic meshing is done.");
-            }
+        Steel = 1,
+        Concrete = 2,
+        Aluminum = 7,
+        ColdFormed = 8,
+        NoDesign = 9
 
-            if (autoMeshMaxLength < 0)
-            {
-                autoMeshMaxLength = 0.0;
-                Engine.Reflection.Compute.RecordWarning("Max length must be positive. If zero, element length is not checked when automatic meshing is done.");
-            }
-
-            return (Bar)bar.AddFragment(new BarAutoMesh { AutoMesh = autoMesh, AutoMeshAtPoints = autoMeshAtPoints, AutoMeshAtLines = autoMeshAtLines, NumSegs = numSegs, AutoMeshMaxLength = autoMeshMaxLength }, true);
-        }
-
-        public static Bar SetDesignProcedure(this Bar bar, DesignProcedureType designProcedure)
-        {
-            return (Bar)bar.AddFragment(new BarDesignProcedure() { DesignProcedure = designProcedure }, true);
-        }
+    }
+    // check if user puts in concrete and material is steel, just say sap is going to use default for this material - setdesigntype to 1 rather than 2
+    public enum BarInsertionPoint
+    {
+        BottomLeft = 1,
+        BottomCenter = 2,
+        BottomRight = 3,
+        MiddleLeft = 4,
+        MiddleCenter = 5,
+        MiddleRight = 6,
+        TopLeft = 7,
+        TopCenter = 8,
+        TopRight = 9,
+        Centroid = 10,
+        ShearCenter = 11
     }
 }

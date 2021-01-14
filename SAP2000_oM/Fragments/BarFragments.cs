@@ -48,13 +48,14 @@ namespace BH.oM.Adapters.SAP2000.Elements
 
         /***************************************************/
     }
-
     public class BarDesignProcedure : IFragment
     {
-        public virtual int MyType { get; set; } = 1;
-
-        public virtual int ItemType { get; set; } = 0;
-
+        public virtual DesignProcedureType DesignProcedure { get; set; } = DesignProcedureType.NoDesign;
+    }
+    public class InsertionPoint : IFragment
+    { 
+        [Description("Bar insertion point based on cross section.")]
+        public virtual BarInsertionPoint BarInsertionPoint { get; set; } = BarInsertionPoint.Centroid;
     }
 
 }
