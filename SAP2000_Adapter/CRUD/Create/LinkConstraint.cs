@@ -53,7 +53,7 @@ namespace BH.Adapter.SAP2000
 
             SetAdapterId(bhLinkConstraint, name);
             
-            return false;
+            return true;
         }
 
         /***************************************************/

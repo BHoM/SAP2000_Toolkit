@@ -95,6 +95,10 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Results_Engine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="SAP2000_oM, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\ProgramData\BHoM\Assemblies\SAP2000_oM.dll</HintPath>
+    </Reference>
     <Reference Include="Serialiser_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Serialiser_Engine.dll</HintPath>
       <Private>False</Private>
