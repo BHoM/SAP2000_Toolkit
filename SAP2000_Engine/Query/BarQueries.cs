@@ -27,6 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.SAP2000.Elements;
+using BH.oM.Adapters.SAP2000;
 using BH.Engine.Base;
 
 namespace BH.Engine.Adapters.SAP2000
@@ -36,6 +37,17 @@ namespace BH.Engine.Adapters.SAP2000
         public static BarAutoMesh BarAutoMesh(this Bar bar)
         {
             return bar.FindFragment<BarAutoMesh>();
+        }
+
+        public static BarDesignProcedure DesignProcedure(this Bar bar)
+        {
+            return bar.FindFragment<BarDesignProcedure>();
+        }
+
+        public static BarInsertionPoint InsertionPoint(this Bar bar)
+        {
+            InsertionPoint o = bar?.FindFragment<InsertionPoint>();
+            return o == null ? BarInsertionPoint.Centroid : o.BarInsertionPoint;
         }
 
     }

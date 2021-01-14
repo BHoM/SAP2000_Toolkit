@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\SAP2000ActionConfig.cs" />
+    <Compile Include="Enums\BarEnums.cs" />
     <Compile Include="Enums\SDShapeType.cs" />
     <Compile Include="Fragments\BarFragments.cs" />
     <Compile Include="Fragments\SAP2000Id.cs" />
