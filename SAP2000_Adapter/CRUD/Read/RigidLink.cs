@@ -108,9 +108,7 @@ namespace BH.Adapter.SAP2000
             {
                 return joinedLinks
                      .Where(x => ids.Contains(x.Key))
-                     .ToDictionary(x => x.Key, x => x.Value)
-                     .Values
-                     .ToList();
+                     .Select(x => x.Value).ToList();
             }
             else
             {
