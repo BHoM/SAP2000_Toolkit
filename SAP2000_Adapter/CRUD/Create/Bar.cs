@@ -24,6 +24,7 @@ using BH.Engine.Structure;
 using BH.Engine.Adapters.SAP2000;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Offsets;
+using BH.oM.Structure.Fragments;
 using BH.oM.Structure.Constraints;
 using BH.oM.Adapters.SAP2000;
 using BH.oM.Adapters.SAP2000.Elements;
@@ -224,13 +225,33 @@ namespace BH.Adapter.SAP2000
                 offset1[2] = offset.Start.Y;
                 offset2[1] = offset.End.Z;
                 offset2[2] = offset.End.Y;
+
+                if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, bhBar.ModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
+                {
+                    CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
+                }
             }
 
-            if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, bhBar.ModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
+            // Section Property Modifiers
+
+            if (bhBar.SectionProperty.FindFragment<SectionModifier>() != null)
             {
-                CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
-            }
+                SectionModifier sectionModifiers = bhBar.SectionProperty.FindFragment<SectionModifier>();
+                double[] sapSectionModifiers = new double[8];
+                sapSectionModifiers[0] = sectionModifiers.Area;
+                sapSectionModifiers[1] = sectionModifiers.Asy;
+                sapSectionModifiers[2] = sectionModifiers.Asz;
+                sapSectionModifiers[3] = sectionModifiers.J;
+                sapSectionModifiers[4] = sectionModifiers.Iy;
+                sapSectionModifiers[5] = sectionModifiers.Iz;
+                sapSectionModifiers[6] = 1; // default mass modifier, not set/implemented yet
+                sapSectionModifiers[7] = 1; // default weight modifier, not set/implemented yet
+                if (m_model.FrameObj.SetModifiers(name, ref sapSectionModifiers) != 0)
+                {
+                    CreatePropertyWarning("Section property modifiers", "Bar", name);
+                }
 
+            }
             
             return true;
         }
