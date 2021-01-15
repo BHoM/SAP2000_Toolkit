@@ -50,12 +50,16 @@ namespace BH.oM.Adapters.SAP2000.Elements
     }
     public class BarDesignProcedure : IFragment
     {
+        [Description("Design procedure based on material type.")]
         public virtual DesignProcedureType DesignProcedure { get; set; } = DesignProcedureType.NoDesign;
     }
     public class InsertionPoint : IFragment
     { 
         [Description("Bar insertion point based on cross section.")]
         public virtual BarInsertionPoint BarInsertionPoint { get; set; } = BarInsertionPoint.Centroid;
+
+        [Description("Transform frame stiffness for offsets from centroid.")]
+        public virtual bool ModifyStiffness { get; set; } = true;
     }
 
 }

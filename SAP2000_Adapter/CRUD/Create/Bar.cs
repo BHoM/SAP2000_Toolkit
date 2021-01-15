@@ -128,6 +128,7 @@ namespace BH.Adapter.SAP2000
             }
 
 
+            // Bar End Length Offset
 
             if (bhBar.Offset != null)
             {
@@ -154,6 +155,9 @@ namespace BH.Adapter.SAP2000
             /* SAP Fragments                                   */
             /***************************************************/
 
+
+            // Automesh
+
             BarAutoMesh barAutoMesh = bhBar.BarAutoMesh();
 
             if (barAutoMesh != null)
@@ -170,8 +174,64 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
+            // Design Procedure
 
+            BarDesignProcedure barDesignProcedure = bhBar.DesignProcedure();
 
+            if (barDesignProcedure != null)
+            {
+                // issue with cold form as a material not being able to be pushed...
+                if (barDesignProcedure.DesignProcedure == DesignProcedureType.Aluminum ||
+                    barDesignProcedure.DesignProcedure == DesignProcedureType.ColdFormed ||
+                    barDesignProcedure.DesignProcedure == DesignProcedureType.Steel ||
+                    barDesignProcedure.DesignProcedure == DesignProcedureType.Concrete)
+                {
+                    // Design Procedure "MyType" is 1 if specified from material list available (limited to enums shown)
+                    if (m_model.FrameObj.SetDesignProcedure(name, 1, 0) != 0)
+                    {
+                        CreatePropertyWarning("DesignProcedure", "Bar", name);
+                    }
+                    else
+                    {
+                        Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} with SAP id {name} was set with design procedure based on materials available.");
+                    }
+                }
+                else
+                {
+                    // Design Procedure "MyType" is 2 if no design specified - this defaults to aluminum rather than nodesign in the api call...
+                    if (m_model.FrameObj.SetDesignProcedure(name, 2, 0) != 0)
+                    {
+                        CreatePropertyWarning("DesignProcedure", "Bar", name);
+                    }
+                    else
+                    {
+                        Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} with SAP id {name} does not have a design procedure.");
+                    }
+
+                }
+            }
+
+            // Insertion Point Offset
+
+            Offset offset = bhBar.Offset;
+
+            double[] offset1 = new double[3];
+            double[] offset2 = new double[3];
+
+            if (offset != null && (offset.Start != null || offset.End != null))
+            {
+                offset1[1] = offset.Start.Z;
+                offset1[2] = offset.Start.Y;
+                offset2[1] = offset.End.Z;
+                offset2[2] = offset.End.Y;
+            }
+
+            if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, bhBar.ModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
+            {
+                CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
+            }
+
+            
             return true;
         }
     }

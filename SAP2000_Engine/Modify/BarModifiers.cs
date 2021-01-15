@@ -53,7 +53,17 @@ namespace BH.Engine.Adapters.SAP2000
 
         public static Bar SetDesignProcedure(this Bar bar, DesignProcedureType designProcedure)
         {
-            return (Bar)bar.AddFragment(new BarDesignProcedure() { DesignProcedure = designProcedure }, true);
+            return (Bar)bar.AddFragment(new BarDesignProcedure { DesignProcedure = designProcedure }, true);
+        }
+
+        public static Bar SetInsertionPoint(this Bar bar, BarInsertionPoint barInsertionPoint = BarInsertionPoint.Centroid)
+        {
+            return bar.SetInsertionPoint(barInsertionPoint, true);
+        }
+
+        public static Bar SetInsertionPoint(this Bar bar, BarInsertionPoint barInsertionPoint = BarInsertionPoint.Centroid, bool modifyStiffness = true)
+        {
+            return (Bar)bar.AddFragment(new InsertionPoint() { BarInsertionPoint = barInsertionPoint, ModifyStiffness = modifyStiffness }, true);
         }
     }
 }

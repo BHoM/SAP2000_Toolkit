@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 
 namespace BH.oM.Adapters.SAP2000
 {
-    public enum DesignProcedureType
+    public enum DesignProcedureType : int
     {
         Steel = 1,
         Concrete = 2,

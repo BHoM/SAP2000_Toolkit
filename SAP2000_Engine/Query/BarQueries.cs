@@ -50,5 +50,12 @@ namespace BH.Engine.Adapters.SAP2000
             return o == null ? BarInsertionPoint.Centroid : o.BarInsertionPoint;
         }
 
+        public static bool ModifyStiffnessInsertionPoint(this Bar bar)
+        {
+            InsertionPoint o = bar?.FindFragment<InsertionPoint>();
+
+            return o == null ? true : o.ModifyStiffness;
+        }
+
     }
 }
