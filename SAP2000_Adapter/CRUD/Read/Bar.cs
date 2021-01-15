@@ -174,13 +174,14 @@ namespace BH.Adapter.SAP2000
                     // Check definition of local 2/3 vs SAP?
                     if (m_model.FrameObj.GetModifiers(id, ref sectionModifiers) == 0)
                     {
+                        // Better way for mapping these back and forth?
                         SectionModifier sectionModifier = new SectionModifier();
                         sectionModifier.Area = sectionModifiers[0];
-                        sectionModifier.Asy = sectionModifiers[1];
-                        sectionModifier.Asz = sectionModifiers[2];
+                        sectionModifier.Asz = sectionModifiers[1];
+                        sectionModifier.Asy = sectionModifiers[2];
                         sectionModifier.J = sectionModifiers[3];
-                        sectionModifier.Iy = sectionModifiers[4];
-                        sectionModifier.Iz = sectionModifiers[5];
+                        sectionModifier.Iz = sectionModifiers[4];
+                        sectionModifier.Iy = sectionModifiers[5];
                         // mass modifier = 6
                         // weight modifier = 7
                         bhomBar.SectionProperty.Fragments.Add(sectionModifier);
