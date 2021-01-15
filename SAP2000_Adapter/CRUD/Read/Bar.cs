@@ -30,6 +30,7 @@ using BH.Engine.Adapter;
 using BH.Engine.Adapters.SAP2000;
 using System;
 using BH.oM.Structure.Offsets;
+using BH.oM.Structure.Fragments;
 
 namespace BH.Adapter.SAP2000
 {
@@ -164,6 +165,25 @@ namespace BH.Adapter.SAP2000
                     {
                         BarInsertionPoint barInsertionPoint = (BarInsertionPoint)insertionPoint;
                         bhomBar = bhomBar.SetInsertionPoint(barInsertionPoint, modifyStiffness);
+                    }
+
+                    // Section Property Modifiers
+
+                    double[] sectionModifiers = new double[8];
+
+                    // Check definition of local 2/3 vs SAP?
+                    if (m_model.FrameObj.GetModifiers(id, ref sectionModifiers) == 0)
+                    {
+                        SectionModifier sectionModifier = new SectionModifier();
+                        sectionModifier.Area = sectionModifiers[0];
+                        sectionModifier.Asy = sectionModifiers[1];
+                        sectionModifier.Asz = sectionModifiers[2];
+                        sectionModifier.J = sectionModifiers[3];
+                        sectionModifier.Iy = sectionModifiers[4];
+                        sectionModifier.Iz = sectionModifiers[5];
+                        // mass modifier = 6
+                        // weight modifier = 7
+                        bhomBar.SectionProperty.Fragments.Add(sectionModifier);
                     }
 
                     bhomBars.Add(bhomBar);
