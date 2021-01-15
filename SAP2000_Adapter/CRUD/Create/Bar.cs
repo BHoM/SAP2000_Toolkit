@@ -219,19 +219,26 @@ namespace BH.Adapter.SAP2000
             double[] offset1 = new double[3];
             double[] offset2 = new double[3];
 
-            if (offset != null && (offset.Start != null || offset.End != null))
+            if (offset != null)
             {
-                offset1[1] = offset.Start.Z;
-                offset1[2] = offset.Start.Y;
-                offset2[1] = offset.End.Z;
-                offset2[2] = offset.End.Y;
-
-                if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, bhBar.ModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
+                if (offset.Start != null)
                 {
-                    CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
+                    offset1[1] = offset.Start.Z;
+                    offset1[2] = offset.Start.Y;
+                }
+
+                if (offset.End != null)
+                {
+                    offset2[1] = offset.End.Z;
+                    offset2[2] = offset.End.Y;
                 }
             }
 
+            if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, bhBar.ModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
+            {
+                CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
+            }
+            
             // Section Property Modifiers
 
             if (bhBar.SectionProperty.FindFragment<SectionModifier>() != null)
@@ -239,11 +246,11 @@ namespace BH.Adapter.SAP2000
                 SectionModifier sectionModifiers = bhBar.SectionProperty.FindFragment<SectionModifier>();
                 double[] sapSectionModifiers = new double[8];
                 sapSectionModifiers[0] = sectionModifiers.Area;
-                sapSectionModifiers[1] = sectionModifiers.Asy;
-                sapSectionModifiers[2] = sectionModifiers.Asz;
+                sapSectionModifiers[1] = sectionModifiers.Asz;
+                sapSectionModifiers[2] = sectionModifiers.Asy;
                 sapSectionModifiers[3] = sectionModifiers.J;
-                sapSectionModifiers[4] = sectionModifiers.Iy;
-                sapSectionModifiers[5] = sectionModifiers.Iz;
+                sapSectionModifiers[4] = sectionModifiers.Iz;
+                sapSectionModifiers[5] = sectionModifiers.Iy;
                 sapSectionModifiers[6] = 1; // default mass modifier, not set/implemented yet
                 sapSectionModifiers[7] = 1; // default weight modifier, not set/implemented yet
                 if (m_model.FrameObj.SetModifiers(name, ref sapSectionModifiers) != 0)
