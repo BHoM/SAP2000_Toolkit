@@ -52,17 +52,4 @@ namespace BH.oM.Adapters.SAP2000
         Centroid = 10,
         ShearCenter = 11
     }
-
-    public enum BracingType
-    {
-        PointBracing = 1,
-        UniformBracing = 2
-    }
-
-    public enum BracingLocation
-    {
-        Top = 1,
-        Bottom = 2,
-        TopAndBottom = 3
-    }
 }
