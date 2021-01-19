@@ -194,7 +194,7 @@ namespace BH.Adapter.SAP2000
                     }
                     else
                     {
-                        Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} with SAP id {name} was set with design procedure based on materials available.");
+                        Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} with SAP id {name} was set with a design procedure automatically based on its material (Steel/Concrete/Cold Form/Aluminum) regardless of selected input.");
                     }
                 }
                 else

@@ -37,7 +37,7 @@ namespace BH.oM.Adapters.SAP2000
         NoDesign = 9
 
     }
-    // check if user puts in concrete and material is steel, just say sap is going to use default for this material - setdesigntype to 1 rather than 2
+
     public enum BarInsertionPoint
     {
         BottomLeft = 1,
@@ -51,5 +51,18 @@ namespace BH.oM.Adapters.SAP2000
         TopRight = 9,
         Centroid = 10,
         ShearCenter = 11
+    }
+
+    public enum BracingType
+    {
+        PointBracing = 1,
+        UniformBracing = 2
+    }
+
+    public enum BracingLocation
+    {
+        Top = 1,
+        Bottom = 2,
+        TopAndBottom = 3
     }
 }
