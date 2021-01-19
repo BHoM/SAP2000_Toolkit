@@ -170,11 +170,9 @@ namespace BH.Adapter.SAP2000
                     // Section Property Modifiers
 
                     double[] sectionModifiers = new double[8];
-
-                    // Check definition of local 2/3 vs SAP?
+                    // first check if material assigned 
                     if (m_model.FrameObj.GetModifiers(id, ref sectionModifiers) == 0)
                     {
-                        // Better way for mapping these back and forth?
                         SectionModifier sectionModifier = new SectionModifier();
                         sectionModifier.Area = sectionModifiers[0];
                         sectionModifier.Asz = sectionModifiers[1];
@@ -184,6 +182,11 @@ namespace BH.Adapter.SAP2000
                         sectionModifier.Iy = sectionModifiers[5];
                         // mass modifier = 6
                         // weight modifier = 7
+                        if (bhomBar.SectionProperty == null)
+                        {
+                            ISectionProperty sectionProperty = new ExplicitSection();
+                            bhomBar.SectionProperty = sectionProperty;
+                        }
                         bhomBar.SectionProperty.Fragments.Add(sectionModifier);
                     }
 

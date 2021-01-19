@@ -56,6 +56,5 @@ namespace BH.Engine.Adapters.SAP2000
 
             return o == null ? true : o.ModifyStiffness;
         }
-
     }
 }

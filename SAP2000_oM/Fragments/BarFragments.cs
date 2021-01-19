@@ -61,5 +61,4 @@ namespace BH.oM.Adapters.SAP2000.Elements
         [Description("Transform frame stiffness for offsets from centroid.")]
         public virtual bool ModifyStiffness { get; set; } = true;
     }
-
 }
