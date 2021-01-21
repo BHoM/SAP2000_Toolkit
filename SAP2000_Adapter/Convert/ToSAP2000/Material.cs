@@ -43,7 +43,6 @@ namespace BH.Adapter.SAP2000
         {
             return new Vector() { X = darray[0], Y = darray[1], Z = darray[2] };
         }
-
         /***************************************************/
     }
 }

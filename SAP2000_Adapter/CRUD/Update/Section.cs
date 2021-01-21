@@ -1,0 +1,80 @@
+﻿/*
+ * This file is part of the Buildings and Habitats object Model (BHoM)
+ * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
+ *
+ * Each contributor holds copyright over their respective contributions.
+ * The project versioning (Git) records all such contribution source information.
+ *                                           
+ *                                                                              
+ * The BHoM is free software: you can redistribute it and/or modify         
+ * it under the terms of the GNU Lesser General Public License as published by  
+ * the Free Software Foundation, either version 3.0 of the License, or          
+ * (at your option) any later version.                                          
+ *                                                                              
+ * The BHoM is distributed in the hope that it will be useful,              
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of               
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                 
+ * GNU Lesser General Public License for more details.                          
+ *                                                                            
+ * You should have received a copy of the GNU Lesser General Public License     
+ * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
+ */
+
+using System.Collections.Generic;
+using System.Linq;
+using BH.oM.Structure.SectionProperties;
+using BH.Engine.Structure;
+using BH.Engine.Base;
+using BH.oM.Structure.Fragments;
+
+namespace BH.Adapter.SAP2000
+{
+    public partial class SAP2000Adapter : BHoMAdapter
+    {
+        /***************************************************/
+        /**** Update Section                            ****/
+        /***************************************************/
+
+        private bool UpdateObjects(IEnumerable<ISectionProperty> bhomSections)
+        {
+            bool success = true;
+
+            int nameCount = 0;
+            string[] names = { };
+            m_model.PropFrame.GetNameList(ref nameCount, ref names);
+
+            foreach (ISectionProperty bhomSection in bhomSections)
+            {
+                string propertyName = bhomSection.DescriptionOrName();
+
+                if (!names.Contains(propertyName))
+                {
+                    Engine.Reflection.Compute.RecordWarning($"Failed to update SectionProperty: { propertyName }, no section with that name found in SAP2000.");
+                    continue;
+                }
+                string matName = "Default";
+                matName = bhomSection.Material.DescriptionOrName();
+                SetSection(bhomSection as dynamic, matName);
+
+                SectionModifier modifier = bhomSection.FindFragment<SectionModifier>();
+
+                if (modifier != null)
+                {
+                    double[] sap2000Mods = new double[8];
+
+                    sap2000Mods[0] = modifier.Area;   //Area
+                    sap2000Mods[1] = modifier.Asz;    //Major axis shear
+                    sap2000Mods[2] = modifier.Asy;    //Minor axis shear
+                    sap2000Mods[3] = modifier.J;      //Torsion
+                    sap2000Mods[4] = modifier.Iz;     //Minor bending
+                    sap2000Mods[5] = modifier.Iy;     //Major bending
+                    sap2000Mods[6] = 1;               //Mass, not currently implemented
+                    sap2000Mods[7] = 1;               //Weight, not currently implemented
+
+                    m_model.PropFrame.SetModifiers(propertyName, ref sap2000Mods);
+                }
+            }
+            return success;
+        }
+    }
+}

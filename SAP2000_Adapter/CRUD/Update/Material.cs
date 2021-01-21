@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -21,6 +21,9 @@
  */
 
 using System.Collections.Generic;
+using BH.Engine.Structure;
+using SAP2000v1;
+using BH.oM.Structure.MaterialFragments;
 using System.Linq;
 using BH.Engine.Adapter;
 using BH.oM.Adapters.SAP2000;
@@ -34,43 +37,38 @@ namespace BH.Adapter.SAP2000
     public partial class SAP2000Adapter : BHoMAdapter
     {
         /***************************************************/
-        /**** Update Node                               ****/
+        /**** Update Material                           ****/
         /***************************************************/
 
-        private bool UpdateObjects(IEnumerable<Node> nodes)
+        private bool UpdateObjects(IEnumerable<IMaterialFragment> bhMaterials)
         {
-            bool success = true;
-            m_model.SelectObj.ClearSelection();
-
-            Engine.Structure.NodeDistanceComparer comparer = AdapterComparers[typeof(Node)] as Engine.Structure.NodeDistanceComparer;
-
-            foreach (Node bhNode in nodes)
+            foreach (IMaterialFragment material in bhMaterials)
             {
-                string name = GetAdapterId<string>(bhNode);
-
-                SetObject(bhNode);
-
-                double x = 0;
-                double y = 0;
-                double z = 0;
-
-                if (m_model.PointObj.GetCoordCartesian(name, ref x, ref y, ref z) == 0)
+                bool success = true;
+                eMatType matType = eMatType.NoDesign;
+                int colour = 0;
+                string guid = null;
+                string notes = "";
+                if (m_model.PropMaterial.GetMaterial(material.DescriptionOrName(), ref matType, ref colour, ref notes, ref guid) == 0)
                 {
-                    oM.Geometry.Point p = new oM.Geometry.Point() { X = x, Y = y, Z = z };
-
-                    if (!comparer.Equals(bhNode, (Node)p))
+                    if (matType != MaterialTypeToCSI(material.IMaterialType()))
                     {
-                        x = bhNode.Position.X - x;
-                        y = bhNode.Position.Y - y;
-                        z = bhNode.Position.Z - z;
-
-                        m_model.PointObj.SetSelected(name, true);
-                        m_model.EditGeneral.Move(x, y, z);
-                        m_model.PointObj.SetSelected(name, false);
+                        Engine.Reflection.Compute.RecordWarning($"Failed to update material: {material.DescriptionOrName()}, can't update to another material type.");
+                        continue;
                     }
+
+                    success &= SetObject(material);
                 }
+                else
+                {
+                    // No material of that name found
+                    Engine.Reflection.Compute.RecordWarning($"Failed to update material: {material.DescriptionOrName()}, as no such material was present in the model.");
+                }
+
+                if (!success)
+                    Engine.Reflection.Compute.RecordWarning($"Failed to update material: {material.DescriptionOrName()}, all BHoM properties may not have been set.");
             }
-            return success;
+            return true;
         }
 
     }

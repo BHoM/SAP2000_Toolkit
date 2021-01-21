@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -27,52 +27,65 @@ using BH.oM.Adapters.SAP2000;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Constraints;
 using BH.Engine.Adapters.SAP2000;
-using System.Runtime.Remoting.Messaging;
 
 namespace BH.Adapter.SAP2000
 {
     public partial class SAP2000Adapter : BHoMAdapter
     {
         /***************************************************/
-        /**** Update Node                               ****/
+        /**** Update Bar                                ****/
         /***************************************************/
-
-        private bool UpdateObjects(IEnumerable<Node> nodes)
+        private bool UpdateObjects(IEnumerable<Bar> bhBars)
         {
             bool success = true;
             m_model.SelectObj.ClearSelection();
 
-            Engine.Structure.NodeDistanceComparer comparer = AdapterComparers[typeof(Node)] as Engine.Structure.NodeDistanceComparer;
+            int nameCount = 0;
+            string[] nameArr = { };
+            m_model.FrameObj.GetNameList(ref nameCount, ref nameArr);
 
-            foreach (Node bhNode in nodes)
+            foreach (Bar bhBar in bhBars)
             {
-                string name = GetAdapterId<string>(bhNode);
-
-                SetObject(bhNode);
-
-                double x = 0;
-                double y = 0;
-                double z = 0;
-
-                if (m_model.PointObj.GetCoordCartesian(name, ref x, ref y, ref z) == 0)
+                object id = bhBar.AdapterId(typeof(SAP2000Id));
+                if (id == null)
                 {
-                    oM.Geometry.Point p = new oM.Geometry.Point() { X = x, Y = y, Z = z };
-
-                    if (!comparer.Equals(bhNode, (Node)p))
-                    {
-                        x = bhNode.Position.X - x;
-                        y = bhNode.Position.Y - y;
-                        z = bhNode.Position.Z - z;
-
-                        m_model.PointObj.SetSelected(name, true);
-                        m_model.EditGeneral.Move(x, y, z);
-                        m_model.PointObj.SetSelected(name, false);
-                    }
+                    Engine.Reflection.Compute.RecordWarning("The Bar must have a SAP2000 adapter id to be updated.");
+                    continue;
                 }
+
+                string name = id as string;
+                if (!nameArr.Contains(name))
+                {
+                    Engine.Reflection.Compute.RecordWarning("The Bar must be present in SAP2000 to be updated");
+                    continue;
+                }
+
+                // check Start and End node, which are not dealt with in SetObject
+                // Check for dealbreaking BHoM validity
+                //if (bhBar.StartNode == null || bhBar.EndNode == null)
+                //{
+                //    Engine.Reflection.Compute.RecordError($"Bar {bhBar.Name} failed to update because its nodes are null");
+                //    return false;
+                //}
+
+                //string startId = GetAdapterId<string>(bhBar.StartNode);
+                //string endId = GetAdapterId<string>(bhBar.EndNode);
+
+                //if (startId == null || endId == null)
+                //{
+                //    Engine.Reflection.Compute.RecordError($"Bar {bhBar.Name} failed to update because its nodes were not found in SAP2000. Check that geometry is valid.");
+                //    return false;
+                //}
+
+                //Node[] barNodes = new Node[2];
+                //barNodes[0] = bhBar.StartNode;
+                //barNodes[1] = bhBar.EndNode;
+                //UpdateObjects(barNodes);
+                SetObject(bhBar);
+
             }
+            m_model.View.RefreshView();
             return success;
         }
-
     }
 }
-

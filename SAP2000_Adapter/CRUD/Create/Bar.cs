@@ -29,6 +29,7 @@ using BH.Engine.Adapter;
 using BH.Engine.Base;
 using System;
 using BH.oM.Base;
+using System.ComponentModel;
 
 namespace BH.Adapter.SAP2000
 {
@@ -82,7 +83,7 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
-
+        [Description("Does all the SAP2000 interaction which does not initiate a new object in SAP2000.")]
         private bool SetObject(Bar bhBar)
         {
             string name = GetAdapterId<string>(bhBar);
