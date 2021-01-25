@@ -91,6 +91,54 @@ namespace BH.Adapter.SAP2000
                     CreatePropertyWarning("Orthotropy", "Material", bhName);
             }
 
+            // Set Material Strengths
+            eMatType matType = MaterialTypeToCSI(material.IMaterialType());
+
+            switch (matType)
+            {
+                case eMatType.Aluminum:
+                    Engine.Reflection.Compute.RecordWarning("BHoM material aluminum does not have SAP2000 material parameters yet.");
+                    break;
+                case eMatType.Steel:
+                    // try/catch for casting to steel?
+                    Steel steel = material as Steel;
+                    if (m_model.PropMaterial.SetOSteel_1(bhName, steel.YieldStress, steel.UltimateStress, steel.YieldStress, steel.UltimateStress, 0, 0, 0, 0, 0, 0, 0) != 0)
+                    {
+                        CreatePropertyWarning("YieldStress", "Material", bhName);
+                        CreatePropertyWarning("UltimateStress", "Material", bhName);
+                    }
+                    break;
+                case eMatType.Concrete:
+                    Concrete concrete = material as Concrete;
+                    // name as NW/LW?
+                    if (m_model.PropMaterial.SetOConcrete_2(bhName, concrete.CylinderStrength, concrete.CylinderStrength, false, 0, 0, 0, 0, 0, 0) != 0)
+                    {
+                        CreatePropertyWarning("ConcreteStrength", "Material", bhName);
+                    }
+                    break;
+                case eMatType.Rebar:
+                    Steel reinf = material as Steel;
+                    if (m_model.PropMaterial.SetORebar_1(bhName, reinf.YieldStress, reinf.UltimateStress, reinf.YieldStress, reinf.UltimateStress, 0, 0, 0, 0, 0, false) != 0)
+                    {
+                        CreatePropertyWarning("YieldStress", "Material", bhName);
+                        CreatePropertyWarning("UltimateStress", "Material", bhName);
+                    }
+                    break;
+                case eMatType.Tendon:
+                    Steel tendon = material as Steel;
+                    if (m_model.PropMaterial.SetOTendon_1(bhName, tendon.YieldStress, tendon.UltimateStress, 0, 0, 0) != 0)
+                    {
+                        CreatePropertyWarning("YieldStress", "Material", bhName);
+                        CreatePropertyWarning("UltimateStress", "Material", bhName);
+                    }
+                    break;
+                default:
+                    Engine.Reflection.Compute.RecordWarning("BHoM material type not found, no additional design material parameters passed to SAP2000.");
+                    m_model.PropMaterial.SetONoDesign(bhName, 0, 0, 0);
+                    break;
+            }
+
+
             if (m_model.PropMaterial.SetWeightAndMass(bhName, 2, material.Density) != 0)
                 CreatePropertyWarning("Density", "Material", bhName);
 
