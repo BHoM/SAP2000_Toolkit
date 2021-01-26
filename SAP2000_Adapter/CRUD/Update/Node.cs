@@ -20,14 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using System.Collections.Generic;
-using System.Linq;
-using BH.Engine.Adapter;
-using BH.oM.Adapters.SAP2000;
 using BH.oM.Structure.Elements;
-using BH.oM.Structure.Constraints;
-using BH.Engine.Adapters.SAP2000;
-using System.Runtime.Remoting.Messaging;
+using System.Collections.Generic;
 
 namespace BH.Adapter.SAP2000
 {
