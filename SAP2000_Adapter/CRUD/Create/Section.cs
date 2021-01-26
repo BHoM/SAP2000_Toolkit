@@ -321,16 +321,7 @@ namespace BH.Adapter.SAP2000
 
             if (modifier != null)
             {
-                double[] sap2000Mods = new double[8];
-
-                sap2000Mods[0] = modifier.Area;   //Area
-                sap2000Mods[1] = modifier.Asz;    //Major axis shear
-                sap2000Mods[2] = modifier.Asy;    //Minor axis shear
-                sap2000Mods[3] = modifier.J;      //Torsion
-                sap2000Mods[4] = modifier.Iz;     //Minor bending
-                sap2000Mods[5] = modifier.Iy;     //Major bending
-                sap2000Mods[6] = 1;               //Mass, not currently implemented
-                sap2000Mods[7] = 1;               //Weight, not currently implemented
+                double[] sap2000Mods = SectionModifierToCSI(modifier);
 
                 if (m_model.PropFrame.SetModifiers(propertyName, ref sap2000Mods) != 0)
                 {
@@ -338,6 +329,24 @@ namespace BH.Adapter.SAP2000
                 }
             }
         }
+
+        private double[] SectionModifierToCSI(SectionModifier modifier)
+        {
+            double[] sap2000Mods = new double[8];
+
+            sap2000Mods[0] = modifier.Area;   //Area
+            sap2000Mods[1] = modifier.Asz;    //Major axis shear
+            sap2000Mods[2] = modifier.Asy;    //Minor axis shear
+            sap2000Mods[3] = modifier.J;      //Torsion
+            sap2000Mods[4] = modifier.Iz;     //Minor bending
+            sap2000Mods[5] = modifier.Iy;     //Major bending
+            sap2000Mods[6] = 1;               //Mass, not currently implemented
+            sap2000Mods[7] = 1;               //Weight, not currently implemented
+
+            return sap2000Mods;
+
+        }
+
     }
 }
 
