@@ -58,7 +58,7 @@ namespace BH.Adapter.SAP2000
             else if (m_model.PropMaterial.SetMaterial(bhName, matType, color, notes, guid) == 0) //create the material
             {
                 sap2000id.Id = bhName;
-                success &= SetObject(material);
+                SetObject(material);
             }
             else
             {

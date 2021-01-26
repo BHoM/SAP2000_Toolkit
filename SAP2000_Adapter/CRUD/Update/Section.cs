@@ -55,24 +55,9 @@ namespace BH.Adapter.SAP2000
                 string matName = "Default";
                 matName = bhomSection.Material.DescriptionOrName();
                 SetSection(bhomSection as dynamic, matName);
+                SetModifiers(bhomSection);
 
-                SectionModifier modifier = bhomSection.FindFragment<SectionModifier>();
 
-                if (modifier != null)
-                {
-                    double[] sap2000Mods = new double[8];
-
-                    sap2000Mods[0] = modifier.Area;   //Area
-                    sap2000Mods[1] = modifier.Asz;    //Major axis shear
-                    sap2000Mods[2] = modifier.Asy;    //Minor axis shear
-                    sap2000Mods[3] = modifier.J;      //Torsion
-                    sap2000Mods[4] = modifier.Iz;     //Minor bending
-                    sap2000Mods[5] = modifier.Iy;     //Major bending
-                    sap2000Mods[6] = 1;               //Mass, not currently implemented
-                    sap2000Mods[7] = 1;               //Weight, not currently implemented
-
-                    m_model.PropFrame.SetModifiers(propertyName, ref sap2000Mods);
-                }
             }
             return success;
         }

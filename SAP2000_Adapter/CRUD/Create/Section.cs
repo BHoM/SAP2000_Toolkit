@@ -25,6 +25,8 @@ using BH.Engine.Structure;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Spatial.ShapeProfiles;
+using BH.oM.Structure.Fragments;
+using BH.Engine.Base;
 using System;
 
 
@@ -47,12 +49,13 @@ namespace BH.Adapter.SAP2000
             }
             else
             {
-                Engine.Reflection.Compute.RecordWarning($"SurfaceProperty {propName} had no material defined. Using a default material.");
+                Engine.Reflection.Compute.RecordWarning($"Section {propName} had no material defined. Using a default material.");
             }
 
             try
             {
                 SetSection(bhomSection as dynamic, matName);
+                SetModifiers(bhomSection);
             }
             catch
             {
@@ -153,9 +156,9 @@ namespace BH.Adapter.SAP2000
         private void SetSection(ExplicitSection bhomSection, string matName)
         {
             string name = bhomSection.DescriptionOrName();
-            if (m_model.PropFrame.SetGeneral(name, matName, bhomSection.CentreZ * 2, 
-                bhomSection.CentreY * 2, bhomSection.Area, bhomSection.Asy, bhomSection.Asz, bhomSection.J, 
-                bhomSection.Iy, bhomSection.Iz, bhomSection.Wply, bhomSection.Wplz, bhomSection.Wely, 
+            if (m_model.PropFrame.SetGeneral(name, matName, bhomSection.CentreZ * 2,
+                bhomSection.CentreY * 2, bhomSection.Area, bhomSection.Asy, bhomSection.Asz, bhomSection.J,
+                bhomSection.Iy, bhomSection.Iz, bhomSection.Wply, bhomSection.Wplz, bhomSection.Wely,
                 bhomSection.Wely, bhomSection.Rgy, bhomSection.Rgz) != 0)
             {
                 Engine.Reflection.Compute.RecordWarning($"Profile for {name} could not be created.");
@@ -309,6 +312,32 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
+
+        private void SetModifiers(ISectionProperty bhomSection)
+        {
+            string propertyName = bhomSection.DescriptionOrName();
+
+            SectionModifier modifier = bhomSection.FindFragment<SectionModifier>();
+
+            if (modifier != null)
+            {
+                double[] sap2000Mods = new double[8];
+
+                sap2000Mods[0] = modifier.Area;   //Area
+                sap2000Mods[1] = modifier.Asz;    //Major axis shear
+                sap2000Mods[2] = modifier.Asy;    //Minor axis shear
+                sap2000Mods[3] = modifier.J;      //Torsion
+                sap2000Mods[4] = modifier.Iz;     //Minor bending
+                sap2000Mods[5] = modifier.Iy;     //Major bending
+                sap2000Mods[6] = 1;               //Mass, not currently implemented
+                sap2000Mods[7] = 1;               //Weight, not currently implemented
+
+                if (m_model.PropFrame.SetModifiers(propertyName, ref sap2000Mods) != 0)
+                {
+                    Engine.Reflection.Compute.RecordError($"Could not add user specified section modifiers for {bhomSection.DescriptionOrName()}.");
+                }
+            }
+        }
     }
 }
 
