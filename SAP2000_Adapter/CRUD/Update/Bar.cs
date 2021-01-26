@@ -62,29 +62,30 @@ namespace BH.Adapter.SAP2000
 
                 // check Start and End node, which are not dealt with in SetObject
                 // Check for dealbreaking BHoM validity
-                //if (bhBar.StartNode == null || bhBar.EndNode == null)
-                //{
-                //    Engine.Reflection.Compute.RecordError($"Bar {bhBar.Name} failed to update because its nodes are null");
-                //    return false;
-                //}
+                if (bhBar.StartNode == null || bhBar.EndNode == null)
+                {
+                    Engine.Reflection.Compute.RecordError($"Bar {bhBar.Name} failed to update because its nodes are null");
+                    return false;
+                }
 
-                //string startId = GetAdapterId<string>(bhBar.StartNode);
-                //string endId = GetAdapterId<string>(bhBar.EndNode);
+                // Retrieve original end points from SAP2000
+                string sapBarI = "";
+                string sapBarJ = "";
 
-                //if (startId == null || endId == null)
-                //{
-                //    Engine.Reflection.Compute.RecordError($"Bar {bhBar.Name} failed to update because its nodes were not found in SAP2000. Check that geometry is valid.");
-                //    return false;
-                //}
-
-                //Node[] barNodes = new Node[2];
-                //barNodes[0] = bhBar.StartNode;
-                //barNodes[1] = bhBar.EndNode;
-                //UpdateObjects(barNodes);
+                if (m_model.FrameObj.GetPoints(name, ref sapBarI, ref sapBarJ) != 0)
+                {
+                    Engine.Reflection.Compute.RecordError($"Bar {bhBar.Name} failed to update because its nodes were not found in SAP2000. Check that geometry is valid.");
+                    return false;
+                }
+                else
+                {
+                    bhBar.StartNode.SetAdapterId(new SAP2000Id() { Id = sapBarI });
+                    bhBar.EndNode.SetAdapterId(new SAP2000Id() { Id = sapBarJ });
+                    List<Node> barNodes = new List<Node>() { bhBar.StartNode, bhBar.EndNode };
+                    UpdateObjects(barNodes);
+                }
                 SetObject(bhBar);
-
             }
-            m_model.View.RefreshView();
             return success;
         }
     }
