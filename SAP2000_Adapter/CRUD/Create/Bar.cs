@@ -239,27 +239,6 @@ namespace BH.Adapter.SAP2000
                 CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
             }
             
-            // Section Property Modifiers
-
-            if (bhBar.SectionProperty.FindFragment<SectionModifier>() != null)
-            {
-                SectionModifier sectionModifiers = bhBar.SectionProperty.FindFragment<SectionModifier>();
-                double[] sapSectionModifiers = new double[8];
-                sapSectionModifiers[0] = sectionModifiers.Area;
-                sapSectionModifiers[1] = sectionModifiers.Asz;
-                sapSectionModifiers[2] = sectionModifiers.Asy;
-                sapSectionModifiers[3] = sectionModifiers.J;
-                sapSectionModifiers[4] = sectionModifiers.Iz;
-                sapSectionModifiers[5] = sectionModifiers.Iy;
-                sapSectionModifiers[6] = 1; // default mass modifier, not set/implemented yet
-                sapSectionModifiers[7] = 1; // default weight modifier, not set/implemented yet
-                if (m_model.FrameObj.SetModifiers(name, ref sapSectionModifiers) != 0)
-                {
-                    CreatePropertyWarning("Section property modifiers", "Bar", name);
-                }
-
-            }
-            
             return true;
         }
     }
