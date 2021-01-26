@@ -166,30 +166,6 @@ namespace BH.Adapter.SAP2000
                         BarInsertionPoint barInsertionPoint = (BarInsertionPoint)insertionPoint;
                         bhomBar = bhomBar.SetInsertionPoint(barInsertionPoint, modifyStiffness);
                     }
-
-                    // Section Property Modifiers
-
-                    double[] sectionModifiers = new double[8];
-                    // first check if material assigned 
-                    if (m_model.FrameObj.GetModifiers(id, ref sectionModifiers) == 0)
-                    {
-                        SectionModifier sectionModifier = new SectionModifier();
-                        sectionModifier.Area = sectionModifiers[0];
-                        sectionModifier.Asz = sectionModifiers[1];
-                        sectionModifier.Asy = sectionModifiers[2];
-                        sectionModifier.J = sectionModifiers[3];
-                        sectionModifier.Iz = sectionModifiers[4];
-                        sectionModifier.Iy = sectionModifiers[5];
-                        // mass modifier = 6
-                        // weight modifier = 7
-                        if (bhomBar.SectionProperty == null)
-                        {
-                            ISectionProperty sectionProperty = new ExplicitSection();
-                            bhomBar.SectionProperty = sectionProperty;
-                        }
-                        bhomBar.SectionProperty.Fragments.Add(sectionModifier);
-                    }
-
                     bhomBars.Add(bhomBar);
                 }
 
