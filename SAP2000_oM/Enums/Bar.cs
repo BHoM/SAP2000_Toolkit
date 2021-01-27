@@ -25,36 +25,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Structure.Elements;
-using BH.oM.Adapters.SAP2000.Elements;
-using BH.oM.Adapters.SAP2000;
-using BH.Engine.Base;
 
-namespace BH.Engine.Adapters.SAP2000
+namespace BH.oM.Adapters.SAP2000
 {
-    public static partial class Query
+    public enum BarDesignProcedureType : int
     {
-        public static BarAutoMesh BarAutoMesh(this Bar bar)
-        {
-            return bar.FindFragment<BarAutoMesh>();
-        }
+        Steel = 1,
+        Concrete = 2,
+        Aluminum = 7,
+        ColdFormed = 8,
+        NoDesign = 9
 
-        public static BarDesignProcedure DesignProcedure(this Bar bar)
-        {
-            return bar.FindFragment<BarDesignProcedure>();
-        }
+    }
 
-        public static BarInsertionPoint InsertionPoint(this Bar bar)
-        {
-            InsertionPoint o = bar?.FindFragment<InsertionPoint>();
-            return o == null ? BarInsertionPoint.Centroid : o.BarInsertionPoint;
-        }
-
-        public static bool ModifyStiffnessInsertionPoint(this Bar bar)
-        {
-            InsertionPoint o = bar?.FindFragment<InsertionPoint>();
-
-            return o == null ? true : o.ModifyStiffness;
-        }
+    public enum BarInsertionPointLocation : int
+    {
+        BottomLeft = 1,
+        BottomCenter = 2,
+        BottomRight = 3,
+        MiddleLeft = 4,
+        MiddleCenter = 5,
+        MiddleRight = 6,
+        TopLeft = 7,
+        TopCenter = 8,
+        TopRight = 9,
+        Centroid = 10,
+        ShearCenter = 11
     }
 }

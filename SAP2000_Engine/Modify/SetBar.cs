@@ -34,7 +34,7 @@ namespace BH.Engine.Adapters.SAP2000
 {
     public static partial class Modify
     {
-        public static Bar SetAutoMesh(this Bar bar, bool autoMesh = false, bool autoMeshAtPoints = false, bool autoMeshAtLines = false, int numSegs = 0, double autoMeshMaxLength = 0.0)
+        public static Bar SetBarAutoMesh(this Bar bar, bool autoMesh = false, bool autoMeshAtPoints = false, bool autoMeshAtLines = false, int numSegs = 0, double autoMeshMaxLength = 0.0)
         {
             if (numSegs < 0)
             {
@@ -51,19 +51,19 @@ namespace BH.Engine.Adapters.SAP2000
             return (Bar)bar.AddFragment(new BarAutoMesh { AutoMesh = autoMesh, AutoMeshAtPoints = autoMeshAtPoints, AutoMeshAtLines = autoMeshAtLines, NumSegs = numSegs, AutoMeshMaxLength = autoMeshMaxLength }, true);
         }
 
-        public static Bar SetDesignProcedure(this Bar bar, DesignProcedureType designProcedure)
+        public static Bar SetBarDesignProcedure(this Bar bar, BarDesignProcedureType designProcedure)
         {
             return (Bar)bar.AddFragment(new BarDesignProcedure { DesignProcedure = designProcedure }, true);
         }
 
-        public static Bar SetInsertionPoint(this Bar bar, BarInsertionPoint barInsertionPoint = BarInsertionPoint.Centroid)
+        public static Bar SetBarInsertionPoint(this Bar bar, BarInsertionPointLocation barInsertionPoint = BarInsertionPointLocation.Centroid)
         {
-            return bar.SetInsertionPoint(barInsertionPoint, true);
+            return bar.SetBarInsertionPoint(barInsertionPoint, true);
         }
 
-        public static Bar SetInsertionPoint(this Bar bar, BarInsertionPoint barInsertionPoint = BarInsertionPoint.Centroid, bool modifyStiffness = true)
+        public static Bar SetBarInsertionPoint(this Bar bar, BarInsertionPointLocation InsertionPoint = BarInsertionPointLocation.Centroid, bool modifyStiffness = true)
         {
-            return (Bar)bar.AddFragment(new InsertionPoint() { BarInsertionPoint = barInsertionPoint, ModifyStiffness = modifyStiffness }, true);
+            return (Bar)bar.AddFragment(new BarInsertionPoint() { InsertionPoint = InsertionPoint, ModifyStiffness = modifyStiffness }, true);
         }
     }
 }
