@@ -177,15 +177,15 @@ namespace BH.Adapter.SAP2000
 
             // Design Procedure
 
-            BarDesignProcedure barDesignProcedure = bhBar.DesignProcedure();
+            BarDesignProcedure barDesignProcedure = bhBar.BarDesignProcedure();
 
             if (barDesignProcedure != null)
             {
                 // issue with cold form as a material not being able to be pushed...
-                if (barDesignProcedure.DesignProcedure == DesignProcedureType.Aluminum ||
-                    barDesignProcedure.DesignProcedure == DesignProcedureType.ColdFormed ||
-                    barDesignProcedure.DesignProcedure == DesignProcedureType.Steel ||
-                    barDesignProcedure.DesignProcedure == DesignProcedureType.Concrete)
+                if (barDesignProcedure.DesignProcedure == BarDesignProcedureType.Aluminum ||
+                    barDesignProcedure.DesignProcedure == BarDesignProcedureType.ColdFormed ||
+                    barDesignProcedure.DesignProcedure == BarDesignProcedureType.Steel ||
+                    barDesignProcedure.DesignProcedure == BarDesignProcedureType.Concrete)
                 {
                     // Design Procedure "MyType" is 1 if specified from material list available (limited to enums shown)
                     if (m_model.FrameObj.SetDesignProcedure(name, 1, 0) != 0)
@@ -234,7 +234,7 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
-            if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.InsertionPoint(), false, bhBar.ModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
+            if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.BarInsertionPoint(), false, bhBar.ModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
             {
                 CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
             }
