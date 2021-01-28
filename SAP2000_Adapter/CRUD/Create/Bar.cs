@@ -234,7 +234,7 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
-            if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.BarInsertionPoint(), false, bhBar.ModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
+            if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.BarInsertionPoint(), false, bhBar.BarModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
             {
                 CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
             }
