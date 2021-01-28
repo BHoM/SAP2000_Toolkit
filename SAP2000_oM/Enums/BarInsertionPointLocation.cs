@@ -28,16 +28,6 @@ using System.Threading.Tasks;
 
 namespace BH.oM.Adapters.SAP2000
 {
-    public enum BarDesignProcedureType : int
-    {
-        Steel = 1,
-        Concrete = 2,
-        Aluminum = 7,
-        ColdFormed = 8,
-        NoDesign = 9
-
-    }
-
     public enum BarInsertionPointLocation : int
     {
         BottomLeft = 1,

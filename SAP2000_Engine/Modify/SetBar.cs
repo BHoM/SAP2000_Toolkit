@@ -61,9 +61,9 @@ namespace BH.Engine.Adapters.SAP2000
             return bar.SetBarInsertionPoint(barInsertionPoint, true);
         }
 
-        public static Bar SetBarInsertionPoint(this Bar bar, BarInsertionPointLocation InsertionPoint = BarInsertionPointLocation.Centroid, bool modifyStiffness = true)
+        public static Bar SetBarInsertionPoint(this Bar bar, BarInsertionPointLocation insertionPoint = BarInsertionPointLocation.Centroid, bool modifyStiffness = true)
         {
-            return (Bar)bar.AddFragment(new BarInsertionPoint() { InsertionPoint = InsertionPoint, ModifyStiffness = modifyStiffness }, true);
+            return (Bar)bar.AddFragment(new BarInsertionPoint() { InsertionPoint = insertionPoint, ModifyStiffness = modifyStiffness }, true);
         }
     }
 }

@@ -32,9 +32,6 @@ namespace BH.oM.Adapters.SAP2000.Elements
 {
     public class BarAutoMesh : IFragment
     {
-        /***************************************************/
-        /**** Public Properties                         ****/
-        /***************************************************/
         [Description("True if the frame object is to be automatically meshed by the program when the SAP analysis model is created.")]
         public virtual bool AutoMesh { get; set; } = false;
         [Description("If AutoMesh is True, the frame object is automatically meshed at intermediate joints along its length.")]
@@ -45,20 +42,5 @@ namespace BH.oM.Adapters.SAP2000.Elements
         public virtual int NumSegs { get; set; } = 0;
         [Description("If AutoMesh is True, the maximum length of auto meshed frame elements. If zero, the element length is not checked when automatic meshing is done.")]
         public virtual double AutoMeshMaxLength { get; set; } = 0.0;
-
-        /***************************************************/
-    }
-    public class BarDesignProcedure : IFragment
-    {
-        [Description("Design procedure based on material type.")]
-        public virtual BarDesignProcedureType DesignProcedure { get; set; } = BarDesignProcedureType.NoDesign;
-    }
-    public class BarInsertionPoint : IFragment
-    { 
-        [Description("Bar insertion point based on cross section.")]
-        public virtual BarInsertionPointLocation InsertionPoint { get; set; } = BarInsertionPointLocation.Centroid;
-
-        [Description("Transform frame stiffness for offsets from centroid.")]
-        public virtual bool ModifyStiffness { get; set; } = true;
     }
 }

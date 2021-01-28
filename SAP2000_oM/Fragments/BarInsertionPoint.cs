@@ -25,36 +25,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.oM.Structure.Elements;
-using BH.oM.Adapters.SAP2000.Elements;
-using BH.oM.Adapters.SAP2000;
-using BH.Engine.Base;
+using System.ComponentModel;
+using BH.oM.Base;
 
-namespace BH.Engine.Adapters.SAP2000
+namespace BH.oM.Adapters.SAP2000.Elements
 {
-    public static partial class Query
-    {
-        public static BarAutoMesh BarAutoMesh(this Bar bar)
-        {
-            return bar.FindFragment<BarAutoMesh>();
-        }
+    public class BarInsertionPoint : IFragment
+    { 
+        [Description("Bar insertion point based on cross section.")]
+        public virtual BarInsertionPointLocation InsertionPoint { get; set; } = BarInsertionPointLocation.Centroid;
 
-        public static BarDesignProcedure BarDesignProcedure(this Bar bar)
-        {
-            return bar.FindFragment<BarDesignProcedure>();
-        }
-
-        public static BarInsertionPointLocation BarInsertionPoint(this Bar bar)
-        {
-            BarInsertionPoint o = bar?.FindFragment<BarInsertionPoint>();
-            return o == null ? BarInsertionPointLocation.Centroid : o.InsertionPoint;
-        }
-
-        public static bool BarModifyStiffnessInsertionPoint(this Bar bar)
-        {
-            BarInsertionPoint o = bar?.FindFragment<BarInsertionPoint>();
-
-            return o == null ? true : o.ModifyStiffness;
-        }
+        [Description("Transform frame stiffness for offsets from centroid.")]
+        public virtual bool ModifyStiffness { get; set; } = true;
     }
 }
