@@ -61,7 +61,6 @@ namespace BH.Adapter.SAP2000
                 case BarResultType.BarStrain:
                 case BarResultType.BarStress:
                 case BarResultType.BarModeShape:
-                    return ReadBarUtilization(barIds);
                 default:
                     Engine.Reflection.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
@@ -238,63 +237,6 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private List<CustomObject> ReadBarUtilization(List<string> barIds = null)
-        {
-            List<BH.oM.Base.CustomObject> barUtilizations = new List<BH.oM.Base.CustomObject>();
-
-            int tableId = 2; //Per table number in SAP, 2 corresponds to "Steel Design 2 - PMM Details"
-            List<string> fieldNamesVal = new List<string>() { "TotalRatio", "PRatio", "MMajRatio", "MMinRatio", "VMajRatio", "VMinRatio", "TorRatio" };
-            List<string> fieldNamesText = new List<string>() { "DesignSect", "DesignType", "Status", "Combo" };
-
-            int numberItems = 0;
-            string[] frameNames = null;
-            double[] resultValues = null;
-            string[] resultTextVals = null;
-            string designCode = null;
-            m_model.DesignSteel.GetCode(ref designCode);
-
-            for (int i = 0; i < barIds.Count; i++)
-            {
-                Dictionary<string, object> dict = new Dictionary<string, object>();
-                foreach (string fieldNameVal in fieldNamesVal)
-                {
-                    int ret = m_model.DesignSteel.GetDetailResultsValue(barIds[i],
-                                                       eItemType.Objects,
-                                                       tableId,
-                                                       fieldNameVal,
-                                                       ref numberItems,
-                                                       ref frameNames,
-                                                       ref resultValues);
-                    if (ret == 0 && resultValues != null)
-                    {
-                        dict.Add(fieldNameVal, resultValues[0]);
-                    }
-
-                }
-                foreach (string fieldNameText in fieldNamesText)
-                {
-                    int ret = m_model.DesignSteel.GetDetailResultsText(barIds[i],
-                                                       eItemType.Objects,
-                                                       tableId,
-                                                       fieldNameText,
-                                                       ref numberItems,
-                                                       ref frameNames,
-                                                       ref resultTextVals);
-                    if (ret == 0 && resultTextVals != null)
-                    {
-                        dict.Add(fieldNameText, resultTextVals[0]);
-                    }
-
-                }
-                dict.Add("DesignCode", designCode);
-                CustomObject bu = BH.Engine.Base.Create.CustomObject(dict, barIds[i]);
-                barUtilizations.Add(bu);
-            }
-
-            return barUtilizations;
-        }
-
-        /***************************************************/
 
         /***************************************************/
         /**** Private method - Extraction methods       ****/

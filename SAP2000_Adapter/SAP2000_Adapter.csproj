@@ -198,6 +198,7 @@
     <Compile Include="CRUD\Read\Results\BarResults.cs" />
     <Compile Include="CRUD\Read\Results\NodeResults.cs" />
     <Compile Include="CRUD\Read\Results\Result.cs" />
+    <Compile Include="CRUD\Read\Results\SteelUtilisationResults.cs" />
     <Compile Include="CRUD\Read\_IRead.cs" />
     <Compile Include="CRUD\Read\RigidLink.cs" />
     <Compile Include="CRUD\Read\Section.cs" />
@@ -224,6 +225,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
