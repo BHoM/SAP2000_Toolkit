@@ -244,12 +244,14 @@ namespace BH.Adapter.SAP2000
 
             int tableId = 2; //Per table number in SAP, 2 corresponds to "Steel Design 2 - PMM Details"
             List<string> fieldNamesVal = new List<string>() { "TotalRatio", "PRatio", "MMajRatio", "MMinRatio", "VMajRatio", "VMinRatio", "TorRatio" };
-            List<string> fieldNamesText = new List<string>() { "DesignSect", "DesignType", "Combo" };
+            List<string> fieldNamesText = new List<string>() { "DesignSect", "DesignType", "Status", "Combo" };
 
             int numberItems = 0;
             string[] frameNames = null;
             double[] resultValues = null;
             string[] resultTextVals = null;
+            string designCode = null;
+            m_model.DesignSteel.GetCode(ref designCode);
 
             for (int i = 0; i < barIds.Count; i++)
             {
@@ -263,7 +265,7 @@ namespace BH.Adapter.SAP2000
                                                        ref numberItems,
                                                        ref frameNames,
                                                        ref resultValues);
-                    if (ret == 0)
+                    if (ret == 0 && resultValues != null)
                     {
                         dict.Add(fieldNameVal, resultValues[0]);
                     }
@@ -278,12 +280,13 @@ namespace BH.Adapter.SAP2000
                                                        ref numberItems,
                                                        ref frameNames,
                                                        ref resultTextVals);
-                    if (ret == 0)
+                    if (ret == 0 && resultTextVals != null)
                     {
                         dict.Add(fieldNameText, resultTextVals[0]);
                     }
 
                 }
+                dict.Add("DesignCode", designCode);
                 CustomObject bu = BH.Engine.Base.Create.CustomObject(dict, barIds[i]);
                 barUtilizations.Add(bu);
             }
