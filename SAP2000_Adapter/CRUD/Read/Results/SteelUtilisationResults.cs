@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.Results;
+using BH.oM.Structure.Loads;
 using BH.oM.Analytical.Results;
 using BH.oM.Structure.Requests;
 using BH.oM.Geometry;
@@ -50,7 +51,14 @@ namespace BH.Adapter.SAP2000
             CheckAndSetUpCases(request);
             List<string> barIds = CheckGetBarIds(request);
 
-            return ReadBarUtilisation(barIds);
+            switch (request.Code)
+            {
+                case oM.Adapters.SAP2000.SteelDesignCode.AISC:
+                    return ReadAISCBarUtilisation(barIds);
+                default:
+                    Engine.Reflection.Compute.RecordError("Result extraction for request design code is not yet supported");
+                    return new List<IResult>();
+            }
 
         }
 
@@ -58,56 +66,82 @@ namespace BH.Adapter.SAP2000
         /**** Private method - Extraction methods       ****/
         /***************************************************/
 
-        private List<CustomObject> ReadBarUtilisation(List<string> barIds = null)
+        private List<AISCSteelUtilisation> ReadAISCBarUtilisation(List<string> barIds = null)
         {
-            List<BH.oM.Base.CustomObject> barUtilisations = new List<BH.oM.Base.CustomObject>();
+            List<AISCSteelUtilisation> barUtilisations = new List<AISCSteelUtilisation>();
 
             int tableId = 2; //Per table number in SAP, 2 corresponds to "Steel Design 2 - PMM Details"
             List<string> fieldNamesVal = new List<string>() { "TotalRatio", "PRatio", "MMajRatio", "MMinRatio", "VMajRatio", "VMinRatio", "TorRatio" };
-            List<string> fieldNamesText = new List<string>() { "DesignSect", "DesignType", "Status", "Combo" };
 
-            int numberItems = 0;
-            string[] frameNames = null;
-            double[] resultValues = null;
-            string[] resultTextVals = null;
             string designCode = null;
             m_model.DesignSteel.GetCode(ref designCode);
 
             for (int i = 0; i < barIds.Count; i++)
             {
-                Dictionary<string, object> dict = new Dictionary<string, object>();
+                int ret;
+                int numberItems = 0;
+                string[] frameNames = null;
+                string combo = "";
+                double totalRatio, pRatio, vMajRatio, vMinRatio, torRatio, mMajRatio, mMinRatio;
+                totalRatio = pRatio = vMajRatio = vMinRatio = torRatio = mMajRatio = mMinRatio = double.NaN;
+                string designType = ""; double[] resultVals = null;
+                string[] resultTextVals = null;
+                Dictionary<string, double> valDict = new Dictionary<string, double>();
+
+                AISCSteelUtilisation bu = null;
+
                 foreach (string fieldNameVal in fieldNamesVal)
                 {
-                    int ret = m_model.DesignSteel.GetDetailResultsValue(barIds[i],
+                    ret = m_model.DesignSteel.GetDetailResultsValue(barIds[i],
                                                        eItemType.Objects,
                                                        tableId,
                                                        fieldNameVal,
                                                        ref numberItems,
                                                        ref frameNames,
-                                                       ref resultValues);
-                    if (ret == 0 && resultValues != null)
+                                                       ref resultVals);
+                    if (ret == 0 && resultVals != null)
                     {
-                        dict.Add(fieldNameVal, resultValues[0]);
+                         valDict.Add(fieldNameVal, resultVals[0]);
                     }
-
                 }
-                foreach (string fieldNameText in fieldNamesText)
+                if (valDict.Count() == 0)
                 {
-                    int ret = m_model.DesignSteel.GetDetailResultsText(barIds[i],
+                    barUtilisations.Add(bu);
+                    continue;
+                }
+
+                ret = m_model.DesignSteel.GetDetailResultsText(barIds[i],
                                                        eItemType.Objects,
                                                        tableId,
-                                                       fieldNameText,
+                                                       "DesignType",
                                                        ref numberItems,
                                                        ref frameNames,
                                                        ref resultTextVals);
-                    if (ret == 0 && resultTextVals != null)
-                    {
-                        dict.Add(fieldNameText, resultTextVals[0]);
-                    }
-
+               if (ret == 0 && resultTextVals != null)
+               {
+                    designType = resultTextVals[0];
+               }
+               ret = m_model.DesignSteel.GetDetailResultsText(barIds[i],
+                                        eItemType.Objects,
+                                        tableId,
+                                        "Combo",
+                                        ref numberItems,
+                                        ref frameNames,
+                                        ref resultTextVals);
+                if (ret == 0 && resultTextVals != null)
+                {
+                    combo = resultTextVals[0];
                 }
-                dict.Add("DesignCode", designCode);
-                CustomObject bu = BH.Engine.Base.Create.CustomObject(dict, barIds[i]);
+
+                valDict.TryGetValue("TotalRatio", out totalRatio);
+                valDict.TryGetValue("PRatio", out pRatio);
+                valDict.TryGetValue("VMajRatio", out vMajRatio);
+                valDict.TryGetValue("VMinRatio", out vMinRatio);
+                valDict.TryGetValue("TorRatio", out torRatio);
+                valDict.TryGetValue("MMajRatio", out mMajRatio);
+                valDict.TryGetValue("MMinRatio", out mMinRatio);
+
+                bu = new AISCSteelUtilisation(barIds[i], combo, 0, 0, 0, 0, designCode, "", "", designType, totalRatio, pRatio, vMajRatio, vMinRatio, torRatio, mMajRatio, mMinRatio);
                 barUtilisations.Add(bu);
             }
 
