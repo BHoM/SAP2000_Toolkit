@@ -129,6 +129,13 @@
     <None Include="packages.config" />
     <None Include="Versioning_32.json" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SAP2000_oM\SAP2000_oM.csproj">
+      <Project>{bc975b64-e35e-4155-a067-7a88505e61c2}</Project>
+      <Name>SAP2000_oM</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

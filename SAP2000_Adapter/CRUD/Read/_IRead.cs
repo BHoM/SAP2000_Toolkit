@@ -35,6 +35,8 @@ using BH.oM.Adapter;
 using BH.oM.Analytical.Results;
 using BH.oM.Structure.Results;
 using BH.oM.Structure.Requests;
+using System.ComponentModel;
+using BH.oM.Data.Requests;
 
 namespace BH.Adapter.SAP2000
 {
@@ -43,31 +45,36 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
         /**** Adapter overload method                   ****/
         /***************************************************/
-        
+
         protected override IEnumerable<IBHoMObject> IRead(Type type, IList ids, ActionConfig actionConfig = null)
         {
+
+            List<string> listIds = null;
+            if (ids != null && ids.Count != 0)
+                listIds = ids.Cast<string>().ToList();
+
             if (type == typeof(Node))
-                return ReadNodes(ids as dynamic);
+                return ReadNodes(listIds);
             else if (type == typeof(Bar))
-                return ReadBars(ids as dynamic);
+                return ReadBars(listIds);
             else if (type == typeof(ISectionProperty) || type.GetInterfaces().Contains(typeof(ISectionProperty)))
-                return ReadSectionProperties(ids as dynamic);
+                return ReadSectionProperties(listIds);
             else if (type == typeof(IMaterialFragment) || type.GetInterfaces().Contains(typeof(IMaterialFragment)))
-                return ReadMaterial(ids as dynamic);
+                return ReadMaterial(listIds);
             else if (type == typeof(Panel))
-                return ReadPanel(ids as dynamic);
+                return ReadPanel(listIds);
             else if (type == typeof(ISurfaceProperty) || type.GetInterfaces().Contains(typeof(ISurfaceProperty)))
-                return ReadSurfaceProperty(ids as dynamic);
+                return ReadSurfaceProperty(listIds);
             else if (type == typeof(LoadCombination))
-                return ReadLoadCombination(ids as dynamic);
+                return ReadLoadCombination(listIds);
             else if (type == typeof(Loadcase))
-                return ReadLoadcase(ids as dynamic);
+                return ReadLoadcase(listIds);
             else if (type == typeof(ILoad) || type.GetInterfaces().Contains(typeof(ILoad)))
-                return ReadLoad(type, ids as dynamic);
+                return ReadLoad(type, listIds);
             else if (type == typeof(RigidLink))
-                return ReadRigidLink(ids as dynamic);
+                return ReadRigidLink(listIds);
             else if (type == typeof(LinkConstraint))
-                return ReadLinkConstraints(ids as dynamic);
+                return ReadLinkConstraints(listIds);
             else if (typeof(IResult).IsAssignableFrom(type))
             {
                 Modules.Structure.ErrorMessages.ReadResultsError(type);
@@ -75,7 +82,83 @@ namespace BH.Adapter.SAP2000
             }
 
 
-            return null;
+            return new List<IBHoMObject>();
+
+        }
+        /***************************************************/
+
+        public IEnumerable<IBHoMObject> Read(SelectionRequest request, ActionConfig actionConfig = null)
+        {
+            List<IBHoMObject> results = new List<IBHoMObject>();
+
+            foreach (KeyValuePair<Type, List<string>> keyVal in SelectedElements())
+            {
+                results.AddRange(IRead(keyVal.Key, keyVal.Value, actionConfig));
+            }
+
+            return results;
+        }
+
+        /***************************************************/
+
+        public Dictionary<Type, List<string>> SelectedElements()
+        {
+            int numItems = 0;
+            int[] objectTypes = new int[0];
+            string[] objectIds = new string[0];
+
+            m_model.SelectObj.GetSelected(ref numItems, ref objectTypes, ref objectIds);
+
+            Dictionary<int, List<string>> dict = objectTypes.Distinct().ToDictionary(x => x, x => new List<string>());
+
+            for (int i = 0; i < numItems; i++)
+            {
+                dict[objectTypes[i]].Add(objectIds[i]);
+            }
+
+            Func<int, Type> ToType = x =>
+            {
+                switch (x)
+                {
+                    case 1:
+                        return typeof(Node);
+                    case 2:
+                    case 3:
+                    case 4:
+                        return typeof(Bar);
+                    case 5:
+                        return typeof(Panel);
+                    case 6:
+                        return null;
+                    case 7:
+                        return typeof(RigidLink);
+                    default:
+                        return null; 
+
+
+                }
+            };
+
+            return dict.ToDictionary(x => ToType(x.Key), x => x.Value);
+            
+
+        }
+        /***************************************************/
+
+        [Description("Ensures that all elements in the first list are present in the second list, warning if not, and returns the second list if the first list is empty.")]
+        private static List<string> FilterIds(IEnumerable<string> ids, IEnumerable<string> sapIds)
+        {
+            if (ids == null || ids.Count() == 0)
+            {
+                return sapIds.ToList();
+            }
+            else
+            {
+                List<string> result = ids.Intersect(sapIds).ToList();
+                if (result.Count() != ids.Count())
+                    Engine.Reflection.Compute.RecordWarning("Some requested SAP2000 ids were not present in the model.");
+                return result;
+            }
         }
 
         /***************************************************/

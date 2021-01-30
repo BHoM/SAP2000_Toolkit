@@ -42,54 +42,78 @@ namespace BH.Adapter.SAP2000
             Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => GetAdapterId<string>(x));
             Dictionary<string, LinkConstraint> bhomLinkConstraints = ReadLinkConstraints().ToDictionary(x => GetAdapterId<string>(x));
 
+
             //Read all links, filter by id at end, so that we can join multi-links.
             int nameCount = 0;
-            string[] names = { };
-            m_model.LinkObj.GetNameList(ref nameCount, ref names);
-            
-            foreach (string name in names)
+            string[] nameArr = { };
+            m_model.LinkObj.GetNameList(ref nameCount, ref nameArr);
+
+
+
+            foreach (string id in nameArr)
             {
                 RigidLink newLink = new RigidLink();
                 SAP2000Id sap2000id = new SAP2000Id();
                 string guid = null;
 
-                sap2000id.Id = name;
+                sap2000id.Id = id;
 
-                string primaryId = "";
-                string secondaryId = "";
-                string propName = "";
-                m_model.LinkObj.GetPoints(name, ref primaryId, ref secondaryId);
-                newLink.PrimaryNode = bhomNodes[primaryId];
-                newLink.SecondaryNodes = new List<Node> { bhomNodes[secondaryId] };
-
-                m_model.LinkObj.GetProperty(name, ref propName);
-                LinkConstraint bhProp = new LinkConstraint();
-                bhomLinkConstraints.TryGetValue(propName, out bhProp);
-                newLink.Constraint = bhProp;
-
-                // Get the groups the link is assigned to
-                int numGroups = 0;
-                string[] groupNames = new string[0];
-                if (m_model.LinkObj.GetGroupAssign(name, ref numGroups, ref groupNames) == 0)
+                try
                 {
-                    foreach (string grpName in groupNames)
-                        newLink.Tags.Add(grpName);
+                    string primaryId = "";
+                    string secondaryId = "";
+                    string propName = "";
+                    m_model.LinkObj.GetPoints(id, ref primaryId, ref secondaryId);
+                    newLink.PrimaryNode = bhomNodes[primaryId];
+                    newLink.SecondaryNodes = new List<Node> { bhomNodes[secondaryId] };
+
+                    if (m_model.LinkObj.GetProperty(id, ref propName) == 0)
+                    {
+                        LinkConstraint bhProp = new LinkConstraint();
+                        bhomLinkConstraints.TryGetValue(propName, out bhProp);
+                        newLink.Constraint = bhProp; m_model.LinkObj.GetProperty(id, ref propName);
+                    }
+                    else
+                    {
+                        Engine.Reflection.Compute.RecordWarning("Could not get link property for RigidLink " + id + ".");
+                    }
+                    
+                    // Get the groups the link is assigned to
+                    int numGroups = 0;
+                    string[] groupNames = new string[0];
+                    if (m_model.LinkObj.GetGroupAssign(id, ref numGroups, ref groupNames) == 0)
+                    {
+                        foreach (string grpName in groupNames)
+                            newLink.Tags.Add(grpName);
+                    }
+
+                    if (m_model.LinkObj.GetGUID(id, ref guid) == 0)
+                        sap2000id.PersistentId = guid;
+
+                    newLink.SetAdapterId(sap2000id);
+                    linkList.Add(newLink);
                 }
 
-                if (m_model.LinkObj.GetGUID(name, ref guid) == 0)
-                    sap2000id.PersistentId = guid;
-
-                newLink.SetAdapterId(sap2000id);
-                linkList.Add(newLink);
+                catch
+                {
+                    ReadElementError("RigidLink", id.ToString());
+                }
             }
 
-            List<RigidLink> joinedList = BH.Engine.Adapters.SAP2000.Query.JoinRigidLink(linkList);
+            Dictionary<string, RigidLink> joinedLinks = BH.Engine.Adapters.SAP2000.Query.JoinRigidLink(linkList).ToDictionary(x => x.Name);
+
+            ids = FilterIds(ids, joinedLinks.Keys);
 
             if (ids != null)
-                return joinedList.Where(x => ids.Contains(x.Name)).ToList();
+            {
+                return joinedLinks
+                     .Where(x => ids.Contains(x.Key))
+                     .Select(x => x.Value).ToList();
+            }
             else
-                return joinedList;
-
+            {
+                return joinedLinks.Values.ToList();
+            }
         }
 
         /***************************************************/

@@ -46,13 +46,9 @@ namespace BH.Adapter.SAP2000
             int nameCount = 0;
             string[] nameArr = { };
 
-            if (ids == null)
-            {
-                if (m_model.PointObj.GetNameList(ref nameCount, ref nameArr) == 0)
-                {
-                    ids = nameArr.ToList();
-                }
-            }
+            m_model.PointObj.GetNameList(ref nameCount, ref nameArr);
+
+            ids = FilterIds(ids, nameArr);
 
             foreach (string id in ids)
             {

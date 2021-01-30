@@ -42,13 +42,11 @@ namespace BH.Adapter.SAP2000
         {
             List<LinkConstraint> propList = new List<LinkConstraint>();
 
-            if (ids == null)
-            {
-                int nameCount = 0;
-                string[] names = { };
-                m_model.PropLink.GetNameList(ref nameCount, ref names);
-                ids = names.ToList();
-            }
+            int nameCount = 0;
+            string[] nameArr = { };
+            m_model.PropLink.GetNameList(ref nameCount, ref nameArr);
+
+            ids = FilterIds(ids, nameArr); 
 
             foreach (string id in ids)
             {

@@ -45,14 +45,11 @@ namespace BH.Adapter.SAP2000
             Dictionary<string, ISectionProperty> bhomSections = ReadSectionProperties().ToDictionary(x => GetAdapterId<string>(x));
 
             int nameCount = 0;
-            string[] names = { };
-            m_model.FrameObj.GetNameList(ref nameCount, ref names);
+            string[] nameArr = { };
+            m_model.FrameObj.GetNameList(ref nameCount, ref nameArr);
 
-            if (ids == null)
-            {
-                ids = names.ToList();
-            }
-            
+            ids = FilterIds(ids, nameArr);
+
             foreach (string id in ids)
             {
                 SAP2000Id sap2000id = new SAP2000Id();

@@ -45,14 +45,12 @@ namespace BH.Adapter.SAP2000
 
             Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => GetAdapterId<string>(x));
             Dictionary<string, ISurfaceProperty> bhomProperties = ReadSurfaceProperty().ToDictionary(x => GetAdapterId<string>(x));
-            
-            if (ids == null)
-            {
-                int nameCount = 0;
-                string[] nameArr = { };
-                m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
-                ids = nameArr.ToList();
-            }
+                
+            int nameCount = 0;
+            string[] nameArr = { };
+            m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
+
+            ids = FilterIds(ids, nameArr);
 
             foreach (string id in ids)
             {

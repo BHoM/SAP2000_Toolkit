@@ -21,6 +21,7 @@
  */
 
 using BH.oM.Structure.Elements;
+using BH.oM.Adapters.SAP2000;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,9 +42,11 @@ namespace BH.Engine.Adapters.SAP2000
             
             foreach (RigidLink link in linkList)
             {
-                string[] nameParts = link.Name.Split(new[] { ":::" }, StringSplitOptions.None);
+                SAP2000Id idFragment = link.FindFragment<SAP2000Id>();
+                string Name = idFragment.Id.ToString();
+                string[] nameParts = Name.Split(new[] { ":::" }, StringSplitOptions.None);
                 if (nameParts.Count() == 1)
-                    joinedList.Add(link.Name, link);
+                    joinedList.Add(Name, link);
                 else
                 {
                     string JoinedName = nameParts[0];

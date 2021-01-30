@@ -52,29 +52,29 @@ namespace BH.Adapter.SAP2000
         {
             List<Loadcase> loadCases = new List<Loadcase>();
 
-            int count = 0;
-            string[] names = null;
+            int nameCount = 0;
+            string[] nameArr = null;
 
-            m_model.LoadPatterns.GetNameList(ref count, ref names);
+            m_model.LoadPatterns.GetNameList(ref nameCount, ref nameArr);
+            ids = FilterIds(ids, nameArr);
 
-            for (int i = 0; i < count; i++ )
+            foreach (string id in ids)
             {
                 Loadcase bhomCase = new Loadcase();
-                SetAdapterId(bhomCase, names[i]);
 
-                eLoadPatternType patternType = eLoadPatternType.Dead;
+                eLoadPatternType patternType = eLoadPatternType.Other;
 
-                if (m_model.LoadPatterns.GetLoadType(names[i], ref patternType) == 0)
+                if (m_model.LoadPatterns.GetLoadType(id, ref patternType) == 0)
                 {
-                    bhomCase.Name = names[i];
-                    bhomCase.Number = i;
+                    bhomCase.Name = id;
                     bhomCase.Nature = patternType.ToBHoM();
                 }
                 else
                 {
-                    ReadElementError("Load Pattern", names[i]);
+                    ReadElementError("Load Pattern", id);
                 }
 
+                SetAdapterId(bhomCase, id);
                 loadCases.Add(bhomCase);
             }
 
@@ -89,30 +89,30 @@ namespace BH.Adapter.SAP2000
 
             Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => GetAdapterId<string>(x));
 
-            int count = 0;
-            string[] names = null;
+            int nameCount = 0;
+            string[] nameArr = null;
+            m_model.RespCombo.GetNameList(ref nameCount, ref nameArr);
 
-            m_model.RespCombo.GetNameList(ref count, ref names);
+            ids = FilterIds(ids, nameArr);
             
-            for (int i = 0; i < count; i++)
+            foreach (string id in ids)
             {
+
+                LoadCombination bhomCombo = new LoadCombination();
+
                 double[] factors = null;
                 int caseCount = 0;
                 eCNameType[] caseTypes = null;
                 string[] caseNames = null;
 
-                if (m_model.RespCombo.GetCaseList(names[i], ref caseCount, ref caseTypes, ref caseNames, ref factors) != 0)
+                if (m_model.RespCombo.GetCaseList(id, ref caseCount, ref caseTypes, ref caseNames, ref factors) != 0)
                 {
-                    ReadElementError("Load Combo", names[i]);
+                    ReadElementError("Load Combo", id);
                 }
                 else
                 {
-                    LoadCombination bhomCombo = new LoadCombination()
-                    {
-                        Name = names[i],
-                        Number = i,
-                    };
-                    SetAdapterId(bhomCombo, names[i]);
+                    bhomCombo.Name = id;
+
                     if (caseCount > 0)
                     {
                         List<ICase> comboCases = new List<ICase>();
@@ -123,6 +123,7 @@ namespace BH.Adapter.SAP2000
                         }
                     }
 
+                    SetAdapterId(bhomCombo, id);
                     combinations.Add(bhomCombo);
                 }
             }
@@ -134,6 +135,10 @@ namespace BH.Adapter.SAP2000
 
         private List<ILoad> ReadLoad(Type type, List<string> ids = null)
         {
+           if (ids != null)
+            {
+                Engine.Reflection.Compute.RecordWarning("Id filtering is not implemented for loads, all loads will be returned.");
+            }
 
             if (type == typeof(PointLoad))
                 return ReadPointLoad();
