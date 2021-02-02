@@ -22,11 +22,12 @@
 
 using System;
 using BH.oM.Reflection.Attributes;
+using BH.oM.Base;
 
 namespace BH.oM.Adapters.SAP2000.Results
 {
 
-    public class AISCSteelUtilisation : BH.oM.Structure.Results.BarResult
+    public class AISCSteelUtilisation : BH.oM.Structure.Results.BarResult, IImmutable
     {
 
         public virtual string DesignCodeReference { get; }
