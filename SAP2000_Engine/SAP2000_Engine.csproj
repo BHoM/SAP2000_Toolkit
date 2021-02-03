@@ -35,14 +35,6 @@
       <HintPath>C:\ProgramData\BHoM\Assemblies\Acoustic_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Adapter_Engine">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Adapter_Engine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Analytical_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Analytical_oM.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="Architecture_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Architecture_oM.dll</HintPath>
       <Private>False</Private>
@@ -53,10 +45,6 @@
     </Reference>
     <Reference Include="BHoM_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Dimensional_oM">
-      <HintPath>C:\ProgramData\BHoM\Assemblies\Dimensional_oM.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Environment_oM">
@@ -130,8 +118,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterIdName.cs" />
-    <Compile Include="Modify\SetBar.cs" />
-    <Compile Include="Query\Bar.cs" />
     <Compile Include="Query\SplitRigidLink.cs" />
     <Compile Include="Query\JoinRigidLink.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

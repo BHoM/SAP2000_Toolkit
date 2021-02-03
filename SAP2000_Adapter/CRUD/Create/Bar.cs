@@ -21,22 +21,18 @@
  */
 
 using BH.Engine.Structure;
-using BH.Engine.Adapters.SAP2000;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Offsets;
-using BH.oM.Structure.Fragments;
 using BH.oM.Structure.Constraints;
 using BH.oM.Adapters.SAP2000;
-using BH.oM.Adapters.SAP2000.Elements;
 using BH.Engine.Adapter;
 using BH.Engine.Base;
 using System;
 using BH.oM.Base;
 
-
 namespace BH.Adapter.SAP2000
 {
-    public partial class SAP2000Adapter : BHoMAdapter
+    public partial class SAP2000Adapter
     {
         /***************************************************/
         /**** Private Methods                            ****/
@@ -128,9 +124,6 @@ namespace BH.Adapter.SAP2000
 
             }
 
-
-            // Bar End Length Offset
-
             if (bhBar.Offset != null)
             {
                 if (bhBar.Offset.Start != null && bhBar.Offset.End != null)
@@ -152,93 +145,6 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
-            /***************************************************/
-            /* SAP Fragments                                   */
-            /***************************************************/
-
-
-            // Automesh
-
-            BarAutoMesh barAutoMesh = bhBar.BarAutoMesh();
-
-            if (barAutoMesh != null)
-            {
-                bool autoMesh = barAutoMesh.AutoMesh;
-                bool autoMeshAtPoints = barAutoMesh.AutoMeshAtPoints;
-                bool autoMeshAtLines = barAutoMesh.AutoMeshAtLines;
-                int numSegs = barAutoMesh.NumSegs;
-                double autoMeshMaxLength = barAutoMesh.AutoMeshMaxLength;
-
-                if (m_model.FrameObj.SetAutoMesh(name, autoMesh, autoMeshAtPoints, autoMeshAtLines, numSegs, autoMeshMaxLength) != 0)
-                {
-                    CreatePropertyWarning("AutoMesh", "Bar", name);
-                }
-            }
-
-            // Design Procedure
-
-            BarDesignProcedure barDesignProcedure = bhBar.BarDesignProcedure();
-
-            if (barDesignProcedure != null)
-            {
-                // issue with cold form as a material not being able to be pushed...
-                if (barDesignProcedure.DesignProcedure == BarDesignProcedureType.Aluminum ||
-                    barDesignProcedure.DesignProcedure == BarDesignProcedureType.ColdFormed ||
-                    barDesignProcedure.DesignProcedure == BarDesignProcedureType.Steel ||
-                    barDesignProcedure.DesignProcedure == BarDesignProcedureType.Concrete)
-                {
-                    // Design Procedure "MyType" is 1 if specified from material list available (limited to enums shown)
-                    if (m_model.FrameObj.SetDesignProcedure(name, 1, 0) != 0)
-                    {
-                        CreatePropertyWarning("DesignProcedure", "Bar", name);
-                    }
-                    else
-                    {
-                        Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} with SAP id {name} was set with a design procedure automatically based on its material (Steel/Concrete/Cold Form/Aluminum) regardless of selected input.");
-                    }
-                }
-                else
-                {
-                    // Design Procedure "MyType" is 2 if no design specified - this defaults to aluminum rather than nodesign in the api call...
-                    if (m_model.FrameObj.SetDesignProcedure(name, 2, 0) != 0)
-                    {
-                        CreatePropertyWarning("DesignProcedure", "Bar", name);
-                    }
-                    else
-                    {
-                        Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} with SAP id {name} does not have a design procedure.");
-                    }
-
-                }
-            }
-
-            // Insertion Point Offset
-
-            Offset offset = bhBar.Offset;
-
-            double[] offset1 = new double[3];
-            double[] offset2 = new double[3];
-
-            if (offset != null)
-            {
-                if (offset.Start != null)
-                {
-                    offset1[1] = offset.Start.Z;
-                    offset1[2] = offset.Start.Y;
-                }
-
-                if (offset.End != null)
-                {
-                    offset2[1] = offset.End.Z;
-                    offset2[2] = offset.End.Y;
-                }
-            }
-
-            if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.BarInsertionPoint(), false, bhBar.BarModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
-            {
-                CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
-            }
-            
             return true;
         }
     }
