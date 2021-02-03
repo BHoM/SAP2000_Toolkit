@@ -20,8 +20,9 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapter;
-using BH.oM.Base;
+using BH.Engine.Structure;
+using BH.oM.Structure.MaterialFragments;
+using SAP2000v1;
 using System.Collections.Generic;
 
 namespace BH.Adapter.SAP2000
@@ -29,22 +30,39 @@ namespace BH.Adapter.SAP2000
     public partial class SAP2000Adapter : BHoMAdapter
     {
         /***************************************************/
-        /**** Adapter overload method                   ****/
+        /**** Update Material                           ****/
         /***************************************************/
 
-        protected override bool IUpdate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
+        private bool UpdateObjects(IEnumerable<IMaterialFragment> bhMaterials)
         {
-            return UpdateObjects(objects as dynamic);
+            foreach (IMaterialFragment material in bhMaterials)
+            {
+                bool success = true;
+                eMatType matType = eMatType.NoDesign;
+                int colour = 0;
+                string guid = null;
+                string notes = "";
+                if (m_model.PropMaterial.GetMaterial(material.DescriptionOrName(), ref matType, ref colour, ref notes, ref guid) == 0)
+                {
+                    if (matType != MaterialTypeToCSI(material.IMaterialType()))
+                    {
+                        Engine.Reflection.Compute.RecordWarning($"Failed to update material: {material.DescriptionOrName()}, can't update to another material type.");
+                        continue;
+                    }
+
+                    success &= SetObject(material);
+                }
+                else
+                {
+                    // No material of that name found
+                    Engine.Reflection.Compute.RecordWarning($"Failed to update material: {material.DescriptionOrName()}, as no such material was present in the model.");
+                }
+
+                if (!success)
+                    Engine.Reflection.Compute.RecordWarning($"Failed to update material: {material.DescriptionOrName()}, all BHoM properties may not have been set.");
+            }
+            return true;
         }
 
-        /***************************************************/
-
-        private bool UpdateObjects(IEnumerable<IBHoMObject> objects)
-        {
-            return base.IUpdate(objects, null);
-        }
-
-        /***************************************************/
     }
 }
-
