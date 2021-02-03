@@ -138,7 +138,7 @@ namespace BH.Adapter.SAP2000
             //Check if the model has been saved
             if (m_model.GetModelFilename(true) == "(Untitled)")
             {
-                Engine.Reflection.Compute.RecordWarning("ETABS requires the model to be saved before being analysed. Please save the model and try running again.");
+                Engine.Reflection.Compute.RecordWarning("SAP2000 requires the model to be saved before being analysed. Please save the model and try running again.");
                 return false;
             }
 

@@ -27,7 +27,10 @@ using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Adapters.SAP2000;
 using BH.Engine.Adapter;
+using BH.Engine.Adapters.SAP2000;
 using System;
+using BH.oM.Structure.Offsets;
+using BH.oM.Structure.Fragments;
 
 namespace BH.Adapter.SAP2000
 {
@@ -119,9 +122,53 @@ namespace BH.Adapter.SAP2000
                     }
 
                     bhomBar.SetAdapterId(sap2000id);
-                    bhomBars.Add(bhomBar);
 
+                    /***************************************************/
+                    /* SAP Fragments                                   */
+                    /***************************************************/
+
+                    // Automesh
+
+                    bool autoMesh = false;
+                    bool autoMeshAtPoints = false;
+                    bool autoMeshAtLines = false;
+                    int numSegs = 0;
+                    double autoMeshMaxLength = 0.0;
+
+                    m_model.FrameObj.GetAutoMesh(id, ref autoMesh, ref autoMeshAtPoints, ref autoMeshAtLines, ref numSegs, ref autoMeshMaxLength);
+                    if (autoMesh)
+                    {
+                        bhomBar = bhomBar.SetBarAutoMesh(autoMesh, autoMeshAtPoints, autoMeshAtLines, numSegs, autoMeshMaxLength);
+                    }
+
+                    // Design Procedure
+
+                    int designProcedure = (int)BarDesignProcedureType.NoDesign;
+
+                    if (m_model.FrameObj.GetDesignProcedure(id, ref designProcedure) == 0)
+                    {
+                        BarDesignProcedureType designProcedureType = (BarDesignProcedureType)designProcedure;
+                        bhomBar = bhomBar.SetBarDesignProcedure(designProcedureType);
+                    }
+
+                    // Insertion Point Offset
+                    // Need to add more information to capture coordinate system?? GetCoordSys method and transform local csys
+                    int insertionPoint = (int)BarInsertionPointLocation.Centroid;
+                    bool mirror = false;
+                    bool modifyStiffness = false;
+
+                    double[] offset1 = new double[3];
+                    double[] offset2 = new double[3];
+                    string cSys = "";
+
+                    if (m_model.FrameObj.GetInsertionPoint(id, ref insertionPoint, ref mirror, ref modifyStiffness, ref offset1, ref offset2, ref cSys) == 0)
+                    {
+                        BarInsertionPointLocation barInsertionPoint = (BarInsertionPointLocation)insertionPoint;
+                        bhomBar = bhomBar.SetBarInsertionPoint(barInsertionPoint, modifyStiffness);
+                    }
+                    bhomBars.Add(bhomBar);
                 }
+
                 catch
                 {
                     ReadElementError("Bar", id.ToString());
