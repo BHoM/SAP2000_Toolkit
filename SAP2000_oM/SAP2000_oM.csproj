@@ -63,6 +63,9 @@
   <ItemGroup>
     <Compile Include="Config\SAP2000ActionConfig.cs" />
     <Compile Include="Elements\AISCSteelUtilisation.cs" />
+	<Compile Include="Enums\SteelDesignCode.cs" />
+    <Compile Include="Enums\BarDesignProcedureType.cs" />
+    <Compile Include="Enums\BarInsertionPointLocation.cs" />
     <Compile Include="Enums\SDShapeType.cs" />
     <Compile Include="Fragments\SAP2000Id.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
