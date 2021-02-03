@@ -53,7 +53,9 @@ namespace BH.Adapter.SAP2000
 
             switch (request.Code)
             {
+                case oM.Adapters.SAP2000.SteelDesignCode.AISC_360_05:
                 case oM.Adapters.SAP2000.SteelDesignCode.AISC_360_10:
+                case oM.Adapters.SAP2000.SteelDesignCode.AISC_360_16:
                     return ReadAISCBarUtilisation(barIds);
                 default:
                     Engine.Reflection.Compute.RecordError("Result extraction for request design code is not yet supported");
