@@ -25,6 +25,7 @@ using BH.oM.Adapters.SAP2000;
 using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.SectionProperties;
+using BH.oM.Structure.Fragments;
 using SAP2000v1;
 using System;
 using System.Collections.Generic;
@@ -164,6 +165,8 @@ namespace BH.Adapter.SAP2000
                         break;
                 }
 
+                // Section Material
+
                 IMaterialFragment material = null;
                 if (!bhomMaterials.TryGetValue(materialName, out material))
                 {
@@ -198,6 +201,28 @@ namespace BH.Adapter.SAP2000
                     case "standard":
                         bhomProperty = BH.Engine.Structure.Create.SectionPropertyFromProfile(bhomProfile, material, id);
                         break;
+                }
+
+                // Section Property Modifiers
+
+                double[] sectionModifiers = new double[8];
+
+                if (m_model.PropFrame.GetModifiers(id, ref sectionModifiers) == 0)
+                {
+                    SectionModifier sectionModifier = new SectionModifier();
+                    sectionModifier.Area = sectionModifiers[0];
+                    sectionModifier.Asz = sectionModifiers[1];
+                    sectionModifier.Asy = sectionModifiers[2];
+                    sectionModifier.J = sectionModifiers[3];
+                    sectionModifier.Iz = sectionModifiers[4];
+                    sectionModifier.Iy = sectionModifiers[5];
+                    // mass modifier = 6
+                    // weight modifier = 7
+                    bhomProperty.Fragments.Add(sectionModifier);
+                }
+                else
+                {
+                    Engine.Reflection.Compute.RecordWarning($"Could not get section modifiers for SectionProperty {id}. No section property modifiers have been set in the BHoM.");
                 }
 
                 bhomProperty.SetAdapterId(sap2000id);
