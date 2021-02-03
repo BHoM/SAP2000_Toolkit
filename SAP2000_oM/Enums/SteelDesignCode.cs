@@ -20,6 +20,8 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using System.ComponentModel;
+
 namespace BH.oM.Adapters.SAP2000
 {
 
@@ -27,9 +29,33 @@ namespace BH.oM.Adapters.SAP2000
     /**** Public Enums                              ****/
     /***************************************************/
 
+    [Description("Defines the Design Code used for result extraction.")]
     public enum SteelDesignCode
     {
-        AISC = 1
+        Undefined,
+        AASHTO_LRFD_2007,
+        AISC_ASD89,
+        AISC_360_10,
+        AISC_360_05,
+        IBC2006,
+        AISC_LRFD93,
+        API_RP2A_LRFD_97,
+        API_RP2A_WSD2000,
+        API_RP2A_WSD2014,
+        AS_4100_1998,
+        ASCE_10_97,
+        BS5950_2000,
+        Chinese_2010,
+        CSA_S16_14,
+        CSA_S16_09,
+        EUROCODE_3_2005,
+        Indian_IS_800_2007,
+        Italian_NTC_2008,
+        Italian_UNI_10011,
+        KBC_2009,
+        Norsok_N_004_2013,
+        NZS_3404_1997,
+        SP_16_13330_2011,
     }
 
     /***************************************************/

@@ -38,7 +38,7 @@ namespace BH.oM.Adapters.SAP2000.Requests
         /***************************************************/
 
         [Description("Defines which code to get steel utilization design results for.")]
-        public virtual SteelDesignCode Code { get; set; } = SteelDesignCode.AISC;
+        public virtual SteelDesignCode Code { get; set; } = SteelDesignCode.AISC_360_10;
 
         [Description("Defines which cases and/or combinations that results should be extracted for. Can generally be set to either Loadcase or Loadcombination objects, or identifiers matching the software. If nothing is provided, results for all cases will be assumed.")]
         public virtual List<object> Cases { get; set; } = new List<object>();
