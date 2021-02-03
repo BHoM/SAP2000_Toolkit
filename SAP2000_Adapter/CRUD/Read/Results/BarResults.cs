@@ -236,7 +236,7 @@ namespace BH.Adapter.SAP2000
         /**** Private method - Extraction methods       ****/
         /***************************************************/
 
-        private List<string> CheckGetBarIds(BarResultRequest request)
+        private List<string> CheckGetBarIds(IStructuralResultRequest request)
         {
 
             List<string> barIds = new List<string>();
