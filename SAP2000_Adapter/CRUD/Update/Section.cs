@@ -20,31 +20,43 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Adapter;
-using BH.oM.Base;
+using BH.Engine.Structure;
+using BH.oM.Structure.SectionProperties;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BH.Adapter.SAP2000
 {
     public partial class SAP2000Adapter : BHoMAdapter
     {
         /***************************************************/
-        /**** Adapter overload method                   ****/
+        /**** Update Section                            ****/
         /***************************************************/
 
-        protected override bool IUpdate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
+        private bool UpdateObjects(IEnumerable<ISectionProperty> bhomSections)
         {
-            return UpdateObjects(objects as dynamic);
+            bool success = true;
+
+            int nameCount = 0;
+            string[] names = { };
+            m_model.PropFrame.GetNameList(ref nameCount, ref names);
+
+            foreach (ISectionProperty bhomSection in bhomSections)
+            {
+                string propertyName = bhomSection.DescriptionOrName();
+
+                if (!names.Contains(propertyName))
+                {
+                    Engine.Reflection.Compute.RecordWarning($"Failed to update SectionProperty: { propertyName }, no section with that name found in SAP2000.");
+                    continue;
+                }
+                string matName = "Default";
+                matName = bhomSection.Material.DescriptionOrName();
+                SetSection(bhomSection as dynamic, matName);
+                SetModifiers(bhomSection);
+            }
+
+            return success;
         }
-
-        /***************************************************/
-
-        private bool UpdateObjects(IEnumerable<IBHoMObject> objects)
-        {
-            return base.IUpdate(objects, null);
-        }
-
-        /***************************************************/
     }
 }
-
