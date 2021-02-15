@@ -44,15 +44,14 @@ namespace BH.Adapter.SAP2000
 
             foreach (Bar bhBar in bhBars)
             {
-                object id = bhBar.AdapterId<string>(typeof(SAP2000Id));
+                string id = bhBar.AdapterId<string>(typeof(SAP2000Id));
                 if (id == null)
                 {
                     Engine.Reflection.Compute.RecordWarning("The Bar must have a SAP2000 adapter id to be updated.");
                     continue;
                 }
 
-                string name = id as string;
-                if (!nameArr.Contains(name))
+                if (!nameArr.Contains(id))
                 {
                     Engine.Reflection.Compute.RecordWarning("The Bar must be present in SAP2000 to be updated");
                     continue;
@@ -70,7 +69,7 @@ namespace BH.Adapter.SAP2000
                 string sapBarI = "";
                 string sapBarJ = "";
 
-                if (m_model.FrameObj.GetPoints(name, ref sapBarI, ref sapBarJ) != 0)
+                if (m_model.FrameObj.GetPoints(id, ref sapBarI, ref sapBarJ) != 0)
                 {
                     Engine.Reflection.Compute.RecordError($"Bar {bhBar.Name} failed to update because its nodes were not found in SAP2000. Check that geometry is valid.");
                     return false;
