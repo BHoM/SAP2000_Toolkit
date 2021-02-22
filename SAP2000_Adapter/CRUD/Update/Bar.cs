@@ -82,6 +82,10 @@ namespace BH.Adapter.SAP2000
                     UpdateObjects(barNodes);
                 }
                 SetObject(bhBar);
+                // Conditional checking for whether to update a property -- only if it has changed
+                // How can I access the old bhom object vs the new bhom object?
+                //Engine.Structure.NameOrDescriptionComparer comparer = AdapterComparers[typeof(Bar)] as Engine.Structure.NameOrDescriptionComparer;
+
             }
             return success;
         }

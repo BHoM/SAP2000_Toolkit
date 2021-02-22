@@ -92,6 +92,20 @@ namespace BH.Adapter.SAP2000
         {
             string name = GetAdapterId<string>(bhBar);
 
+            SetSectionProperty(bhBar, name);
+            SetOrientationAngle(bhBar, name);
+            SetRelease(bhBar, name);
+            SetOffsets(bhBar, name);
+            SetGroups(bhBar, name);
+            SetAutomesh(bhBar, name);
+            SetDesignProcedure(bhBar, name);
+            SetInsertionPoint(bhBar, name);
+
+            return true;
+        }
+
+        private void SetSectionProperty(Bar bhBar, string name)
+        {
             if (bhBar.SectionProperty != null)
             {
                 string propId = GetAdapterId<string>(bhBar.SectionProperty);
@@ -103,7 +117,9 @@ namespace BH.Adapter.SAP2000
                     }
                 }
             }
-
+        }
+        private void SetOrientationAngle(Bar bhBar, string name)
+        {
             if (bhBar.OrientationAngle != 0)
             {
                 if (m_model.FrameObj.SetLocalAxes(name, bhBar.OrientationAngle * 180 / System.Math.PI) != 0)
@@ -111,7 +127,9 @@ namespace BH.Adapter.SAP2000
                     CreatePropertyWarning("Orientation angle", "Bar", name);
                 }
             }
-
+        }
+        private void SetRelease(Bar bhBar, string name)
+        {
             if (bhBar.Release != null)
             {
                 bool[] restraintStart = null;
@@ -128,10 +146,9 @@ namespace BH.Adapter.SAP2000
                 }
 
             }
-
-
-            // Bar End Length Offset
-
+        }
+        private void SetOffsets(Bar bhBar, string name)
+        {
             if (bhBar.Offset != null)
             {
                 if (bhBar.Offset.Start != null && bhBar.Offset.End != null)
@@ -142,7 +159,9 @@ namespace BH.Adapter.SAP2000
                     }
                 }
             }
-
+        }
+        private void SetGroups(Bar bhBar, string name)
+        {
             foreach (string gName in bhBar.Tags)
             {
                 string groupName = gName.ToString();
@@ -152,14 +171,9 @@ namespace BH.Adapter.SAP2000
                     m_model.FrameObj.SetGroupAssign(name, groupName);
                 }
             }
-
-            /***************************************************/
-            /* SAP Fragments                                   */
-            /***************************************************/
-
-
-            // Automesh
-
+        }
+        private void SetAutomesh(Bar bhBar, string name)
+        {
             BarAutoMesh barAutoMesh = bhBar.BarAutoMesh();
 
             if (barAutoMesh != null)
@@ -175,9 +189,9 @@ namespace BH.Adapter.SAP2000
                     CreatePropertyWarning("AutoMesh", "Bar", name);
                 }
             }
-
-            // Design Procedure
-
+        }
+        private void SetDesignProcedure(Bar bhBar, string name)
+        {
             BarDesignProcedure barDesignProcedure = bhBar.BarDesignProcedure();
 
             if (barDesignProcedure != null)
@@ -209,38 +223,36 @@ namespace BH.Adapter.SAP2000
                     {
                         Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} with SAP id {name} does not have a design procedure.");
                     }
-
                 }
             }
 
-            // Insertion Point Offset
+        }
+        private void SetInsertionPoint(Bar bhBar, string name)
+        {
+                Offset offset = bhBar.Offset;
 
-            Offset offset = bhBar.Offset;
+                double[] offset1 = new double[3];
+                double[] offset2 = new double[3];
 
-            double[] offset1 = new double[3];
-            double[] offset2 = new double[3];
-
-            if (offset != null)
-            {
-                if (offset.Start != null)
+                if (offset != null)
                 {
-                    offset1[1] = offset.Start.Z;
-                    offset1[2] = offset.Start.Y;
+                    if (offset.Start != null)
+                    {
+                        offset1[1] = offset.Start.Z;
+                        offset1[2] = offset.Start.Y;
+                    }
+
+                    if (offset.End != null)
+                    {
+                        offset2[1] = offset.End.Z;
+                        offset2[2] = offset.End.Y;
+                    }
                 }
 
-                if (offset.End != null)
+                if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.BarInsertionPoint(), false, bhBar.BarModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
                 {
-                    offset2[1] = offset.End.Z;
-                    offset2[2] = offset.End.Y;
+                    CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
                 }
-            }
-
-            if (m_model.FrameObj.SetInsertionPoint(name, (int)bhBar.BarInsertionPoint(), false, bhBar.BarModifyStiffnessInsertionPoint(), ref offset1, ref offset2) != 0)
-            {
-                CreatePropertyWarning("Insertion point and perpendicular offset", "Bar", name);
-            }
-            
-            return true;
         }
     }
 }
