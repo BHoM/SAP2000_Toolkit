@@ -127,6 +127,8 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
+            SetAdapterId(bhLoad, null);
+
             return true;
         }
 
@@ -157,6 +159,8 @@ namespace BH.Adapter.SAP2000
                     CreateElementError("Point Displacement", bhLoad.Name);
                 }
             }
+
+            SetAdapterId(bhLoad, null);
 
             return true;
         }
@@ -212,6 +216,8 @@ namespace BH.Adapter.SAP2000
                         CreateElementError("BarLoad", bhBar.Name + dirs[i]);
                 }
             }
+
+            SetAdapterId(bhLoad, null);
 
             return true;
         }
@@ -275,6 +281,8 @@ namespace BH.Adapter.SAP2000
                         CreateElementError("BarLoad", bhBar.Name + dirs[i]);
                 }
             }
+
+            SetAdapterId(bhLoad, null);
 
             return true;
         }
@@ -341,6 +349,8 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
+            SetAdapterId(bhLoad, null);
+
             return true;
         }
 
@@ -362,8 +372,10 @@ namespace BH.Adapter.SAP2000
                 {
                     CreateElementError("AreaUniformTemperatureLoad", bhLoad.Name);
                 }
-                
+
             }
+
+            SetAdapterId(bhLoad, null);
 
             Engine.Reflection.Compute.RecordNote("SAP2000 includes functionality for temperature gradient application, but that feature is not yet supported here.");
 
@@ -385,6 +397,8 @@ namespace BH.Adapter.SAP2000
             AreaUniformlyDistributedLoad contourLoadArea = Engine.Structure.Create.AreaUniformlyDistributedLoad(bhLoad.Loadcase, loadVals.ToVector(), panelsToLoad, 
                                                                                                                 bhLoad.Axis, bhLoad.Projected, bhLoad.Name);
             CreateLoad(contourLoadArea);
+
+            SetAdapterId(bhLoad, null);
 
             return true;
         }
@@ -414,29 +428,33 @@ namespace BH.Adapter.SAP2000
                                                                                                         distanceFromB, forceB, momentB, false, bhLoad.Axis, bhLoad.Projected, bhLoad.Name);
             CreateLoad(barVaryLoad);
 
+            SetAdapterId(bhLoad, null);
+
             return true;
         }
 
         /***************************************************/
 
-        private bool CreateLoad(GravityLoad gravityLoad)
+        private bool CreateLoad(GravityLoad bhLoad)
         {
             double selfWeightExisting = 0;
-            double selfWeightNew = -gravityLoad.GravityDirection.Z;
+            double selfWeightNew = -bhLoad.GravityDirection.Z;
 
-            string caseName = GetAdapterId<string>(gravityLoad.Loadcase);
+            string caseName = GetAdapterId<string>(bhLoad.Loadcase);
 
             m_model.LoadPatterns.GetSelfWTMultiplier(caseName, ref selfWeightExisting);
 
             if (selfWeightExisting != 0)
-                BH.Engine.Reflection.Compute.RecordWarning($"The self weight for loadcase {gravityLoad.Loadcase.Name} will be overwritten. Previous value: {selfWeightExisting}, new value: {selfWeightNew}");
+                BH.Engine.Reflection.Compute.RecordWarning($"The self weight for loadcase {bhLoad.Loadcase.Name} will be overwritten. Previous value: {selfWeightExisting}, new value: {selfWeightNew}");
 
             m_model.LoadPatterns.SetSelfWTMultiplier(caseName, selfWeightNew);
 
-            if (gravityLoad.GravityDirection.X != 0 || gravityLoad.GravityDirection.Y != 0)
+            if (bhLoad.GravityDirection.X != 0 || bhLoad.GravityDirection.Y != 0)
                 Engine.Reflection.Compute.RecordError("SAP2000 can only handle gravity loads in global z direction");
 
             BH.Engine.Reflection.Compute.RecordNote("SAP2000 handles gravity loads via loadcases, so only one gravity load per loadcase can be used. This gravity load will be applied to all objects.");
+
+            SetAdapterId(bhLoad, null);
 
             return true;
         }
@@ -459,6 +477,8 @@ namespace BH.Adapter.SAP2000
             }
 
             Engine.Reflection.Compute.RecordNote("SAP2000 includes functionality for temperature gradient in 2 and 3 local bar axes, but the BHoM currently only supports uniform temperature changes.");
+
+            SetAdapterId(bhLoad, null);
 
             return true;
         }
@@ -515,6 +535,8 @@ namespace BH.Adapter.SAP2000
 
             }
 
+            SetAdapterId(bhLoad, null);
+
             return true;
         }
 
@@ -543,6 +565,8 @@ namespace BH.Adapter.SAP2000
                     CreateElementError("BarPrestressLoad", bar.Name);
                 BH.Engine.Reflection.Compute.RecordWarning($"Target Force load case must be nonlinear static. Verify {loadPat} prior to running analysis.");
             }
+
+            SetAdapterId(bhLoad, null);
 
             return true;
         }
