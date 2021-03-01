@@ -69,11 +69,14 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
 
         private List<BarDisplacement> ReadBarDisplacements(List<string> barIds = null,
-                                                           int divisions = 5)
+                                                           int divisions = 0)
         {
             List<BarDisplacement> displacements  = new List<BarDisplacement>();
-            Engine.Reflection.Compute.RecordWarning("Displacements will only be extracted at SAP2000 calculation nodes." +
+            if (divisions != 0)
+            {
+                Engine.Reflection.Compute.RecordWarning("Displacements will only be extracted at SAP2000 calculation nodes." +
                                                     "'Divisions' parameter will not be considered in result extraction");
+            }
 
             int resultCount = 0;
             string[] Obj = null;
@@ -89,52 +92,58 @@ namespace BH.Adapter.SAP2000
             double[] ry = null;
             double[] rz = null;
 
-            Dictionary<string, Point> points = new Dictionary<string, Point>();
 
             for (int i = 0; i < barIds.Count; i++)
             {
-                int divs = divisions;
-                string[] intElem = null;
+                Dictionary<string, double> nodes = new Dictionary<string, double>();
+                string[] intElems = null;
                 double[] di = null;
                 double[] dj = null;
+                int div = 0;
 
-                m_model.FrameObj.GetElm(barIds[i], ref divs, ref intElem, ref di, ref dj);
+                m_model.FrameObj.GetElm(barIds[i], ref div, ref intElems, ref di, ref dj);
 
-                Dictionary<string, double> nodeWithPos = new Dictionary<string, double>();
+                divisions = div + 1;
 
-                for (int j = 0; j < divs; j++)
+                string p1Id = "";
+                string p2Id = "";
+
+                //get first point
+                m_model.LineElm.GetPoints(intElems[0], ref p1Id, ref p2Id);
+                nodes[p1Id] = di[0];
+
+                //get the rest of the points
+                for (int j = 0; j < div; j++)
                 {
-                    string p1Id = "";
-                    string p2Id = "";
-                    m_model.LineElm.GetPoints(intElem[j], ref p1Id, ref p2Id);
+                    m_model.LineElm.GetPoints(intElems[j], ref p1Id, ref p2Id);
 
-                    nodeWithPos[p1Id] = di[j];
-                    nodeWithPos[p2Id] = dj[j];
+                    nodes[p2Id] = dj[j];
                 }
 
-
-                foreach (var nodePos in nodeWithPos)
+                foreach (var point in nodes)
                 {
-                         int ret = m_model.Results.JointDispl(nodePos.Key,
-                                                              eItemTypeElm.Element,
-                                                              ref resultCount,
-                                                              ref Obj,
-                                                              ref Elm,
-                                                              ref LoadCase,
-                                                              ref StepType,
-                                                              ref StepNum,
-                                                              ref ux,
-                                                              ref uy,
-                                                              ref uz,
-                                                              ref rx,
-                                                              ref ry,
-                                                              ref rz);
-
-                    if (ret == 0)
+                    if (m_model.Results.JointDispl(point.Key,
+                                                        eItemTypeElm.Element,
+                                                        ref resultCount,
+                                                        ref Obj,
+                                                        ref Elm,
+                                                        ref LoadCase,
+                                                        ref StepType,
+                                                        ref StepNum,
+                                                        ref ux,
+                                                        ref uy,
+                                                        ref uz,
+                                                        ref rx,
+                                                        ref ry,
+                                                        ref rz) != 0)
+                    {
+                        Engine.Reflection.Compute.RecordError($"Could not extract results for an output station in bar {barIds}.");
+                    }
+                    else
                     {
                         for (int j = 0; j < resultCount; j++)
                         {
-                            BarDisplacement disp = new BarDisplacement(barIds[i], LoadCase[j], -1, StepNum[j], nodePos.Value, divs + 1, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
+                            BarDisplacement disp = new BarDisplacement(barIds[i], LoadCase[j], -1, StepNum[j], point.Value, divisions, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
                             displacements.Add(disp);
                         }
                     }
@@ -148,9 +157,14 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private List<BarForce> ReadBarForce(List<string> barIds, int divisions)
+        private List<BarForce> ReadBarForce(List<string> barIds, int divisions = 0)
         {
             List<BarForce> barForces = new List<BarForce>();
+            if (divisions != 0)
+            {
+                Engine.Reflection.Compute.RecordWarning("Forces will only be extracted at SAP2000 calculation nodes." +
+                                                    "'Divisions' parameter will not be considered in result extraction");
+            }
 
             int resultCount = 0;
             string[] loadcaseNames = null;
@@ -161,17 +175,17 @@ namespace BH.Adapter.SAP2000
             double[] stepNum = null;
             string[] stepType = null;
 
+            int div = 0;
+            string[] intElems = null;
+            double[] di = null;
+            double[] dj = null;
+
             double[] p = null;
             double[] v2 = null;
             double[] v3 = null;
             double[] t = null;
             double[] m2 = null;
             double[] m3 = null;
-
-            int type = 2; //minimum number of division points for a bar element
-            double segSize = 0;
-            bool op1 = false;
-            bool op2 = false;
 
             Dictionary<string, Point> points = new Dictionary<string, Point>();
 
@@ -180,16 +194,11 @@ namespace BH.Adapter.SAP2000
                 //Get element length
                 double length = GetBarLength(barIds[i], points);
 
-                int divs = divisions;
+                //get number of divisions
+                m_model.FrameObj.GetElm(barIds[i], ref div, ref intElems, ref di, ref dj);
+                divisions = div + 1;
 
-                m_model.FrameObj.SetOutputStations(barIds[i], type, 0, divs);
-                m_model.FrameObj.GetOutputStations(barIds[i],
-                                                   ref type,
-                                                   ref segSize,
-                                                   ref divs,
-                                                   ref op1,
-                                                   ref op2);
-                int ret = m_model.Results.FrameForce(barIds[i],
+                if (m_model.Results.FrameForce(barIds[i],
                                                      eItemTypeElm.ObjectElm,
                                                      ref resultCount,
                                                      ref objects,
@@ -204,12 +213,15 @@ namespace BH.Adapter.SAP2000
                                                      ref v3,
                                                      ref t,
                                                      ref m2,
-                                                     ref m3);
-                if (ret == 0)
+                                                     ref m3) != 0)
+                {
+                    Engine.Reflection.Compute.RecordError($"Could not extract results for an output station in bar {barIds}.");
+                }
+                else
                 {
                     for (int j = 0; j < resultCount; j++)
                     {
-                        BarForce bf = new BarForce(barIds[i], loadcaseNames[j], -1, stepNum[j], objStation[j] / length, divs, p[j], v3[j], v2[j], t[j], -m3[j], m2[j]);
+                        BarForce bf = new BarForce(barIds[i], loadcaseNames[j], -1, stepNum[j], objStation[j] / length, divisions, p[j], v3[j], v2[j], t[j], -m3[j], m2[j]);
                         barForces.Add(bf);
                     }
                 }
