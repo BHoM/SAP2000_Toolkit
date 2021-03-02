@@ -166,8 +166,6 @@ namespace BH.Adapter.SAP2000
                                                     "'Divisions' parameter will not be considered in result extraction");
             }
 
-            m_model.SelectObj.All();
-
             int resultCount = 0;
             string[] loadcaseNames = null;
             string[] objects = null;
@@ -177,6 +175,11 @@ namespace BH.Adapter.SAP2000
             double[] stepNum = null;
             string[] stepType = null;
 
+            int div = 0;
+            string[] intElems = null;
+            double[] di = null;
+            double[] dj = null;
+
             double[] p = null;
             double[] v2 = null;
             double[] v3 = null;
@@ -184,32 +187,43 @@ namespace BH.Adapter.SAP2000
             double[] m2 = null;
             double[] m3 = null;
 
-            if (m_model.Results.FrameForce(barIds[0], //this is ignored if type is SelectionElm
-                                                    eItemTypeElm.SelectionElm,
-                                                    ref resultCount,
-                                                    ref objects,
-                                                    ref objStation,
-                                                    ref elm,
-                                                    ref elmStation,
-                                                    ref loadcaseNames,
-                                                    ref stepType,
-                                                    ref stepNum,
-                                                    ref p,
-                                                    ref v2,
-                                                    ref v3,
-                                                    ref t,
-                                                    ref m2,
-                                                    ref m3) != 0)
+            Dictionary<string, Point> points = new Dictionary<string, Point>();
+
+            for (int i = 0; i < barIds.Count; i++)
             {
-                Engine.Reflection.Compute.RecordError($"Could not extract results.");
-            }
-            else
-            {
-                //get lengths and divisions
-                for (int j = 0; j < resultCount; j++)
+                //Get element length
+                double length = GetBarLength(barIds[i], points);
+
+                //get number of divisions
+                m_model.FrameObj.GetElm(barIds[i], ref div, ref intElems, ref di, ref dj);
+                divisions = div + 1;
+
+                if (m_model.Results.FrameForce(barIds[i],
+                                                     eItemTypeElm.ObjectElm,
+                                                     ref resultCount,
+                                                     ref objects,
+                                                     ref objStation,
+                                                     ref elm,
+                                                     ref elmStation,
+                                                     ref loadcaseNames,
+                                                     ref stepType,
+                                                     ref stepNum,
+                                                     ref p,
+                                                     ref v2,
+                                                     ref v3,
+                                                     ref t,
+                                                     ref m2,
+                                                     ref m3) != 0)
                 {
-                    BarForce bf = new BarForce(objects[j], loadcaseNames[j], -1, stepNum[j], objStation[j], divisions, p[j], v3[j], v2[j], t[j], -m3[j], m2[j]);
-                    barForces.Add(bf);
+                    Engine.Reflection.Compute.RecordError($"Could not extract results for an output station in bar {barIds}.");
+                }
+                else
+                {
+                    for (int j = 0; j < resultCount; j++)
+                    {
+                        BarForce bf = new BarForce(barIds[i], loadcaseNames[j], -1, stepNum[j], objStation[j] / length, divisions, p[j], v3[j], v2[j], t[j], -m3[j], m2[j]);
+                        barForces.Add(bf);
+                    }
                 }
             }
 
@@ -254,8 +268,6 @@ namespace BH.Adapter.SAP2000
                     barIds.Add(ids[i].ToString());
                 }
             }
-
-
 
             return barIds;
         }
