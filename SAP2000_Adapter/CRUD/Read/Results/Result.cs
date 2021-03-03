@@ -27,6 +27,7 @@ using System.Linq;
 using BH.oM.Analytical.Results;
 using BH.oM.Structure.Loads;
 using BH.oM.Data.Requests;
+using BH.oM.Structure.Requests;
 using BH.oM.Adapter;
 
 namespace BH.Adapter.SAP2000
@@ -62,38 +63,32 @@ namespace BH.Adapter.SAP2000
 
         private List<string> GetAllCases(IList cases)
         {
+            int caseCount = 0;
+            int comboCount = 0;
+            string[] caseNames = { };
+            string[] comboNames = { };
+            m_model.LoadCases.GetNameList(ref caseCount, ref caseNames);
+            m_model.RespCombo.GetNameList(ref comboCount, ref comboNames);
+
             List<string> loadcaseIds = new List<string>();
 
-            if (cases == null || cases.Count == 0)
+            //Get the ID for each case (so that we can accept both case names and case objects)
+            foreach (object thisCase in cases)
             {
-                int Count = 0;
-                string[] case_names = null;
-                string[] combo_names = null;
-                m_model.LoadCases.GetNameList(ref Count, ref case_names);
-                m_model.RespCombo.GetNameList(ref Count, ref combo_names);
-                loadcaseIds = case_names.ToList();
+                if (thisCase is ICase)
+                {
+                    ICase bhCase = thisCase as ICase;
+                    loadcaseIds.Add(bhCase.Name.ToString());
+                }
+                else if (thisCase is string)
+                {
+                    string caseId = thisCase as string;
+                    loadcaseIds.Add(caseId);
+                }
+            }
 
-                if (combo_names != null)
-                {
-                    loadcaseIds.AddRange(combo_names);
-                }
-            }
-            else
-            {
-                foreach (object thisCase in cases)
-                {
-                    if (thisCase is ICase)
-                    {
-                        ICase bhCase = thisCase as ICase;
-                        loadcaseIds.Add(bhCase.Name.ToString());
-                    }
-                    else if (thisCase is string)
-                    {
-                        string caseId = thisCase as string;
-                        loadcaseIds.Add(caseId);
-                    }
-                }
-            }
+            loadcaseIds = FilterIds(loadcaseIds, caseNames.Concat(comboNames).ToArray());
+            
 
             return loadcaseIds;
         }
@@ -111,6 +106,28 @@ namespace BH.Adapter.SAP2000
                 }
             }
             return true;
+        }
+
+        /***************************************************/
+        private List<string> CheckGetBarIds(IStructuralResultRequest request)
+        {
+            int sapBarCount = 0;
+            string[] sapBarIds = null;
+            m_model.FrameObj.GetNameList(ref sapBarCount, ref sapBarIds);
+
+            //Get the bar ids which are valid
+            return FilterIds(request.ObjectIds.Select(x => x.ToString()), sapBarIds);
+        }
+
+        /***************************************************/
+
+        private List<string> CheckGetNodeIds(NodeResultRequest request)
+        {
+            int sapNodeCount = 0;
+            string[] sapNodeIds = null;
+            m_model.PointObj.GetNameList(ref sapNodeCount, ref sapNodeIds);
+
+            return FilterIds(request.ObjectIds.Select(x => x.ToString()), sapNodeIds);
         }
     }
 }
