@@ -247,11 +247,13 @@ namespace BH.Adapter.SAP2000
         {
             string p1Id = "";
             string p2Id = "";
+            Point p1;
+            Point p2;
 
             m_model.FrameObj.GetPoints(barId, ref p1Id, ref p2Id);
 
-            if (pts.TryGetValue(p1Id, out Point p1) &&
-                pts.TryGetValue(p2Id, out Point p2))
+            if (pts.TryGetValue(p1Id, out p1) &&
+                pts.TryGetValue(p2Id, out p2))
             {
                 return p1.Distance(p2);
             }
