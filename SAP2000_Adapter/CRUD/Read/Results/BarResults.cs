@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BH.oM.Structure.Elements;
 using BH.oM.Structure.Results;
 using BH.oM.Analytical.Results;
 using BH.oM.Structure.Requests;
@@ -44,6 +45,7 @@ namespace BH.Adapter.SAP2000
                                                 ActionConfig actionConfig = null)
         {
             CheckAndSetUpCases(request);
+
             List<string> barIds = CheckGetBarIds(request);
 
             switch (request.ResultType)
@@ -175,11 +177,6 @@ namespace BH.Adapter.SAP2000
             double[] stepNum = null;
             string[] stepType = null;
 
-            int div = 0;
-            string[] intElems = null;
-            double[] di = null;
-            double[] dj = null;
-
             double[] p = null;
             double[] v2 = null;
             double[] v3 = null;
@@ -187,16 +184,12 @@ namespace BH.Adapter.SAP2000
             double[] m2 = null;
             double[] m3 = null;
 
-            Dictionary<string, Point> points = new Dictionary<string, Point>();
+            Dictionary<string, Point> points = ReadNodes().ToDictionary(x => GetAdapterId<string>(x), y => y.Position);
 
             for (int i = 0; i < barIds.Count; i++)
             {
                 //Get element length
                 double length = GetBarLength(barIds[i], points);
-
-                //get number of divisions
-                m_model.FrameObj.GetElm(barIds[i], ref div, ref intElems, ref di, ref dj);
-                divisions = div + 1;
 
                 if (m_model.Results.FrameForce(barIds[i],
                                                      eItemTypeElm.ObjectElm,
@@ -219,6 +212,8 @@ namespace BH.Adapter.SAP2000
                 }
                 else
                 {
+                    divisions = objStation.ToHashSet().Count(); //Get unique values of objStation, which is equal to the divisions set by SAP.
+
                     for (int j = 0; j < resultCount; j++)
                     {
                         BarForce bf = new BarForce(barIds[i], loadcaseNames[j], -1, stepNum[j], objStation[j] / length, divisions, p[j], v3[j], v2[j], t[j], -m3[j], m2[j]);
@@ -232,46 +227,20 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private List<BarResult> ReadBarStrains(List<string> barIds = null, int divisions = 5)
+        private List<BarResult> ReadBarStrains(List<string> barIds = null, int divisions = 0)
         {
             throw new NotImplementedException("Bar strain results are not supported yet!");
         }
 
         /***************************************************/
 
-        private List<BarResult> ReadBarStresses(List<string> barIds = null, int divisions = 5)
+        private List<BarResult> ReadBarStresses(List<string> barIds = null, int divisions = 0)
         {
             throw new NotImplementedException("Bar stress results are not supported yet!");
         }
 
         /***************************************************/
         /**** Private method - Extraction methods       ****/
-        /***************************************************/
-
-        private List<string> CheckGetBarIds(IStructuralResultRequest request)
-        {
-
-            List<string> barIds = new List<string>();
-            var ids = request.ObjectIds;
-
-            if (ids == null || ids.Count == 0)
-            {
-                int bars = 0;
-                string[] names = null;
-                m_model.FrameObj.GetNameList(ref bars, ref names);
-                barIds = names.ToList();
-            }
-            else
-            {
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    barIds.Add(ids[i].ToString());
-                }
-            }
-
-            return barIds;
-        }
-
         /***************************************************/
 
         private double GetBarLength(string barId, Dictionary<string, Point> pts)
@@ -281,29 +250,21 @@ namespace BH.Adapter.SAP2000
 
             m_model.FrameObj.GetPoints(barId, ref p1Id, ref p2Id);
 
-            Point p1 = CheckGetPoint(p1Id, pts);
-            Point p2 = CheckGetPoint(p2Id, pts);
+            if (pts.TryGetValue(p1Id, out Point p1) &&
+                pts.TryGetValue(p2Id, out Point p2))
+            {
+                return p1.Distance(p2);
+            }
+            else
+            {
+                Engine.Reflection.Compute.RecordError($"could not determine length of bar {barId}. Something has gone terribly wrong.");
+                return 1;
+            }
 
-            return p1.Distance(p2);
         }
 
         /***************************************************/
 
-        private Point CheckGetPoint(string pointId, Dictionary<string, Point> pts)
-        {
-            Point pt;
-            double x = 0;
-            double y = 0;
-            double z = 0;
-
-            if (!pts.TryGetValue(pointId, out pt))
-            {
-                m_model.PointObj.GetCoordCartesian(pointId, ref x, ref y, ref z);
-                pt = new Point() {X = x, Y = y, Z = z};
-                pts[pointId] = pt;
-            }
-            return pt;
-        }
     }
 }
 

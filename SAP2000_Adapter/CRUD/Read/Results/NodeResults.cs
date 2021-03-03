@@ -180,27 +180,7 @@ namespace BH.Adapter.SAP2000
         /**** Private method - Support methods          ****/
         /***************************************************/
 
-        private List<string> CheckGetNodeIds(NodeResultRequest request)
-        {
-            List<string> nodeIds = new List<string>();
-            var ids = request.ObjectIds;
 
-            if (ids == null || ids.Count == 0)
-            {
-                int nodes = 0;
-                string[] names = null;
-                m_model.PointObj.GetNameList(ref nodes, ref names);
-                nodeIds = names.ToList();
-            }
-            else
-            {
-                for (int i = 0; i < ids.Count; i++)
-                {
-                    nodeIds.Add(ids[i].ToString());
-                }
-            }
-            return nodeIds;
-        }
     }
 }
 
