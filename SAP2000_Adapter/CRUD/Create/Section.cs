@@ -28,6 +28,11 @@ using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Structure.Fragments;
 using BH.Engine.Base;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using BH.oM.Adapters.SAP2000;
+using BH.oM.Adapter;
+using BH.Engine.Adapter;
 
 
 namespace BH.Adapter.SAP2000
@@ -306,9 +311,61 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
 
         private bool SetProfile(TaperedProfile bhomProfile, string sectionName, string matName)
-        {
-            Engine.Reflection.Compute.RecordError("TaperedProfile is not yet implemented in SAP2000 adapter");
-            return false;
+        {        
+            if (bhomProfile.Profiles == null)
+            {
+                Engine.Reflection.Compute.RecordWarning($"Profile for {bhomProfile.DescriptionOrName()} is empty. Tapered section was not created");
+                return false;
+            }
+
+            List<KeyValuePair<double, IProfile>> stations = bhomProfile.Profiles.OrderBy(obj => obj.Key).ToList();
+
+            List<string> profNames = null;
+            List<double> profLengths = stations.Select(obj => obj.Key).ToList();
+
+            //Tapered Frame Property in SAP references other profiles, but BHoM defines them within the TaperedProfile. Add any un-defined profiles before continuing.
+            foreach(IProfile subProf in stations.Select(obj => obj.Value).ToList())
+            {
+                if (GetAdapterId<string>(subProf) != null) // Profile in model
+                {
+                    profNames.Add(GetAdapterId<string>(subProf));
+                }
+                else 
+                {
+                    string subName = subProf.DescriptionOrName();
+                    SetProfile(subProf as dynamic, subName, matName);
+                    profNames.Add(subName);
+                }
+            }
+
+            //Define SAP inputs
+            int nProfiles = profNames.Count - 1;
+            string[] startSec = null;
+            string[] endSec = null;
+            double[] myLength = null;
+            int[] myType = null;
+            int[] EI33 = null;
+            int[] EI22 = null;
+
+            //Convert list of stations to list of segments
+            for (int i = 1; i < nProfiles; i++)
+            {
+                startSec.Append(profNames[i - 1]);
+                endSec.Append(profNames[i]);
+                myLength.Append(profLengths[i] - profLengths[i - 1]);
+                myType.Append(1);
+                EI33.Append(1);
+                EI22.Append(1);
+            }
+
+            //Send the tapered profile to SAP.
+            if (m_model.PropFrame.SetNonPrismatic(sectionName, nProfiles, ref startSec, ref endSec, ref myLength, ref myType, ref EI33, ref EI22) != 0)
+            {
+                Engine.Reflection.Compute.RecordWarning($"Could not create tapered section: {bhomProfile.DescriptionOrName()}");
+                return false;
+            }
+
+            return true;
         }
 
         /***************************************************/
