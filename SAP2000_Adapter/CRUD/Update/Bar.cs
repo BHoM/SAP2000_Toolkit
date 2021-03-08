@@ -81,10 +81,48 @@ namespace BH.Adapter.SAP2000
                     List<Node> barNodes = new List<Node>() { bhBar.StartNode, bhBar.EndNode };
                     UpdateObjects(barNodes);
                 }
-                SetObject(bhBar);
-                // Conditional checking for whether to update a property -- only if it has changed
-                // How can I access the old bhom object vs the new bhom object?
-                //Engine.Structure.NameOrDescriptionComparer comparer = AdapterComparers[typeof(Bar)] as Engine.Structure.NameOrDescriptionComparer;
+
+                // Set Properties
+                SetSectionProperty(bhBar, name);
+                SetOrientationAngle(bhBar, name);
+                SetRelease(bhBar, name);
+                SetOffsets(bhBar, name);
+                SetGroups(bhBar, name);
+                SetAutomesh(bhBar, name);
+                SetDesignProcedure(bhBar, name);
+                SetInsertionPoint(bhBar, name);
+
+            }
+            return success;
+        }
+
+        private bool UpdateBarPropAssigns(IEnumerable<Bar> bhBars)
+        {
+            bool success = true;
+            m_model.SelectObj.ClearSelection();
+
+            int nameCount = 0;
+            string[] nameArr = { };
+            m_model.FrameObj.GetNameList(ref nameCount, ref nameArr);
+
+            foreach (Bar bhBar in bhBars)
+            {
+                object id = bhBar.AdapterId(typeof(SAP2000Id));
+                if (id == null)
+                {
+                    Engine.Reflection.Compute.RecordWarning("The Bar must have a SAP2000 adapter id to be updated.");
+                    continue;
+                }
+
+                string name = id as string;
+                if (!nameArr.Contains(name))
+                {
+                    Engine.Reflection.Compute.RecordWarning("The Bar must be present in SAP2000 to be updated");
+                    continue;
+                }
+
+                // Set Properties
+                SetSectionProperty(bhBar, name);
 
             }
             return success;
