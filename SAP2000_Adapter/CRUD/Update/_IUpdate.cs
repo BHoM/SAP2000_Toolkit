@@ -23,6 +23,10 @@
 using BH.oM.Adapter;
 using BH.oM.Base;
 using System.Collections.Generic;
+using BH.oM.Adapters.SAP2000;
+using BH.oM.Structure.Elements;
+using BH.oM.Structure.SectionProperties;
+using System.Linq;
 
 namespace BH.Adapter.SAP2000
 {
@@ -34,7 +38,16 @@ namespace BH.Adapter.SAP2000
 
         protected override bool IUpdate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
         {
-            return UpdateObjects(objects as dynamic);
+            SAP2000PushConfig config = (SAP2000PushConfig)actionConfig;
+
+            if (config != null && config.UpdateOnlyBarPropAssigns) // Only update bar assigns
+            {
+                return UpdateBarPropAssigns(objects.OfType<Bar>());
+            }
+            else
+            {
+                return UpdateObjects(objects as dynamic);
+            }
         }
 
         /***************************************************/

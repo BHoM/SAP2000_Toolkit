@@ -50,8 +50,8 @@ namespace BH.Adapter.SAP2000
                     Engine.Reflection.Compute.RecordWarning($"Failed to update SectionProperty: { propertyName }, no section with that name found in SAP2000.");
                     continue;
                 }
-                string matName = "Default";
-                matName = bhomSection.Material.DescriptionOrName();
+
+                string matName = bhomSection.Material.DescriptionOrName();
                 SetSection(bhomSection as dynamic, matName);
                 SetModifiers(bhomSection);
             }

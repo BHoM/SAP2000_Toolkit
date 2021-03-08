@@ -29,7 +29,7 @@ namespace BH.oM.Adapters.SAP2000
     [Description("This Config can be specified in the `ActionConfig` input of any Adapter Action (e.g. Push).")]
     // Note: this will get passed within any CRUD method (see their signature). 
     // In order to access its properties, you will need to cast it to `SAP2000ActionConfig`.
-    public class SAP2000ActionConfig : ActionConfig
+    public class SAP2000PushConfig : ActionConfig
     {
         /***************************************************/
         /**** Public Properties                         ****/
@@ -37,6 +37,10 @@ namespace BH.oM.Adapters.SAP2000
 
         [Description("Sets whether the loads being pushed should overwrite existing loads on the same object within the same loadcase")]
         public virtual bool ReplaceLoads { get; set; } = false;
+
+
+        [Description("If true, only Bar property assignments will be updated, ignoring changes to property definitions, geometry or other Bar assigns such as offsets, releases, etc. Non-existing objects will still be pushed.")]
+        public virtual bool UpdateOnlyBarPropAssigns { get; set; } = false;
 
         /***************************************************/
     }

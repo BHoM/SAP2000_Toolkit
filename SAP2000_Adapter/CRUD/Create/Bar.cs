@@ -81,17 +81,6 @@ namespace BH.Adapter.SAP2000
             bhBar.SetAdapterId(sap2000IdFragment);
 
             // Set Properties
-            SetObject(bhBar);
-
-            return true;
-        }
-
-        /***************************************************/
-        [Description("Does all the SAP2000 interaction which does not initiate a new object in SAP2000.")]
-        private bool SetObject(Bar bhBar)
-        {
-            string name = GetAdapterId<string>(bhBar);
-
             SetSectionProperty(bhBar, name);
             SetOrientationAngle(bhBar, name);
             SetRelease(bhBar, name);
@@ -103,6 +92,24 @@ namespace BH.Adapter.SAP2000
 
             return true;
         }
+
+        /***************************************************/
+        //[Description("Does all the SAP2000 interaction which does not initiate a new object in SAP2000.")]
+        //private bool SetObject(Bar bhBar)
+        //{
+        //    string name = GetAdapterId<string>(bhBar);
+
+        //    SetSectionProperty(bhBar, name);
+        //    SetOrientationAngle(bhBar, name);
+        //    SetRelease(bhBar, name);
+        //    SetOffsets(bhBar, name);
+        //    SetGroups(bhBar, name);
+        //    SetAutomesh(bhBar, name);
+        //    SetDesignProcedure(bhBar, name);
+        //    SetInsertionPoint(bhBar, name);
+
+        //    return true;
+        //}
 
         private void SetSectionProperty(Bar bhBar, string name)
         {

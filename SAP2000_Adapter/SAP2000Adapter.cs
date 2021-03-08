@@ -34,7 +34,7 @@ namespace BH.Adapter.SAP2000
         /**** Public Properties                         ****/
         /***************************************************/
         
-            public SAP2000ActionConfig SAPConfig { get; set; } = new SAP2000ActionConfig();
+            public SAP2000PushConfig SAPConfig { get; set; } = new SAP2000PushConfig();
 
         /***************************************************/
         /**** Constructors                              ****/
