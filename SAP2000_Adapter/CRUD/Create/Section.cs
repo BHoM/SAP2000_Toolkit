@@ -25,6 +25,7 @@ using BH.Engine.Structure;
 using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Spatial.ShapeProfiles;
+using BH.Engine.Spatial;
 using BH.oM.Structure.Fragments;
 using BH.Engine.Base;
 using System;
@@ -47,58 +48,25 @@ namespace BH.Adapter.SAP2000
         {
             string propName = bhomSection.DescriptionOrName();
 
-            string matName = "Default";
-            if (bhomSection.Material != null)
-            {
-                matName = bhomSection.Material.DescriptionOrName();
-            }
-            else
+            if (bhomSection.Material == null)
             {
                 Engine.Reflection.Compute.RecordWarning($"Section {propName} had no material defined. Using a default material.");
             }
 
-            try
-            {
-                SetSection(bhomSection as dynamic, matName);
-                SetModifiers(bhomSection);
-            }
-            catch
-            {
-                Engine.Reflection.Compute.RecordError($"Section {bhomSection.DescriptionOrName()} could not be created. Section type may not implemented, or input data may be invalid.");
-                return true;
-            }
+            SetSection(bhomSection as dynamic);
 
-            string propertyName = bhomSection.DescriptionOrName();
-            SetAdapterId(bhomSection, propertyName);
+            SetAdapterId(bhomSection, bhomSection.DescriptionOrName());
+
+            SetModifiers(bhomSection);
 
             return true;
         }
 
         /***************************************************/
-        /**** Set Property                              ****/
+        /**** Set Section                               ****/
         /***************************************************/
 
-        private void SetSection(CableSection bhomSection, string matName)
-        {
-            string name = bhomSection.DescriptionOrName();
-            if (m_model.PropCable.SetProp(name, matName, bhomSection.Area) != 0)
-            {
-                Engine.Reflection.Compute.RecordError($"Could not create Cable section with name {name}");
-                return;
-            }
-            return;
-        }
-
-        /***************************************************/
-
-        private void SetSection(CompositeSection bhomSection, string matName)
-        {
-            return;
-        }
-
-        /***************************************************/
-
-        private void SetSection(ConcreteSection bhomSection, string matName)
+        private void SetSection(IGeometricalSection bhomSection)
         {
             string name = bhomSection.DescriptionOrName();
             if (bhomSection.SectionProfile == null)
@@ -107,87 +75,45 @@ namespace BH.Adapter.SAP2000
                 return;
             }
 
-            SetProfile(bhomSection.SectionProfile as dynamic, name, matName);
+            SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), bhomSection.Material?.DescriptionOrName() ?? "");
             return;
         }
 
         /***************************************************/
 
-        private void SetSection(TimberSection bhomSection, string matName)
+        private void SetSection(ExplicitSection bhomSection)
         {
-            string name = bhomSection.DescriptionOrName();
-            if (bhomSection.SectionProfile == null)
-            {
-                Engine.Reflection.Compute.RecordWarning($"Profile for {name} is null. Section was not created");
-                return;
-            }
-
-            SetProfile(bhomSection.SectionProfile as dynamic, name, matName);
-            return;
+            SetGeneral(bhomSection);
         }
 
         /***************************************************/
 
-        private void SetSection(SteelSection bhomSection, string matName)
+        private void SetSection(ISectionProperty bhomSection)
         {
-            string name = bhomSection.DescriptionOrName();
-            if (bhomSection.SectionProfile == null)
-            {
-                Engine.Reflection.Compute.RecordWarning($"Profile for {name} is null. Section was not created");
-                return;
-            }
-
-            SetProfile(bhomSection.SectionProfile as dynamic, name, matName);
-            return;
+            Engine.Reflection.Compute.RecordError($"Sections of type {bhomSection.GetType().Name} are not explicitly supported by SAP2000. Section with name {bhomSection.DescriptionOrName()} will be pushed as an explicit section.");
+            SetGeneral(bhomSection);
         }
 
         /***************************************************/
 
-        private void SetSection(AluminiumSection bhomSection, string matName)
+        private void SetGeneral(ISectionProperty bhomSection)
         {
-            string name = bhomSection.DescriptionOrName();
-            if (bhomSection.SectionProfile == null)
-            {
-                Engine.Reflection.Compute.RecordWarning($"Profile for {name} is null.");
-                return;
-            }
-
-            SetProfile(bhomSection.SectionProfile as dynamic, name, matName);
-            return;
+            m_model.PropFrame.SetGeneral(bhomSection.DescriptionOrName(),
+                bhomSection.Material?.DescriptionOrName() ?? "",
+                bhomSection.CentreZ * 2,
+                bhomSection.CentreY * 2,
+                bhomSection.Area,
+                bhomSection.Asy,
+                bhomSection.Asz,
+                bhomSection.J, bhomSection.Iy, bhomSection.Iz,
+                bhomSection.Wply, bhomSection.Wplz,
+                bhomSection.Wely, bhomSection.Wely,
+                bhomSection.Rgy, bhomSection.Rgz);
         }
 
         /***************************************************/
-
-        private void SetSection(ExplicitSection bhomSection, string matName)
-        {
-            string name = bhomSection.DescriptionOrName();
-            if (m_model.PropFrame.SetGeneral(name, matName, bhomSection.CentreZ * 2, 
-                bhomSection.CentreY * 2, bhomSection.Area, bhomSection.Asy, bhomSection.Asz, bhomSection.J, 
-                bhomSection.Iy, bhomSection.Iz, bhomSection.Wply, bhomSection.Wplz, bhomSection.Wely, 
-                bhomSection.Wely, bhomSection.Rgy, bhomSection.Rgz) != 0)
-            {
-                Engine.Reflection.Compute.RecordWarning($"Profile for {name} could not be created.");
-            }
-
-            return;
-        }
-
+        /****** Set Profile                          *******/
         /***************************************************/
-
-        private void SetSection(GenericSection bhomSection, string matName)
-        {
-            if (bhomSection.SectionProfile == null)
-            {
-                Engine.Reflection.Compute.RecordWarning($"Profile for {bhomSection.DescriptionOrName()} is null. Section was not created");
-                return;
-            }
-
-            SetProfile(bhomSection.SectionProfile as dynamic, bhomSection.DescriptionOrName(), matName);
-            return;
-        }
-
-        /***************************************************/
-
         private bool SetProfile(AngleProfile bhomProfile, string sectionName, string matName)
         {
             int ret = m_model.PropFrame.SetAngle(sectionName, matName, bhomProfile.Height, bhomProfile.Width, bhomProfile.FlangeThickness, bhomProfile.WebThickness);
@@ -302,44 +228,25 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private bool SetProfile(GenericSection bhomProfile, string sectionName, string matName)
+        private bool SetProfile(TaperedProfile taperProfile, string sectionName, string matName)
         {
-            Engine.Reflection.Compute.RecordError("GenericSection is not yet implemented in SAP2000 adapter");
-            return false;
-        }
+            //Check and fix taperProfile
+            taperProfile.MapPositionDomain();
 
-        /***************************************************/
+            //Decompose the taperProfile dictionary
+            IProfile[] profiles = taperProfile.Profiles.Values.ToArray();
+            double[] positions = taperProfile.Profiles.Keys.ToArray();
 
-        private bool SetProfile(TaperedProfile bhomProfile, string sectionName, string matName)
-        {        
-            if (bhomProfile.Profiles == null)
+            //Add the sub-profiles to the model and create a list of names
+            string[] profNames = new string[profiles.Length];
+            for (int i = 0; i < profiles.Length; i++)
             {
-                Engine.Reflection.Compute.RecordWarning($"Profile for {bhomProfile.DescriptionOrName()} is empty. Tapered section was not created");
-                return false;
+                profNames[i] = sectionName + $"_{i}";
+                SetProfile(profiles[i] as dynamic, profNames[i], matName);
             }
 
-            List<KeyValuePair<double, IProfile>> stations = bhomProfile.Profiles.OrderBy(obj => obj.Key).ToList();
-
-            List<string> profNames = new List<string>();
-            List<double> profLengths = stations.Select(obj => obj.Key).ToList();
-
-            //Tapered Frame Property in SAP references other profiles, but BHoM defines them within the TaperedProfile. Add any un-defined profiles before continuing.
-            foreach(IProfile subProf in stations.Select(obj => obj.Value).ToList())
-            {
-                if (GetAdapterId<string>(subProf) != null) // Profile in model
-                {
-                    profNames.Add(GetAdapterId<string>(subProf));
-                }
-                else 
-                {
-                    string subName = subProf.DescriptionOrName();
-                    SetProfile(subProf as dynamic, subName, matName);
-                    profNames.Add(subName);
-                }
-            }
-
-            //Define SAP inputs
-            int nSegments = profNames.Count - 1;
+            //initialize SAP inputs
+            int nSegments = profiles.Length - 1;
             string[] startSec = new string[nSegments];
             string[] endSec = new string[nSegments];
             double[] myLength = new double[nSegments];
@@ -352,20 +259,14 @@ namespace BH.Adapter.SAP2000
             {
                 startSec[i-1] = profNames[i - 1];
                 endSec[i - 1] = profNames[i];
-                myLength[i - 1] = profLengths[i] - profLengths[i - 1];
+                myLength[i - 1] = positions[i] - positions[i - 1];
                 myType[i - 1] = 1;
-                EI33[i - 1] = 1;
+                EI33[i - 1] = 1; //using linear interpolation for now. SAP allows other options, to be set before this is PR'd!
                 EI22[i - 1] = 1;
             }
 
-            //Send the tapered profile to SAP.
-            if (m_model.PropFrame.SetNonPrismatic(sectionName, nSegments, ref startSec, ref endSec, ref myLength, ref myType, ref EI33, ref EI22) != 0)
-            {
-                Engine.Reflection.Compute.RecordWarning($"Could not create tapered section: {bhomProfile.DescriptionOrName()}");
-                return false;
-            }
-
-            return true;
+            //Send the tapered profile to SAP
+            return (m_model.PropFrame.SetNonPrismatic(sectionName, nSegments, ref startSec, ref endSec, ref myLength, ref myType, ref EI33, ref EI22) == 0);
         }
 
         /***************************************************/
