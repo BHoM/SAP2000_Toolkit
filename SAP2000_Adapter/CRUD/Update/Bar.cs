@@ -83,14 +83,7 @@ namespace BH.Adapter.SAP2000
                 }
 
                 // Set Properties
-                SetSectionProperty(bhBar, name);
-                SetOrientationAngle(bhBar, name);
-                SetRelease(bhBar, name);
-                SetOffsets(bhBar, name);
-                SetGroups(bhBar, name);
-                SetAutomesh(bhBar, name);
-                SetDesignProcedure(bhBar, name);
-                SetInsertionPoint(bhBar, name);
+                SetObject(bhBar);
 
             }
             return success;
