@@ -320,7 +320,7 @@ namespace BH.Adapter.SAP2000
 
             List<KeyValuePair<double, IProfile>> stations = bhomProfile.Profiles.OrderBy(obj => obj.Key).ToList();
 
-            List<string> profNames = null;
+            List<string> profNames = new List<string>();
             List<double> profLengths = stations.Select(obj => obj.Key).ToList();
 
             //Tapered Frame Property in SAP references other profiles, but BHoM defines them within the TaperedProfile. Add any un-defined profiles before continuing.
@@ -339,27 +339,27 @@ namespace BH.Adapter.SAP2000
             }
 
             //Define SAP inputs
-            int nProfiles = profNames.Count - 1;
-            string[] startSec = null;
-            string[] endSec = null;
-            double[] myLength = null;
-            int[] myType = null;
-            int[] EI33 = null;
-            int[] EI22 = null;
+            int nSegments = profNames.Count - 1;
+            string[] startSec = new string[nSegments];
+            string[] endSec = new string[nSegments];
+            double[] myLength = new double[nSegments];
+            int[] myType = new int[nSegments];
+            int[] EI33 = new int[nSegments];
+            int[] EI22 = new int[nSegments];
 
             //Convert list of stations to list of segments
-            for (int i = 1; i < nProfiles; i++)
+            for (int i = 1; i <= nSegments; i++)
             {
-                startSec.Append(profNames[i - 1]);
-                endSec.Append(profNames[i]);
-                myLength.Append(profLengths[i] - profLengths[i - 1]);
-                myType.Append(1);
-                EI33.Append(1);
-                EI22.Append(1);
+                startSec[i-1] = profNames[i - 1];
+                endSec[i - 1] = profNames[i];
+                myLength[i - 1] = profLengths[i] - profLengths[i - 1];
+                myType[i - 1] = 1;
+                EI33[i - 1] = 1;
+                EI22[i - 1] = 1;
             }
 
             //Send the tapered profile to SAP.
-            if (m_model.PropFrame.SetNonPrismatic(sectionName, nProfiles, ref startSec, ref endSec, ref myLength, ref myType, ref EI33, ref EI22) != 0)
+            if (m_model.PropFrame.SetNonPrismatic(sectionName, nSegments, ref startSec, ref endSec, ref myLength, ref myType, ref EI33, ref EI22) != 0)
             {
                 Engine.Reflection.Compute.RecordWarning($"Could not create tapered section: {bhomProfile.DescriptionOrName()}");
                 return false;
