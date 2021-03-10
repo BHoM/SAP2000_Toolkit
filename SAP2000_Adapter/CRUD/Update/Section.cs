@@ -51,8 +51,7 @@ namespace BH.Adapter.SAP2000
                     continue;
                 }
 
-                string matName = bhomSection.Material.DescriptionOrName();
-                SetSection(bhomSection as dynamic, matName);
+                SetSection(bhomSection as dynamic);
                 SetModifiers(bhomSection);
             }
 

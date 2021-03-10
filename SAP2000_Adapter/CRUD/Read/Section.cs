@@ -21,6 +21,8 @@
  */
 
 using BH.Engine.Adapter;
+using BH.Engine.Structure;
+using BH.oM.Geometry;
 using BH.oM.Adapters.SAP2000;
 using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Structure.MaterialFragments;
@@ -52,6 +54,7 @@ namespace BH.Adapter.SAP2000
             m_model.PropFrame.GetNameList(ref nameCount, ref nameArr);
 
             ids = FilterIds(ids, nameArr);
+            List<string> backLog = new List<string>();
 
             foreach (string id in ids)
             {
@@ -133,9 +136,16 @@ namespace BH.Adapter.SAP2000
                         m_model.PropFrame.GetColdZ(id, ref fileName, ref materialName, ref t3, ref t2, ref tw, ref radius, ref tfb, ref angle, ref color, ref notes, ref guid);
                         bhomProfile = BH.Engine.Spatial.Create.ZSectionProfile(t3, t2, tw, tw, radius, 0);
                         break;
+                    case eFramePropType.Variable:
+                        if (!backLog.Contains(id))
+                        {
+                            //Can't read tapered sections until all other sections have been read.
+                            backLog.Add(id);
+                            continue;
+                        }
+                        break;
                     case eFramePropType.DbChannel:
                     case eFramePropType.SD:
-                    case eFramePropType.Variable:
                     case eFramePropType.Joist:
                     case eFramePropType.Bridge:
                     case eFramePropType.Cold_C:
@@ -203,35 +213,150 @@ namespace BH.Adapter.SAP2000
                         break;
                 }
 
-                // Section Property Modifiers
+                // Apply Property Modifiers
+                bhomProperty.Fragments.Add(ReadFrameSectionModifiers(id));
 
-                double[] sectionModifiers = new double[8];
-
-                if (m_model.PropFrame.GetModifiers(id, ref sectionModifiers) == 0)
-                {
-                    SectionModifier sectionModifier = new SectionModifier();
-                    sectionModifier.Area = sectionModifiers[0];
-                    sectionModifier.Asz = sectionModifiers[1];
-                    sectionModifier.Asy = sectionModifiers[2];
-                    sectionModifier.J = sectionModifiers[3];
-                    sectionModifier.Iz = sectionModifiers[4];
-                    sectionModifier.Iy = sectionModifiers[5];
-                    // mass modifier = 6
-                    // weight modifier = 7
-                    bhomProperty.Fragments.Add(sectionModifier);
-                }
-                else
-                {
-                    Engine.Reflection.Compute.RecordWarning($"Could not get section modifiers for SectionProperty {id}. No section property modifiers have been set in the BHoM.");
-                }
-
+                // Apply the AdapterId
                 bhomProperty.SetAdapterId(sap2000id);
+
+                // Add to the list
                 propList.Add(bhomProperty);
+            }
+
+            //Read any leftover sections (currently only tapered profiles)
+            if (backLog.Count > 0)
+            {
+                foreach (string id in backLog)
+                {
+                    ISectionProperty bhomProperty = null;
+                    TaperedProfile bhomProfile = null;
+                    IMaterialFragment material = null;
+                    SAP2000Id sap2000id = new SAP2000Id
+                    {
+                        Id = id
+                    };
+
+                    bhomProfile = ReadTaperedProfile(id, propList);
+
+                    material = ReadTaperedMaterial(bhomProfile, propList);
+
+                    bhomProperty = Create.SectionPropertyFromProfile(bhomProfile, material, id);
+
+                    bhomProperty.SetAdapterId(sap2000id);
+
+                    bhomProperty.Fragments.Add(ReadFrameSectionModifiers(id));
+
+                    propList.Add(bhomProperty);
+                }
             }
             return propList;
         }
 
         /***************************************************/
+
+        private TaperedProfile ReadTaperedProfile(string id, List<ISectionProperty> propList)
+        {
+            int nSegments = 0;
+            string[] startSec = null;
+            string[] endSec = null;
+            double[] myLength = null;
+            int[] myType = null;
+            int[] EI33 = null;
+            int[] EI22 = null;
+            int color = 0;
+            string notes = null;
+            string guid = null;
+
+            m_model.PropFrame.GetNonPrismatic(id, ref nSegments, ref startSec, ref endSec, ref myLength, ref myType, ref EI33, ref EI22, ref color, ref notes, ref guid);
+
+            if (myType.Any(x => x != 1))
+                Engine.Reflection.Compute.RecordNote($"BhoM only supports Non-prismatic sections with relative length values; {id} is being converted to relative length, check results.");
+
+            List<double> positions = new List<double>() { 0 };
+            List<int> interpolationOrder = new List<int>() { };
+
+            for (int i = 0; i < nSegments; i++)
+            {
+                positions.Add(positions[i] + myLength[i]);
+                interpolationOrder.Add(System.Math.Max(EI33[i], EI22[i]));
+            }
+
+            double totLength = myLength.Sum();
+            positions = positions.Select(x => x / totLength).ToList();
+
+            Dictionary<string, IProfile> profileDict = propList.ToDictionary(x => x.DescriptionOrName(), x => (x as IGeometricalSection).SectionProfile);
+            foreach (KeyValuePair<string, IProfile> profile in profileDict)
+                profile.Value.Name = profile.Key;
+
+            List<IProfile> profiles = new List<IProfile>
+                        {
+                            profileDict[startSec.First()]
+                        };
+            endSec.ToList().ForEach(x => profiles.Add(profileDict[x]));
+
+            //Check that adjacent segments have the same sections - if not, add a tiny segment to the BHoM Profile.
+            if (nSegments > 1) // only need to check if there are more than one segments
+            {
+                for (int i = nSegments - 1; i > 0; i--)
+                {
+                    if (startSec[i] != endSec[i-1])
+                    {
+                        profiles.Insert(i + 2, profileDict[startSec[i + 1]]);
+                        positions.Insert(i + 2, positions[i + 1] + Tolerance.Distance);
+                    }
+                }
+            }
+
+
+            if (profiles.Any(x => x == null))
+            {
+                Engine.Reflection.Compute.RecordNote("Some of the sub-sections for tapered section {id} were not defined, so the section could not be read");
+            }
+
+            return Engine.Spatial.Create.TaperedProfile(positions, profiles, interpolationOrder);
+        }
+
+        /***************************************************/
+
+        private IMaterialFragment ReadTaperedMaterial(TaperedProfile taperProf, List<ISectionProperty> propList)
+        {
+            List<string> profNames = taperProf.Profiles.Values.Select(x => x.DescriptionOrName()).ToList();
+
+            List<IMaterialFragment> materials = new List<IMaterialFragment>();
+
+            foreach (string profName in profNames)
+                materials.Add(propList.First(x => x.DescriptionOrName() == profName).Material);
+
+            if (materials.ToHashSet().Count > 1)
+                Engine.Reflection.Compute.RecordWarning($"Tapered Profile {taperProf.DescriptionOrName()} has more than one material. Only the first will be used");
+
+            return materials.ToHashSet().FirstOrDefault();
+        }
+
+        /***************************************************/
+        private SectionModifier ReadFrameSectionModifiers(string id)
+        {
+            double[] sectionModifiers = new double[8];
+            SectionModifier sectionModifier = new SectionModifier();
+
+            if (m_model.PropFrame.GetModifiers(id, ref sectionModifiers) == 0)
+            {
+                sectionModifier.Area = sectionModifiers[0];
+                sectionModifier.Asz = sectionModifiers[1];
+                sectionModifier.Asy = sectionModifiers[2];
+                sectionModifier.J = sectionModifiers[3];
+                sectionModifier.Iz = sectionModifiers[4];
+                sectionModifier.Iy = sectionModifiers[5];
+                // mass modifier = 6
+                // weight modifier = 7
+            }
+            else
+            {
+                Engine.Reflection.Compute.RecordWarning($"Could not get section modifiers for SectionProperty {id}. No section property modifiers have been set in the BHoM.");
+            }
+
+            return sectionModifier;
+        }
     }
 }
 
