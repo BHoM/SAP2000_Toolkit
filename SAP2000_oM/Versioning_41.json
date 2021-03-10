@@ -1,0 +1,10 @@
+﻿{
+  "Type": {
+    "ToNew": {
+        "BH.oM.Adapters.SAP2000.SAP2000ActionConfig" : "BH.oM.Adapters.SAP2000.SAP2000PushConfig"
+    },
+    "ToOld": {
+        "BH.oM.Adapters.SAP2000.SAP2000PushConfig" : "BH.oM.Adapters.SAP2000.SAP2000ActionConfig"
+    }
+  }
+} 
