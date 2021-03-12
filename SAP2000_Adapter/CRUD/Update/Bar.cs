@@ -100,7 +100,7 @@ namespace BH.Adapter.SAP2000
 
             foreach (Bar bhBar in bhBars)
             {
-                object id = bhBar.AdapterId(typeof(SAP2000Id));
+                object id = bhBar.AdapterId<string>(typeof(SAP2000Id));
                 if (id == null)
                 {
                     Engine.Reflection.Compute.RecordWarning("The Bar must have a SAP2000 adapter id to be updated.");
