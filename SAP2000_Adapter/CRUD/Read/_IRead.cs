@@ -148,6 +148,10 @@ namespace BH.Adapter.SAP2000
         [Description("Ensures that all elements in the first list are present in the second list, warning if not, and returns the second list if the first list is empty.")]
         private static List<string> FilterIds(IEnumerable<string> ids, IEnumerable<string> sapIds)
         {
+            if (sapIds == null)
+            {
+                sapIds = Enumerable.Empty<string>();
+            }
             if (ids == null || ids.Count() == 0)
             {
                 return sapIds.ToList();
