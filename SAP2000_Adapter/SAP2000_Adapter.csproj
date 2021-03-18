@@ -156,6 +156,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdapterActions\SetupPushConfig.cs" />
     <Compile Include="AdapterActions\Execute.cs" />
     <Compile Include="Convert\AdapterIdName.cs" />
     <Compile Include="Convert\ToBHoM\Bar.cs" />
@@ -198,7 +199,7 @@
     <Compile Include="CRUD\Read\Results\BarResults.cs" />
     <Compile Include="CRUD\Read\Results\NodeResults.cs" />
     <Compile Include="CRUD\Read\Results\Result.cs" />
-	<Compile Include="CRUD\Read\Results\SteelUtilisationResults.cs" />
+    <Compile Include="CRUD\Read\Results\SteelUtilisationResults.cs" />
     <Compile Include="CRUD\Read\_IRead.cs" />
     <Compile Include="CRUD\Read\RigidLink.cs" />
     <Compile Include="CRUD\Read\Section.cs" />

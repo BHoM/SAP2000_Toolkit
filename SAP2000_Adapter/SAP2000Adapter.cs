@@ -34,7 +34,7 @@ namespace BH.Adapter.SAP2000
         /**** Public Properties                         ****/
         /***************************************************/
         
-            public SAP2000PushConfig SAPConfig { get; set; } = new SAP2000PushConfig();
+            public SAP2000PushConfig SAPPushConfig { get; set; } = new SAP2000PushConfig();
 
         /***************************************************/
         /**** Constructors                              ****/
@@ -48,7 +48,7 @@ namespace BH.Adapter.SAP2000
             SetupComparers();
             SetupDependencies();
             AdapterIdFragmentType = typeof(SAP2000Id);
-            m_AdapterSettings.DefaultPushType = oM.Adapter.PushType.CreateNonExisting;
+            m_AdapterSettings.DefaultPushType = oM.Adapter.PushType.FullPush;
 
             if (active)
             {
