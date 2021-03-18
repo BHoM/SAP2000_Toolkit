@@ -136,7 +136,7 @@ namespace BH.Adapter.SAP2000
                 bhLoad.Moment.Z,
             };
 
-            bool replace = true;
+            bool replace = SAPPushConfig.ReplaceLoads;
 
             foreach (Node bhNode in nodes)
             {
@@ -169,7 +169,7 @@ namespace BH.Adapter.SAP2000
                 bhLoad.Rotation.Z,
             };
 
-            bool replace = true;
+            bool replace = SAPPushConfig.ReplaceLoads;
 
             foreach (Node bhNode in nodes)
             {
@@ -219,8 +219,8 @@ namespace BH.Adapter.SAP2000
             bool relDist = true;
             string cSys = bhLoad.Axis.ToCSI();
             eItemType type = eItemType.Objects;
-            bool replace = true;
-            
+
+            bool replace = SAPPushConfig.ReplaceLoads;
 
             foreach (Bar bhBar in bars)
             {
@@ -283,8 +283,8 @@ namespace BH.Adapter.SAP2000
             bool relDist = bhLoad.RelativePositions;
             string cSys = bhLoad.Axis.ToCSI();
             eItemType type = eItemType.Objects;
-            bool replace = true;
 
+            bool replace = SAPPushConfig.ReplaceLoads;
 
             foreach (Bar bhBar in bars)
             {
@@ -331,7 +331,9 @@ namespace BH.Adapter.SAP2000
                     dirs = new int[] { 1, 2, 3 };
                     break;
             }
-            bool replace = true;
+
+            bool replace = SAPPushConfig.ReplaceLoads;
+
             string cSys = bhLoad.Axis.ToCSI();
             eItemType type = eItemType.Objects;
 
@@ -381,7 +383,8 @@ namespace BH.Adapter.SAP2000
             string loadPat = GetAdapterId<string>(bhLoad.Loadcase);
             double vals = bhLoad.TemperatureChange;
             int loadType = 1; // BHoM currently supports uniform temperature change, no support yet for temperature gradient
-            bool replace = true;
+
+            bool replace = SAPPushConfig.ReplaceLoads;
 
             foreach (Panel panel in panels)
             {
@@ -486,7 +489,8 @@ namespace BH.Adapter.SAP2000
             string loadPat = GetAdapterId<string>(bhLoad.Loadcase);
             double tempChange = bhLoad.TemperatureChange;
             int loadType = 1; // BHoM currently only supports uniform temperature change (=1); SAP supports gradients in local 2 and 3 axes (=2 and =3).
-            bool replace = true;
+            
+            bool replace = SAPPushConfig.ReplaceLoads;
 
             foreach (Bar bar in bars)
             {

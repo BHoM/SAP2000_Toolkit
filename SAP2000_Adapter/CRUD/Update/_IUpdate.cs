@@ -36,11 +36,11 @@ namespace BH.Adapter.SAP2000
         /**** Adapter overload method                   ****/
         /***************************************************/
 
-        protected override bool IUpdate<T>(IEnumerable<T> objects, ActionConfig actionConfig = null)
+        protected override bool IUpdate<T>(IEnumerable<T> objects, ActionConfig actionConfig)
         {
-            SAP2000PushConfig config = (SAP2000PushConfig)actionConfig;
+            this.SAPPushConfig = actionConfig as SAP2000PushConfig;
 
-            if (config != null && config.UpdateOnlyBarPropAssigns) // Only update bar assigns
+            if (SAPPushConfig != null && SAPPushConfig.UpdateOnlyBarPropAssigns) // Only update bar assigns
             {
                 return UpdateBarPropAssigns(objects.OfType<Bar>());
             }
