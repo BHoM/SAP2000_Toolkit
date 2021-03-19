@@ -156,16 +156,8 @@ namespace BH.Adapter.SAP2000
                 return ReadAreaLoad();
             else if (type == typeof(AreaUniformTemperatureLoad))
                 return ReadAreaUniformTemperatureLoad();
-            else if (type == typeof(ContourLoad))
-                return ReadContourLoad();
-            else if (type == typeof(GeometricalLineLoad))
-                return ReadGeometricalLineLoad();
             else if (type == typeof(PointDisplacement))
                 return ReadPointDispl();
-            else if (type == typeof(PointVelocity))
-                return ReadPointVelocity();
-            else if (type == typeof(PointAcceleration))
-                return ReadPointAcceleration();
             else if (type == typeof(GravityLoad))
                 return ReadGravityLoad();
             else
@@ -270,22 +262,6 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private List<ILoad> ReadPointVelocity(List<string> ids = null)
-        {
-            Engine.Reflection.Compute.RecordError("Read PointVelocity is not implemented!");
-            return new List<ILoad>();
-        }
-
-        /***************************************************/
-
-        private List<ILoad> ReadPointAcceleration(List<string> ids = null)
-        {
-            Engine.Reflection.Compute.RecordError("Read PointVelocity is not implemented!");
-            return new List<ILoad>();
-        }
-
-        /***************************************************/
-
         private List<ILoad> ReadBarUniformDistributedLoad(List<string> ids = null)
         {
             List<ILoad> loads = new List<ILoad>();
@@ -322,7 +298,6 @@ namespace BH.Adapter.SAP2000
                         double val = val1[i];
                         Vector force = new Vector();
                         LoadAxis axis = cSys[i].LoadAxisToBHoM();
-                        bool projected = false;
 
                         switch (dir[i])
                         {
@@ -344,24 +319,8 @@ namespace BH.Adapter.SAP2000
                             case 6:
                                 force.Z = val;
                                 break;
-                            case 7:
-                                force.X = val;
-                                projected = true;
-                                break;
-                            case 8:
-                                force.Y = val;
-                                projected = true;
-                                break;
-                            case 9:
-                                force.Z = val;
-                                projected = true;
-                                break;
                             case 10:
                                 force.Z = -val;
-                                break;
-                            case 11:
-                                force.Z = -val;
-                                projected = true;
                                 break;
                             default:
                                 Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
@@ -375,8 +334,7 @@ namespace BH.Adapter.SAP2000
                                     Force = force,
                                     Loadcase = bhomCases[caseNames[i]],
                                     Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
-                                    Axis = axis,
-                                    Projected = projected
+                                    Axis = axis
                                 });
                                 break;
                             case 2:
@@ -385,8 +343,7 @@ namespace BH.Adapter.SAP2000
                                     Moment = force,
                                     Loadcase = bhomCases[caseNames[i]],
                                     Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
-                                    Axis = axis,
-                                    Projected = projected
+                                    Axis = axis
                                 });
                                 break;
                             default:
@@ -442,7 +399,6 @@ namespace BH.Adapter.SAP2000
 
                         Vector forceA = new Vector();
                         Vector forceB = new Vector();
-                        bool projected = false;
 
                         switch (dir[i])
                         {
@@ -470,29 +426,9 @@ namespace BH.Adapter.SAP2000
                                 forceA.Z = val1[i];
                                 forceB.Z = val2[i];
                                 break;
-                            case 7:
-                                forceA.Z = val1[i];
-                                forceB.Z = val2[i];
-                                projected = true;
-                                break;
-                            case 8:
-                                forceA.Z = val1[i];
-                                forceB.Z = val2[i];
-                                projected = true;
-                                break;
-                            case 9:
-                                forceA.Z = val1[i];
-                                forceB.Z = val2[i];
-                                projected = true;
-                                break;
                             case 10:
                                 forceA.Z = -val1[i];
                                 forceB.Z = -val2[i];
-                                break;
-                            case 11:
-                                forceA.Z = val1[i];
-                                forceB.Z = val2[i];
-                                projected = true;
                                 break;
                             default:
                                 Engine.Reflection.Compute.RecordWarning("That load direction is not yet supported. Dir = " + dir[i].ToString());
@@ -511,8 +447,7 @@ namespace BH.Adapter.SAP2000
                                     Loadcase = bhomCases[caseNames[i]],
                                     Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
                                     Axis = axis,
-                                    RelativePositions = false,
-                                    Projected = projected
+                                    RelativePositions = false
                                 });
                                 break;
                             case 2:
@@ -525,8 +460,7 @@ namespace BH.Adapter.SAP2000
                                     Loadcase = bhomCases[caseNames[i]],
                                     Objects = new BHoMGroup<Bar>() { Elements = { bhomBar } },
                                     Axis = axis,
-                                    RelativePositions = false,
-                                    Projected = projected
+                                    RelativePositions = false
                                 });
                                 break;
                             default:
@@ -750,40 +684,28 @@ namespace BH.Adapter.SAP2000
                     
                     Vector force = new Vector();
                     LoadAxis axis = cSys[i].LoadAxisToBHoM();
-                    bool projected = false;
-
                     switch (dir[i])
                     {
                         case 1:
-                        case 4:
                             force.X = val[i];
                             break;
                         case 2:
-                        case 5:
                             force.Y = val[i];
                             break;
                         case 3:
+                            force.Z = val[i];
+                            break;
+                        case 4:
+                            force.X = val[i];
+                            break;
+                        case 5:
+                            force.Y = val[i];
+                            break;
                         case 6:
                             force.Z = val[i];
-                            break;                        
-                        case 7:
-                            force.X = val[i];
-                            projected = true;
-                            break;
-                        case 8:
-                            force.Y = val[i];
-                            projected = true;
-                            break;
-                        case 9:
-                            force.Z = val[i];
-                            projected = true;
                             break;
                         case 10:
                             force.Z = -val[i];
-                            break;
-                        case 11:
-                            force.Z = -val[i];
-                            projected = true;
                             break;
                         default:
                             BH.Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
@@ -794,9 +716,8 @@ namespace BH.Adapter.SAP2000
                     {
                         Pressure = force,
                         Loadcase = bhomCases[caseNames[i]],
-                        Objects = new BHoMGroup<IAreaElement>() { Elements = { bhomPanel } },
-                        Axis = axis,
-                        Projected = projected
+                        Objects = new BHoMGroup<IAreaElement>() { Elements = { bhomPanel as IAreaElement} },
+                        Axis = axis
                     });
                 }
             }
@@ -878,28 +799,12 @@ namespace BH.Adapter.SAP2000
                     {
                         TemperatureChange = tempForce,
                         Loadcase = bhomCases[caseNames[i]],
-                        Objects = new BHoMGroup<IAreaElement>() { Elements = { bhomPanel } },
+                        Objects = new BHoMGroup<IAreaElement>() { Elements = { bhomPanel as IAreaElement } },
                         Axis = LoadAxis.Global
                     });
                 }
             }
             return loads;
-        }
-
-        /***************************************************/
-
-        private List<ILoad> ReadContourLoad(List<string> ids = null)
-        {
-            Engine.Reflection.Compute.RecordError("ContourLoads are mapped to Null Areas with AreaLoads, so we can't be sure the object was originally a ContourLoad or not - suggest pulling AreaUniformlyDistributedLoad and filtering for null properties.");
-            return new List<ILoad>();
-        }
-
-        /***************************************************/
-
-        private List<ILoad> ReadGeometricalLineLoad(List<string> ids = null)
-        {
-            Engine.Reflection.Compute.RecordError("GeometricalLineLoads are mapped to Null Frames with Uniform Loads, so we can't be sure the object was originally a GeometricalLineLoads or not - suggest pulling BarUniformlyDistributedLoad and filtering for null properties.");
-            return new List<ILoad>();
         }
 
         /***************************************************/
