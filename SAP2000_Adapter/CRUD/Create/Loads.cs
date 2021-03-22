@@ -517,9 +517,7 @@ namespace BH.Adapter.SAP2000
             double[] forceVals = null;
             double[] momentVals = null;
             double dist = bhLoad.DistanceFromA;
-            if (dist > 1.0)
-                Engine.Reflection.Compute.RecordWarning("Please provide DistanceFromA as a relative distance (decimal between 0 and 1.0).");
-            bool relDist = true;
+            bool relDist = false; // BarPointLoad is defined as absolute distance from i (A) end of bar.
 
             // Determine coordinate system (local vs global) and set directions vector for CSI protocol
             switch (bhLoad.Axis)
@@ -538,7 +536,7 @@ namespace BH.Adapter.SAP2000
 
             // Loop through bars and set point loads
             string cSys = bhLoad.Axis.ToCSI();
-            bool replace = true;
+            bool replace = SAPPushConfig.ReplaceLoads;
             eItemType type = eItemType.Objects;
             foreach (Bar bar in bars)
             {
@@ -593,6 +591,16 @@ namespace BH.Adapter.SAP2000
 
             return true;
         }
+        
+        /***************************************************/
+
+        private bool CreateLoad(ILoad bhLoad)
+        {
+            Engine.Reflection.Compute.RecordError($"TheLoad type {bhLoad.GetType()} is not implemented!");
+            return false;
+        }
+
+        /***************************************************/
     }
 }
 
