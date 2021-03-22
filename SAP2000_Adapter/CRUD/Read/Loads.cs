@@ -150,6 +150,10 @@ namespace BH.Adapter.SAP2000
                 return ReadBarVaryingDistributedLoad();
             else if (type == typeof(BarUniformTemperatureLoad))
                 return ReadBarUniformTemperatureLoad();
+            else if (type == typeof(ContourLoad))
+                return ReadContourLoad();
+            else if (type == typeof(GeometricalLineLoad))
+                return ReadGeometricalLineLoad();
             else if (type == typeof(BarPrestressLoad))
                 return ReadBarPrestressLoad();
             else if (type == typeof(AreaUniformlyDistributedLoad))
@@ -158,6 +162,10 @@ namespace BH.Adapter.SAP2000
                 return ReadAreaUniformTemperatureLoad();
             else if (type == typeof(PointDisplacement))
                 return ReadPointDispl();
+            else if (type == typeof(PointVelocity))
+                return ReadPointVelocity();
+            else if (type == typeof(PointAcceleration))
+                return ReadPointAcceleration();
             else if (type == typeof(GravityLoad))
                 return ReadGravityLoad();
             else
@@ -259,6 +267,21 @@ namespace BH.Adapter.SAP2000
             return loads;
         }
 
+        /***************************************************/
+
+        private List<ILoad> ReadPointVelocity(List<string> ids = null)
+        {
+            Engine.Reflection.Compute.RecordError("Read PointVelocity is not implemented!");
+            return new List<ILoad>();
+        }
+
+        /***************************************************/
+
+        private List<ILoad> ReadPointAcceleration(List<string> ids = null)
+        {
+            Engine.Reflection.Compute.RecordError("Read PointVelocity is not implemented!");
+            return new List<ILoad>();
+        }
 
         /***************************************************/
 
@@ -716,7 +739,7 @@ namespace BH.Adapter.SAP2000
                     {
                         Pressure = force,
                         Loadcase = bhomCases[caseNames[i]],
-                        Objects = new BHoMGroup<IAreaElement>() { Elements = { bhomPanel as IAreaElement} },
+                        Objects = new BHoMGroup<IAreaElement>() { Elements = { bhomPanel } },
                         Axis = axis
                     });
                 }
@@ -799,12 +822,28 @@ namespace BH.Adapter.SAP2000
                     {
                         TemperatureChange = tempForce,
                         Loadcase = bhomCases[caseNames[i]],
-                        Objects = new BHoMGroup<IAreaElement>() { Elements = { bhomPanel as IAreaElement } },
+                        Objects = new BHoMGroup<IAreaElement>() { Elements = { bhomPanel } },
                         Axis = LoadAxis.Global
                     });
                 }
             }
             return loads;
+        }
+
+        /***************************************************/
+
+        private List<ILoad> ReadContourLoad(List<string> ids = null)
+        {
+            Engine.Reflection.Compute.RecordError("ContourLoads are mapped to Null Areas with AreaLoads, so we can't be sure the object was originally a ContourLoad or not - suggest pulling AreaUniformlyDistributedLoad and filtering for null properties.");
+            return new List<ILoad>();
+        }
+
+        /***************************************************/
+
+        private List<ILoad> ReadGeometricalLineLoad(List<string> ids = null)
+        {
+            Engine.Reflection.Compute.RecordError("GeometricalLineLoads are mapped to Null Frames with Uniform Loads, so we can't be sure the object was originally a GeometricalLineLoads or not - suggest pulling BarUniformlyDistributedLoad and filtering for null properties.");
+            return new List<ILoad>();
         }
 
         /***************************************************/
