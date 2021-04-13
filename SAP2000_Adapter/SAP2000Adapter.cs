@@ -58,6 +58,12 @@ namespace BH.Adapter.SAP2000
 
                 Open openCommand = new Open();
 
+                if (System.Diagnostics.Process.GetProcessesByName("SAP2000").Length > 1)
+                {
+                    BH.Engine.Reflection.Compute.RecordError("More than one SAP2000 instance is open. BHoM will attach to the most recently updated process, " +
+                        "but you should only work with one SAP2000 instance at a time with BHoM.");
+                }
+
                 if (File.Exists(filePath))
                     openCommand.FileName = filePath;
 
