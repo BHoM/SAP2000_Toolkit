@@ -22,6 +22,7 @@
 
 using SAP2000v1;
 using System;
+using System.IO;
 using BH.oM.Adapters.SAP2000;
 using BH.oM.Adapter.Commands;
 using BH.Engine.Adapter;
@@ -56,36 +57,72 @@ namespace BH.Adapter.SAP2000
                 cHelper helper = new Helper();
 
                 Open openCommand = new Open();
-                if (System.IO.File.Exists(filePath))
+
+                if (File.Exists(filePath))
                     openCommand.FileName = filePath;
 
-                if (System.Diagnostics.Process.GetProcessesByName("SAP2000").Length > 0)
+                // Try to attach to an existing instance of SAP2000
+                try
                 {
-                    object runningInstance = System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.SAP2000.API.SAPObject");
-
+                    object runningInstance = (cOAPI) System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.SAP2000.API.SapObject");
                     m_app = (cOAPI)runningInstance;
+                    // Attach to current model
                     m_model = m_app.SapModel;
+                    // Continue if filepath provided
                     if (openCommand.FileName != null)
-                        RunCommand(openCommand);
+                    {
+                        FileInfo file = new FileInfo(filePath);
+                        string extension = file.Extension;
+                        if (String.Equals(extension, ".sdb"))
+                        {
+                            String openModelFileName = m_model.GetModelFilename();
+                            // Filepath matches open file
+                            if (String.Equals(openModelFileName, filePath) == false)
+                            {
+                                // Attempt to save current file, close, and open SAP2000 file
+                                m_model.File.Save();
+                                m_model.File.OpenFile(filePath);
+                                BH.Engine.Reflection.Compute.RecordWarning("A SAP2000 Model was already open, and it has been saved if it was a named file. " +
+                                    "The model at the filePath has been opened instead.");
+                            }
+                        }
+                        else
+                        {
+                            BH.Engine.Reflection.Compute.RecordError("Invalid extension. SAP2000 model filename must end with .sdb. " +
+                                "BHoM is attached to the current SAP2000 instance, but a valid SAP2000 model path has not been provided.");
+                        }
+                    }
                     else
-                        RunCommand(new NewModel());
+                    {
+                        BH.Engine.Reflection.Compute.RecordWarning("File path is either not provided or invalid. " +
+                            "Please save your SAP2000 model before proceeding. " +
+                            "BHoM is attached to the current SAP2000 instance.");
+                    }
                 }
-                else 
+                catch
+                // No open instance of SAP2000
                 {
-                    //open SAP if not running
                     try
                     {
                         m_app = helper.CreateObject(pathToSAP);
                         m_app.ApplicationStart();
                         m_model = m_app.SapModel;
+                        // File exists and can be loaded
                         if (openCommand.FileName != null)
                             RunCommand(openCommand);
+                        // File does not exist, open new model
                         else
-                            RunCommand(new NewModel() );
+                        {
+                            RunCommand(new NewModel());
+                            BH.Engine.Reflection.Compute.RecordWarning("File path is either not provided or invalid. " +
+                                "Please save your SAP2000 model before proceeding." +
+                                " BHoM is attached to the current SAP2000 instance.");
+                        }
                     }
                     catch
+                    // Unable to launch SAP2000
                     {
-                        Console.WriteLine("Cannot load SAP2000, check that SAP2000 is installed and a license is available");
+                        BH.Engine.Reflection.Compute.RecordError("Cannot load SAP2000, check that SAP2000 is installed and a license is available");
                     }
                 }
             }
