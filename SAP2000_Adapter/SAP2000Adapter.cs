@@ -132,6 +132,10 @@ namespace BH.Adapter.SAP2000
                     }
                 }
             }
+            else
+            {
+                BH.Engine.Reflection.Compute.RecordWarning("SAP2000 Adapter is not currently active.");
+            }
         }
 
         /***************************************************/
