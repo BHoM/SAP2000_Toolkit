@@ -100,6 +100,7 @@ namespace BH.Adapter.SAP2000
                     }
                     else
                     {
+                        RunCommand(new NewModel());
                         BH.Engine.Reflection.Compute.RecordWarning("File path is either not provided or invalid. " +
                                                         "BHoM is attached to the current SAP2000 instance.");
                     }
