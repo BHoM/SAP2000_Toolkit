@@ -101,8 +101,7 @@ namespace BH.Adapter.SAP2000
                     else
                     {
                         BH.Engine.Reflection.Compute.RecordWarning("File path is either not provided or invalid. " +
-                            "Please save your SAP2000 model before proceeding. " +
-                            "BHoM is attached to the current SAP2000 instance.");
+                                                        "BHoM is attached to the current SAP2000 instance.");
                     }
                 }
                 catch
@@ -121,8 +120,7 @@ namespace BH.Adapter.SAP2000
                         {
                             RunCommand(new NewModel());
                             BH.Engine.Reflection.Compute.RecordWarning("File path is either not provided or invalid. " +
-                                "Please save your SAP2000 model before proceeding." +
-                                " BHoM is attached to the current SAP2000 instance.");
+                                                                "BHoM is attached to the current SAP2000 instance.");
                         }
                     }
                     catch
