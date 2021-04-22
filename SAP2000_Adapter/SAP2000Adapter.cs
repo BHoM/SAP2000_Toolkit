@@ -53,25 +53,25 @@ namespace BH.Adapter.SAP2000
 
             if (active)
             {
-                string pathToSAP = @"C:\Program Files\Computers and Structures\SAP2000 21\SAP2000.exe";
+                string progId = "CSI.SAP2000.API.SapObject";
                 cHelper helper = new Helper();
 
-                Open openCommand = new Open();
-
+                //Check for multiple SAP instances
                 if (System.Diagnostics.Process.GetProcessesByName("SAP2000").Length > 1)
                 {
-                    BH.Engine.Reflection.Compute.RecordError("More than one SAP2000 instance is open. BHoM will attach to the most recently updated process, " +
+                    BH.Engine.Reflection.Compute.RecordError("More than one SAP2000 instance is open. BHoM has attached to the most recently updated process, " +
                         "but you should only work with one SAP2000 instance at a time with BHoM.");
                 }
 
+                // Set up the open command
+                Open openCommand = new Open();
                 if (File.Exists(filePath))
                     openCommand.FileName = filePath;
 
                 // Try to attach to an existing instance of SAP2000
                 try
                 {
-                    object runningInstance = (cOAPI) System.Runtime.InteropServices.Marshal.GetActiveObject("CSI.SAP2000.API.SapObject");
-                    m_app = (cOAPI)runningInstance;
+                    m_app = (cOAPI)System.Runtime.InteropServices.Marshal.GetActiveObject(progId);
                     // Attach to current model
                     m_model = m_app.SapModel;
                     // Continue if filepath provided
@@ -102,16 +102,15 @@ namespace BH.Adapter.SAP2000
                     {
                         if (m_model.GetModelFilename(false) == null)
                             RunCommand(new NewModel());
-                        BH.Engine.Reflection.Compute.RecordWarning("File path is either not provided or invalid. " +
+                        BH.Engine.Reflection.Compute.RecordNote("File path is either not provided or invalid. " +
                                                         "BHoM is attached to the current SAP2000 instance.");
                     }
                 }
-                catch
-                // No open instance of SAP2000
+                catch    // No open instance of SAP2000
                 {
                     try
                     {
-                        m_app = helper.CreateObject(pathToSAP);
+                        m_app = helper.CreateObjectProgID(progId);
                         m_app.ApplicationStart();
                         m_model = m_app.SapModel;
                         // File exists and can be loaded
@@ -121,20 +120,31 @@ namespace BH.Adapter.SAP2000
                         else
                         {
                             RunCommand(new NewModel());
-                            BH.Engine.Reflection.Compute.RecordWarning("File path is either not provided or invalid. " +
+                            BH.Engine.Reflection.Compute.RecordNote("File path is either not provided or invalid. " +
                                                                 "BHoM is attached to the current SAP2000 instance.");
                         }
                     }
                     catch
                     // Unable to launch SAP2000
                     {
-                        BH.Engine.Reflection.Compute.RecordError("Cannot load SAP2000, check that SAP2000 is installed and a license is available");
+                        Engine.Reflection.Compute.RecordError("Cannot load SAP2000, check that SAP2000 is installed and a license is available");
                     }
                 }
             }
             else
             {
-                BH.Engine.Reflection.Compute.RecordWarning("SAP2000 Adapter is not currently active.");
+                int sapCount = System.Diagnostics.Process.GetProcessesByName("SAP2000").Length;
+                if (sapCount > 1)
+                {
+                    Engine.Reflection.Compute.RecordError("More than one SAP2000 instance is open. BHoM will attach to the most recently updated process, " +
+                        "but may result in unpredictable behavior. You should only work with one SAP2000 instance at a time while using BHoM.");
+                }
+                else if (sapCount == 1 && !string.IsNullOrEmpty(filePath))
+                    Engine.Reflection.Compute.RecordWarning("SAP2000 is open and a filePath has been provided. BHoM will save your work and open the specified file.");
+                else if (sapCount == 1)
+                    Engine.Reflection.Compute.RecordNote("SAP2000 is open. No filePath has been provided, so BHoM will attach to the current model, if one exists.");
+                else
+                    Engine.Reflection.Compute.RecordNote("SAP2000 Adapter is not currently active.");
             }
         }
 
