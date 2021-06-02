@@ -205,7 +205,8 @@ namespace BH.Adapter.SAP2000
                             Wply = S22,
                             Wplz = S33,
                             Wely = Z22,
-                            Welz = Z33
+                            Welz = Z33,
+                            Name = id
                         };
                         break;
                     case "standard":
@@ -284,9 +285,9 @@ namespace BH.Adapter.SAP2000
             double totLength = myLength.Sum();
             positions = positions.Select(x => x / totLength).ToList();
 
-            Dictionary<string, IProfile> profileDict = propList.ToDictionary(x => x.DescriptionOrName(), x => (x as IGeometricalSection).SectionProfile);
+            Dictionary<string, IProfile> profileDict = propList.ToDictionary(x => x.DescriptionOrName(), x => (x as IGeometricalSection)?.SectionProfile);
             foreach (KeyValuePair<string, IProfile> profile in profileDict)
-                profile.Value.Name = profile.Key;
+                if (profile.Value != null) profile.Value.Name = profile.Key;
 
             List<IProfile> profiles = new List<IProfile>
                         {
