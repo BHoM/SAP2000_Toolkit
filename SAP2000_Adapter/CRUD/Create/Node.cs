@@ -96,7 +96,7 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
-            if (!bhNode.Orientation.Equals(Basis.XY))
+            if (bhNode.Orientation != null && !bhNode.Orientation.Equals(Basis.XY))
             {
                 int myVectOpt = 3; //specify orientation by vectors
                 string globalCSys = "GLOBAL"; //specify point orientation relative to the global coordinate system
