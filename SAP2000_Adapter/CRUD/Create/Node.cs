@@ -96,20 +96,28 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
-            if (bhNode.Orientation != null && !bhNode.Orientation.Equals(Basis.XY))
+            if (bhNode.Orientation != null)
             {
-                int myVectOpt = 3; //specify orientation by vectors
-                string globalCSys = "GLOBAL"; //specify point orientation relative to the global coordinate system
-                int[] myDir = { 1, 2 }; //not used for VecOpt = 3
-                string[] noPts = { "None", "None" }; //not used for VecOpt = 3
-                int myPlane2 = 12; //specify point orientation by local 1(X) and 2(Y) vectors
-                double[] myAxVect = bhNode.Orientation.X.ToDoubleArray();
-                double[] myPlVect = bhNode.Orientation.Y.ToDoubleArray();
+                if (bhNode.Orientation.IsEqual(Basis.XY))
+                {
+                    if (m_model.PointObj.SetLocalAxes(name, 0, 0, 0) != 0) //Set orientation to Global coordinate system
+                        CreatePropertyWarning("Node Local Axes", "Node", name);
+                }
+                else
+                {
+                    int myVectOpt = 3; //specify orientation by vectors
+                    string globalCSys = "GLOBAL"; //specify point orientation relative to the global coordinate system
+                    int[] myDir = { 1, 2 }; //not used for VecOpt = 3
+                    string[] noPts = { "None", "None" }; //not used for VecOpt = 3
+                    int myPlane2 = 12; //specify point orientation by local 1(X) and 2(Y) vectors
+                    double[] myAxVect = bhNode.Orientation.X.ToDoubleArray();
+                    double[] myPlVect = bhNode.Orientation.Y.ToDoubleArray();
 
-                if (m_model.PointObj.SetLocalAxesAdvanced(name, true,
-                        myVectOpt, globalCSys, ref myDir, ref noPts, ref myAxVect, myPlane2,
-                        myVectOpt, globalCSys, ref myDir, ref noPts, ref myPlVect) != 0)
-                    CreatePropertyWarning("Node Local Axes", "Node", name);
+                    if (m_model.PointObj.SetLocalAxesAdvanced(name, true,
+                            myVectOpt, globalCSys, ref myDir, ref noPts, ref myAxVect, myPlane2,
+                            myVectOpt, globalCSys, ref myDir, ref noPts, ref myPlVect) != 0)
+                        CreatePropertyWarning("Node Local Axes", "Node", name);
+                }
             }
 
             foreach (string gName in bhNode.Tags)
