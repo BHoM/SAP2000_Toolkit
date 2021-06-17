@@ -77,9 +77,8 @@ namespace BH.Adapter.SAP2000
                     bhomPanel.ExternalEdges = outEdges;
                 }
 
-                //Ignore the openings
-                List<Opening> noOpenings = null;
-                bhomPanel.Openings = noOpenings;
+                //There are no openings in SAP2000 
+                bhomPanel.Openings = new List<Opening>();
                 
                 //Get the section property
                 string propertyName = "";
