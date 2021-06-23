@@ -103,53 +103,58 @@ namespace BH.Adapter.SAP2000
                 double[] dj = null;
                 int div = 0;
 
-                m_model.FrameObj.GetElm(barIds[i], ref div, ref intElems, ref di, ref dj);
-
-                divisions = div + 1;
-
-                string p1Id = "";
-                string p2Id = "";
-
-                //get first point
-                m_model.LineElm.GetPoints(intElems[0], ref p1Id, ref p2Id);
-                nodes[p1Id] = di[0];
-
-                //get the rest of the points
-                for (int j = 0; j < div; j++)
+                if (m_model.FrameObj.GetElm(barIds[i], ref div, ref intElems, ref di, ref dj) != 0)
                 {
-                    m_model.LineElm.GetPoints(intElems[j], ref p1Id, ref p2Id);
-
-                    nodes[p2Id] = dj[j];
+                    Engine.Reflection.Compute.RecordWarning($"Could not get output stations for bar {barIds[i]}.");
                 }
-
-                foreach (var point in nodes)
+                else
                 {
-                    if (m_model.Results.JointDispl(point.Key,
-                                                        eItemTypeElm.Element,
-                                                        ref resultCount,
-                                                        ref Obj,
-                                                        ref Elm,
-                                                        ref LoadCase,
-                                                        ref StepType,
-                                                        ref StepNum,
-                                                        ref ux,
-                                                        ref uy,
-                                                        ref uz,
-                                                        ref rx,
-                                                        ref ry,
-                                                        ref rz) != 0)
+                    divisions = div + 1;
+
+                    string p1Id = "";
+                    string p2Id = "";
+
+                    //get first point
+                    int successtwo = m_model.LineElm.GetPoints(intElems[0], ref p1Id, ref p2Id);
+                    nodes[p1Id] = di[0];
+
+                    //get the rest of the points
+                    for (int j = 0; j < div; j++)
                     {
-                        Engine.Reflection.Compute.RecordError($"Could not extract results for an output station in bar {barIds}.");
-                    }
-                    else
-                    {
-                        for (int j = 0; j < resultCount; j++)
-                        {
-                            BarDisplacement disp = new BarDisplacement(barIds[i], LoadCase[j], -1, StepNum[j], point.Value, divisions, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
-                            displacements.Add(disp);
-                        }
+                        m_model.LineElm.GetPoints(intElems[j], ref p1Id, ref p2Id);
+
+                        nodes[p2Id] = dj[j];
                     }
 
+                    foreach (var point in nodes)
+                    {
+                        if (m_model.Results.JointDispl(point.Key,
+                                                            eItemTypeElm.Element,
+                                                            ref resultCount,
+                                                            ref Obj,
+                                                            ref Elm,
+                                                            ref LoadCase,
+                                                            ref StepType,
+                                                            ref StepNum,
+                                                            ref ux,
+                                                            ref uy,
+                                                            ref uz,
+                                                            ref rx,
+                                                            ref ry,
+                                                            ref rz) != 0)
+                        {
+                            Engine.Reflection.Compute.RecordWarning($"Could not extract results for an output station in bar {barIds[i]}.");
+                        }
+                        else
+                        {
+                            for (int j = 0; j < resultCount; j++)
+                            {
+                                BarDisplacement disp = new BarDisplacement(barIds[i], LoadCase[j], -1, StepNum[j], point.Value, divisions, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
+                                displacements.Add(disp);
+                            }
+                        }
+
+                    }
                 }
 
             }
