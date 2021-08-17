@@ -240,7 +240,7 @@ namespace BH.Adapter.SAP2000
 
                     material = ReadTaperedMaterial(bhomProfile, propList);
 
-                    bhomProperty = Create.SectionPropertyFromProfile(bhomProfile, material, id);
+                    bhomProperty = BH.Engine.Structure.Create.SectionPropertyFromProfile(bhomProfile, material, id);
 
                     bhomProperty.SetAdapterId(sap2000id);
 

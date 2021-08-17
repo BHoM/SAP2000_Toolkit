@@ -89,7 +89,7 @@ namespace BH.Adapter.SAP2000
             double x = 0, y = 0, z = 0;
 
             if (m_model.PointObj.GetCoordCartesian(id, ref x, ref y, ref z) == 0)
-                return Create.Point(x, y, z);
+                return BH.Engine.Geometry.Create.Point(x, y, z);
 
             return null;
         }
@@ -144,10 +144,10 @@ namespace BH.Adapter.SAP2000
                     case 2: // Two Joints
                         IEnumerable<string> axPtIds = myAxPt.AsEnumerable().Select(x => (x == "None" ? id : x));
                         List<Point> pts1 = axPtIds.Select( x => ReadNodeCoordinates(x)).ToList();
-                        vec1 = Create.Line(pts1[0], pts1[1]).Direction();
+                        vec1 = BH.Engine.Geometry.Create.Line(pts1[0], pts1[1]).Direction();
                         break;
                     case 3: // User Vector
-                        vec1 = Create.Vector(myAxVect[0], myAxVect[1], myAxVect[2]);
+                        vec1 = BH.Engine.Geometry.Create.Vector(myAxVect[0], myAxVect[1], myAxVect[2]);
                         break;
                 }
 
@@ -160,10 +160,10 @@ namespace BH.Adapter.SAP2000
                     case 2: // Two Joints
                         IEnumerable<string> plPtIds = myPlPt.AsEnumerable().Select(x => (x == "None" ? id : x));
                         List<Point> pts2 = plPtIds.Select(x => ReadNodeCoordinates(x)).ToList();
-                        vec2 = Create.Line(pts2[0], pts2[1]).Direction();
+                        vec2 = BH.Engine.Geometry.Create.Line(pts2[0], pts2[1]).Direction();
                         break;
                     case 3: // User Vector
-                        vec2 = Create.Vector(myPlVect[0], myPlVect[1], myPlVect[2]);
+                        vec2 = BH.Engine.Geometry.Create.Vector(myPlVect[0], myPlVect[1], myPlVect[2]);
                         break;
                 }
 
@@ -172,22 +172,22 @@ namespace BH.Adapter.SAP2000
                     switch (myPlane2)
                     {
                         case 12:
-                            basis = Create.Basis(vec1, vec2);
+                            basis = BH.Engine.Geometry.Create.Basis(vec1, vec2);
                             break;
                         case 13:
-                            basis = Create.Basis(vec1, vec1.CrossProduct(-vec2));
+                            basis = BH.Engine.Geometry.Create.Basis(vec1, vec1.CrossProduct(-vec2));
                             break;
                         case 21:
-                            basis = Create.Basis(vec2, vec1);
+                            basis = BH.Engine.Geometry.Create.Basis(vec2, vec1);
                             break;
                         case 23:
-                            basis = Create.Basis(vec1.CrossProduct(vec2), vec1);
+                            basis = BH.Engine.Geometry.Create.Basis(vec1.CrossProduct(vec2), vec1);
                             break;
                         case 31:
-                            basis = Create.Basis(vec2, vec2.CrossProduct(-vec1));
+                            basis = BH.Engine.Geometry.Create.Basis(vec2, vec2.CrossProduct(-vec1));
                             break;
                         case 32:
-                            basis = Create.Basis(vec2.CrossProduct(vec1), vec2);
+                            basis = BH.Engine.Geometry.Create.Basis(vec2.CrossProduct(vec1), vec2);
                             break;
                         default:
                             CreatePropertyWarning("Orientation", "Node", id);
@@ -212,7 +212,7 @@ namespace BH.Adapter.SAP2000
             Vector basisX = basis.X.Rotate(a, basis.Z).Rotate(b, basis.Y).Rotate(c, basis.X);
             Vector basisY = basis.Y.Rotate(a, basis.Z).Rotate(b, basis.Y).Rotate(c, basis.X);
 
-            return Create.Basis(basisX, basisY);
+            return BH.Engine.Geometry.Create.Basis(basisX, basisY);
             
         }
 
