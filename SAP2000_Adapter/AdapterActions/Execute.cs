@@ -121,6 +121,16 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
+        public bool RunCommand(Exit command)
+        {
+            bool success = m_app.ApplicationExit(command.SaveBeforeClose) == 0;
+            m_app = null;
+            m_model = null;
+            return success;
+        }
+
+        /***************************************************/
+
         public bool RunCommand(IExecuteCommand command)
         {
             Engine.Reflection.Compute.RecordWarning($"The command {command.GetType().Name} is not supported by this Adapter.");
