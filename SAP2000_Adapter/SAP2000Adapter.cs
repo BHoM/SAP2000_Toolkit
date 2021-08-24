@@ -87,7 +87,7 @@ namespace BH.Adapter.SAP2000
                             {
                                 // Attempt to save current file, close, and open SAP2000 file
                                 m_model.File.Save();
-                                m_model.File.OpenFile(filePath);
+                                RunCommand(openCommand);
                                 BH.Engine.Reflection.Compute.RecordWarning("A SAP2000 Model was already open, and it has been saved if it was a named file. " +
                                     "The model at the filePath has been opened instead.");
                             }
@@ -102,6 +102,7 @@ namespace BH.Adapter.SAP2000
                     {
                         if (m_model.GetModelFilename(false) == null)
                             RunCommand(new NewModel());
+                        else m_model.SetPresentUnits(eUnits.N_m_C); //set units to SI (NewModel and OpenModel already do this)
                         BH.Engine.Reflection.Compute.RecordNote("File path is either not provided or invalid. " +
                                                         "BHoM is attached to the current SAP2000 instance.");
                     }
