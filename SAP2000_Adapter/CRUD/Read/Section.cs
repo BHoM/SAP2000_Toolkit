@@ -77,6 +77,7 @@ namespace BH.Adapter.SAP2000
                 double tw = 0;
                 double tfb = 0;
                 double t2b = 0;
+                double dis = 0;
                 double radius = 0;
                 double angle = 0;
                 int color = 0;
@@ -98,15 +99,20 @@ namespace BH.Adapter.SAP2000
                         m_model.PropFrame.GetChannel(id, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref color, ref notes, ref guid);
                         bhomProfile = BH.Engine.Spatial.Create.ChannelProfile(t3, t2, tw, tf, 0, 0);
                         break;
-                    case eFramePropType.T:                        
+                    case eFramePropType.T:
+                    case eFramePropType.ConcreteTee:
+                        m_model.PropFrame.GetTee(id, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref color, ref notes, ref guid);
+                        bhomProfile = BH.Engine.Spatial.Create.TSectionProfile(t3, t2, tw, tf);
                         break;
                     case eFramePropType.Angle:
+                    case eFramePropType.Concrete_L:
                         m_model.PropFrame.GetAngle(id, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref color, ref notes, ref guid);
                         bhomProfile = BH.Engine.Spatial.Create.AngleProfile(t3, t2, tw, tf, 0, 0);
                         break;
                     case eFramePropType.DblAngle:
                         break;
                     case eFramePropType.Box:
+                    case eFramePropType.ConcreteBox:
                         m_model.PropFrame.GetTube(id, ref fileName, ref materialName, ref t3, ref t2, ref tf, ref tw, ref color, ref notes, ref guid);
                         if (tf == tw)
                             bhomProfile = BH.Engine.Spatial.Create.BoxProfile(t3, t2, tf, 0, 0);
@@ -114,10 +120,12 @@ namespace BH.Adapter.SAP2000
                             bhomProfile = BH.Engine.Spatial.Create.FabricatedBoxProfile(t3, t2, tw, tf, tf, 0);
                         break;
                     case eFramePropType.Pipe:
+                    case eFramePropType.ConcretePipe:
                         m_model.PropFrame.GetPipe(id, ref fileName, ref materialName, ref t3, ref tw, ref color, ref notes, ref guid);
                         bhomProfile = BH.Engine.Spatial.Create.TubeProfile(t3, tw);
                         break;
                     case eFramePropType.Rectangular:
+                    case eFramePropType.SteelPlate:
                         m_model.PropFrame.GetRectangle(id, ref fileName, ref materialName, ref t3, ref t2, ref color, ref notes, ref guid);
                         bhomProfile = BH.Engine.Spatial.Create.RectangleProfile(t3, t2, 0);
                         break;
@@ -125,6 +133,7 @@ namespace BH.Adapter.SAP2000
                         bhomProfile = BH.Engine.Spatial.Create.CircleProfile(0.2);
                         break;
                     case eFramePropType.Circle:
+                    case eFramePropType.SteelRod:
                         m_model.PropFrame.GetCircle(id, ref fileName, ref materialName, ref t3, ref color, ref notes, ref guid);
                         bhomProfile = BH.Engine.Spatial.Create.CircleProfile(t3);
                         break;
@@ -158,23 +167,17 @@ namespace BH.Adapter.SAP2000
                     case eFramePropType.PCCGirderU:
                     case eFramePropType.BuiltupIHybrid:
                     case eFramePropType.BuiltupUHybrid:
-                    case eFramePropType.Concrete_L:
                     case eFramePropType.FilledTube:
                     case eFramePropType.FilledPipe:
                     case eFramePropType.EncasedRectangle:
                     case eFramePropType.EncasedCircle:
                     case eFramePropType.BucklingRestrainedBrace:
                     case eFramePropType.CoreBrace_BRB:
-                    case eFramePropType.ConcreteTee:
-                    case eFramePropType.ConcreteBox:
-                    case eFramePropType.ConcretePipe:
                     case eFramePropType.ConcreteCross:
-                    case eFramePropType.SteelPlate:
-                    case eFramePropType.SteelRod:
                     default:                        
                         break;
                 }
-
+                
                 // Section Material
 
                 IMaterialFragment material = null;
@@ -205,7 +208,9 @@ namespace BH.Adapter.SAP2000
                             Wply = S22,
                             Wplz = S33,
                             Wely = Z22,
-                            Welz = Z33
+                            Welz = Z33,
+                            Material = material,
+                            Name = id
                         };
                         break;
                     case "standard":
@@ -229,18 +234,12 @@ namespace BH.Adapter.SAP2000
                 foreach (string id in backLog)
                 {
                     ISectionProperty bhomProperty = null;
-                    TaperedProfile bhomProfile = null;
-                    IMaterialFragment material = null;
                     SAP2000Id sap2000id = new SAP2000Id
                     {
                         Id = id
                     };
 
-                    bhomProfile = ReadTaperedProfile(id, propList);
-
-                    material = ReadTaperedMaterial(bhomProfile, propList);
-
-                    bhomProperty = BH.Engine.Structure.Create.SectionPropertyFromProfile(bhomProfile, material, id);
+                    bhomProperty = ReadTaperedSection(id, propList);
 
                     bhomProperty.SetAdapterId(sap2000id);
 
@@ -254,7 +253,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private TaperedProfile ReadTaperedProfile(string id, List<ISectionProperty> propList)
+        private ISectionProperty ReadTaperedSection(string id, List<ISectionProperty> propList)
         {
             int nSegments = 0;
             string[] startSec = null;
@@ -266,6 +265,7 @@ namespace BH.Adapter.SAP2000
             int color = 0;
             string notes = null;
             string guid = null;
+            IMaterialFragment material = null;
 
             m_model.PropFrame.GetNonPrismatic(id, ref nSegments, ref startSec, ref endSec, ref myLength, ref myType, ref EI33, ref EI22, ref color, ref notes, ref guid);
 
@@ -284,9 +284,22 @@ namespace BH.Adapter.SAP2000
             double totLength = myLength.Sum();
             positions = positions.Select(x => x / totLength).ToList();
 
-            Dictionary<string, IProfile> profileDict = propList.ToDictionary(x => x.DescriptionOrName(), x => (x as IGeometricalSection).SectionProfile);
-            foreach (KeyValuePair<string, IProfile> profile in profileDict)
-                profile.Value.Name = profile.Key;
+            //Get materials for the tapered section
+            IEnumerable<ISectionProperty> startProps = propList.Where(x => startSec.Contains(x.Name)).ToHashSet();
+            if (startProps.Count() >= 1)
+            {
+                material = startProps.First().Material;
+                if (startProps.Count() > 1) Engine.Reflection.Compute.RecordWarning($"Tapered section {id} has more than one material, only the first will be returned");
+            }
+            else
+            {
+                Engine.Reflection.Compute.RecordWarning($"Tapered section {id} has no materials defined, null material will be returned.");
+            }
+
+            Dictionary<string, IProfile> profileDict = propList.ToDictionary(x => x.DescriptionOrName(), x => (x as IGeometricalSection)?.SectionProfile);
+
+            //foreach (KeyValuePair<string, IProfile> profile in profileDict)
+            //    profile.Value.Name = profile.Key;
 
             List<IProfile> profiles = new List<IProfile>
                         {
@@ -307,30 +320,20 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
+            IProfile profile = null;
 
             if (profiles.Any(x => x == null))
             {
-                Engine.Reflection.Compute.RecordNote("Some of the sub-sections for tapered section {id} were not defined, so the section could not be read");
+                Engine.Reflection.Compute.RecordWarning("Some of the sub-sections for tapered section {id} were not defined, so the section could not be read");
+                return new ExplicitSection()
+                {
+                    Material = material,
+                    Name = id
+                };
             }
 
-            return Engine.Spatial.Create.TaperedProfile(positions, profiles, interpolationOrder);
-        }
-
-        /***************************************************/
-
-        private IMaterialFragment ReadTaperedMaterial(TaperedProfile taperProf, List<ISectionProperty> propList)
-        {
-            List<string> profNames = taperProf.Profiles.Values.Select(x => x.DescriptionOrName()).ToList();
-
-            List<IMaterialFragment> materials = new List<IMaterialFragment>();
-
-            foreach (string profName in profNames)
-                materials.Add(propList.First(x => x.DescriptionOrName() == profName).Material);
-
-            if (materials.ToHashSet().Count > 1)
-                Engine.Reflection.Compute.RecordWarning($"Tapered Profile {taperProf.DescriptionOrName()} has more than one material. Only the first will be used");
-
-            return materials.ToHashSet().FirstOrDefault();
+            profile = Engine.Spatial.Create.TaperedProfile(positions, profiles, interpolationOrder);
+            return Engine.Structure.Create.SectionPropertyFromProfile(profile, material, id);
         }
 
         /***************************************************/
@@ -357,6 +360,8 @@ namespace BH.Adapter.SAP2000
 
             return sectionModifier;
         }
+
+        /***************************************************/
     }
 }
 
