@@ -28,9 +28,11 @@ using BH.oM.Dimensional;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Adapters.SAP2000;
+using BH.oM.Adapters.SAP2000.Elements;
 using BH.Engine.Adapters.SAP2000;
 using BH.Engine.Adapter;
 using BH.Engine.Units;
+using BH.Engine.Base;
 using System;
 using SAP2000v1;
 
@@ -137,10 +139,27 @@ namespace BH.Adapter.SAP2000
 
                 if (meshType != (int)PanelAutoMeshType.None)
                 {
-                    bhomPanel = bhomPanel.SetPanelAutoMesh((PanelAutoMeshType)meshType, n1, n2, maxSize1, maxSize2, 
-                        pointOnEdgeFromLine, pointOnEdgeFromPoint, extendCookieCutLines, Engine.Units.Convert.FromDegree(rotation), 
-                        maxSizeGeneral, localAxesOnEdge, localAxesOnFace, restraintsOnEdge, 
-                        restraintsOnFace, group, subMesh, subMeshSize);
+                    PanelAutoMesh fragment = new PanelAutoMesh()
+                    {
+                        MeshType = (PanelAutoMeshType)meshType,
+                        N1 = n1,
+                        N2 = n2,
+                        MaxSize1 = maxSize1,
+                        MaxSize2 = maxSize2,
+                        PointOnEdgeFromLine = pointOnEdgeFromLine,
+                        PointOnEdgeFromPoint = pointOnEdgeFromPoint,
+                        ExtendCookieCutLines = extendCookieCutLines,
+                        Rotation = rotation.FromDegree(),
+                        MaxSizeGeneral = maxSizeGeneral,
+                        LocalAxesOnEdge = localAxesOnEdge,
+                        LocalAxesOnFace = localAxesOnFace,
+                        RestraintsOnEdge = restraintsOnEdge,
+                        RestraintsOnFace = restraintsOnFace,
+                        Group = group,
+                        SubMesh = subMesh,
+                        SubMeshSize = subMeshSize,
+                    };
+                    bhomPanel.AddFragment(fragment);
                 }
 
                 // Edge Constraint
@@ -149,7 +168,7 @@ namespace BH.Adapter.SAP2000
 
                 m_model.AreaObj.GetEdgeConstraint(id, ref constraintExists);
                 if (constraintExists)
-                    bhomPanel = bhomPanel.SetPanelEdgeConstraint(constraintExists);
+                    bhomPanel.AddFragment(new PanelEdgeConstraint() { EdgeConstraint = true});
 
                 // Material Overwrite
 
@@ -173,8 +192,17 @@ namespace BH.Adapter.SAP2000
 
                 m_model.AreaObj.GetOffsets(id, ref offsetType, ref offsetPattern, ref offsetPatternSF, ref offset);
 
-                if (offsetType > 0)
-                    bhomPanel = bhomPanel.SetPanelOffset((PanelOffsetType)offsetType, offsetPattern, offsetPatternSF, offset);
+                if (offsetType != (int)PanelOffsetType.None)
+                {
+                    PanelOffset fragment = new PanelOffset()
+                    {
+                        OffsetType = (PanelOffsetType)offsetType,
+                        OffsetPattern = offsetPattern,
+                        OffsetPatternSF = offsetPatternSF,
+                        Offset = offset
+                    };
+                    bhomPanel.AddFragment(fragment);
+                }
 
                 //Add the panel to the list
                 bhomPanels.Add(bhomPanel);
