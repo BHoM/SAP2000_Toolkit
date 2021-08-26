@@ -172,6 +172,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Units_Engine">
+      <HintPath>..\..\..\..\..\..\ProgramData\BHoM\Assemblies\Units_Engine.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterActions\SetupPushConfig.cs" />

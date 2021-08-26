@@ -28,8 +28,11 @@ using BH.oM.Dimensional;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Adapters.SAP2000;
+using BH.Engine.Adapters.SAP2000;
 using BH.Engine.Adapter;
+using BH.Engine.Units;
 using System;
+using SAP2000v1;
 
 namespace BH.Adapter.SAP2000
 {
@@ -102,6 +105,77 @@ namespace BH.Adapter.SAP2000
                     sap2000id.PersistentId = guid;
 
                 bhomPanel.SetAdapterId(sap2000id);
+
+                /***************************************************/
+                /* SAP Fragments                                   */
+                /***************************************************/
+
+                // Automesh
+
+                int meshType = (int)PanelAutoMeshType.None;
+                int n1 = 0;
+                int n2 = 0;
+                double maxSize1 = 0;
+                double maxSize2 = 0;
+                bool pointOnEdgeFromLine = false;
+                bool pointOnEdgeFromPoint = false;
+                bool extendCookieCutLines = false;
+                double rotation = 0;
+                double maxSizeGeneral = 0;
+                bool localAxesOnEdge = false;
+                bool localAxesOnFace = false;
+                bool restraintsOnEdge = false;
+                bool restraintsOnFace = false;
+                string group = null;
+                bool subMesh = false;
+                double subMeshSize = 0;
+
+                m_model.AreaObj.GetAutoMesh(id, ref meshType, ref n1, ref n2, ref maxSize1, ref maxSize2,
+                    ref pointOnEdgeFromLine, ref pointOnEdgeFromPoint, ref extendCookieCutLines,
+                    ref rotation, ref maxSizeGeneral, ref localAxesOnEdge, ref localAxesOnFace,
+                    ref restraintsOnEdge, ref restraintsOnFace, ref group, ref subMesh, ref subMeshSize);
+
+                if (meshType != (int)PanelAutoMeshType.None)
+                {
+                    bhomPanel = bhomPanel.SetPanelAutoMesh((PanelAutoMeshType)meshType, n1, n2, maxSize1, maxSize2, 
+                        pointOnEdgeFromLine, pointOnEdgeFromPoint, extendCookieCutLines, Engine.Units.Convert.FromDegree(rotation), 
+                        maxSizeGeneral, localAxesOnEdge, localAxesOnFace, restraintsOnEdge, 
+                        restraintsOnFace, group, subMesh, subMeshSize);
+                }
+
+                // Edge Constraint
+
+                bool constraintExists = false;
+
+                m_model.AreaObj.GetEdgeConstraint(id, ref constraintExists);
+                if (constraintExists)
+                    bhomPanel = bhomPanel.SetPanelEdgeConstraint(constraintExists);
+
+                // Material Overwrite
+
+                string propName = "";
+
+                m_model.AreaObj.GetMaterialOverwrite(id, ref propName);
+
+                if (propName != "None")
+                {
+                    ISurfaceProperty property = Engine.Base.Query.ShallowClone(bhomPanel.Property);
+                    property.Material = ReadMaterial(new List<string> { propName }).FirstOrDefault();
+                    bhomPanel.Property = property;
+                }
+
+                // Offsets
+
+                int offsetType = (int)PanelOffsetType.None;
+                string offsetPattern = "";
+                double offsetPatternSF = 0;
+                double[] offset = null;
+
+                m_model.AreaObj.GetOffsets(id, ref offsetType, ref offsetPattern, ref offsetPatternSF, ref offset);
+
+                if (offsetType > 0)
+                    bhomPanel = bhomPanel.SetPanelOffset((PanelOffsetType)offsetType, offsetPattern, offsetPatternSF, offset);
+
                 //Add the panel to the list
                 bhomPanels.Add(bhomPanel);
             }
@@ -111,6 +185,8 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
     }
+
+
 }
 
 
