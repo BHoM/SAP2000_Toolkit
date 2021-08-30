@@ -168,6 +168,7 @@
     <Compile Include="Convert\ToSAP2000\Loads.cs" />
     <Compile Include="Convert\ToSAP2000\Material.cs" />
     <Compile Include="CRUD\Create\Errors.cs" />
+    <Compile Include="CRUD\Create\Group.cs" />
     <Compile Include="CRUD\Create\Node.cs" />
     <Compile Include="CRUD\Create\LinkConstraint.cs" />
     <Compile Include="CRUD\Create\Section.cs" />
