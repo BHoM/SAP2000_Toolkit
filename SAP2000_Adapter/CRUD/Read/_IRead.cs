@@ -75,6 +75,8 @@ namespace BH.Adapter.SAP2000
                 return ReadRigidLink(listIds);
             else if (type == typeof(LinkConstraint))
                 return ReadLinkConstraints(listIds);
+            else if (type == typeof(BHoMGroup<ISectionProperty>))
+                return ReadAutoSelect(listIds);
             else if (typeof(IResult).IsAssignableFrom(type))
             {
                 Modules.Structure.ErrorMessages.ReadResultsError(type);

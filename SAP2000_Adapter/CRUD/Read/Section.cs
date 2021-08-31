@@ -23,6 +23,7 @@
 using BH.Engine.Adapter;
 using BH.Engine.Structure;
 using BH.oM.Geometry;
+using BH.oM.Base;
 using BH.oM.Adapters.SAP2000;
 using BH.oM.Spatial.ShapeProfiles;
 using BH.oM.Structure.MaterialFragments;
@@ -121,8 +122,9 @@ namespace BH.Adapter.SAP2000
                         m_model.PropFrame.GetRectangle(id, ref fileName, ref materialName, ref t3, ref t2, ref color, ref notes, ref guid);
                         bhomProfile = BH.Engine.Spatial.Create.RectangleProfile(t3, t2, 0);
                         break;
-                    case eFramePropType.Auto://not member will have this assigned but it still exists in the propertyType list
-                        bhomProfile = BH.Engine.Spatial.Create.CircleProfile(0.2);
+                    case eFramePropType.Auto://no member will have this assigned but it still exists in the propertyType list
+                        Engine.Reflection.Compute.RecordWarning("AutoSelect Sections are output as BHoM Groups of ISectionProperty. " +
+                            "Please request type of 'BH.oM.Base.BHoMGroup<BH.oM.Structure.SectionProperties.SteelSection>' from the Pull");
                         break;
                     case eFramePropType.Circle:
                         m_model.PropFrame.GetCircle(id, ref fileName, ref materialName, ref t3, ref color, ref notes, ref guid);
@@ -357,6 +359,57 @@ namespace BH.Adapter.SAP2000
 
             return sectionModifier;
         }
+
+        /***************************************************/
+        private List<BHoMGroup<ISectionProperty>> ReadAutoSelect(List<string> ids = null)
+        {
+            List<BHoMGroup<ISectionProperty>> bhomGroups = new List<BHoMGroup<ISectionProperty>>();
+
+            Dictionary<string, ISectionProperty> bhomSections = ReadSectionProperties().ToDictionary(x => GetAdapterId<string>(x));
+
+            int nameCount = 0;
+            string[] nameArr = { };
+            m_model.PropFrame.GetNameList(ref nameCount, ref nameArr);
+
+            ids = FilterIds(ids, nameArr);
+
+            foreach (string id in ids)
+            {
+                BHoMGroup<ISectionProperty> bhomGroup = new BHoMGroup<ISectionProperty>();
+
+                eFramePropType propertyType = eFramePropType.General;
+
+                SAP2000Id sap2000id = new SAP2000Id();
+
+                sap2000id.Id = id;
+
+                m_model.PropFrame.GetTypeOAPI(id, ref propertyType);
+
+                if (propertyType == eFramePropType.Auto)
+                {
+                    int numItems = 0;
+                    string[] sectNames = null;
+                    string autoStartSection = "";
+                    string notes = "";
+                    string guid = "";
+
+                    m_model.PropFrame.GetAutoSelectSteel(id, ref numItems, ref sectNames, ref autoStartSection, ref notes, ref guid);
+
+                    bhomGroup.Elements = sectNames.Select(x => bhomSections[x]).ToList();
+
+                    // Apply the AdapterId
+                    bhomGroup.SetAdapterId(sap2000id);
+
+                    // Add to the list
+                    bhomGroups.Add(bhomGroup);
+                }
+            }
+
+
+            return bhomGroups;
+        }
+
+        /***************************************************/
     }
 }
 

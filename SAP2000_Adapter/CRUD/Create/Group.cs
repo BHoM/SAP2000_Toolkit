@@ -78,7 +78,7 @@ namespace BH.Adapter.SAP2000
 
             string[] nameArr = names.ToArray();
 
-            if (m_model.PropFrame.SetAutoSelectSteel(bhomGroup.Name, nameArr.Length, ref nameArr, "Median", "Made By BHoM") != 0)
+            if (m_model.PropFrame.SetAutoSelectAluminum(bhomGroup.Name, nameArr.Length, ref nameArr, "Median", "Made By BHoM") != 0)
             {
                 Engine.Reflection.Compute.RecordWarning("Could not create autoselect group");
             }
