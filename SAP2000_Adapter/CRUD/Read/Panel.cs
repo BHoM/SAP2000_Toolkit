@@ -137,29 +137,91 @@ namespace BH.Adapter.SAP2000
                     ref rotation, ref maxSizeGeneral, ref localAxesOnEdge, ref localAxesOnFace,
                     ref restraintsOnEdge, ref restraintsOnFace, ref group, ref subMesh, ref subMeshSize);
 
-                if (meshType != (int)PanelAutoMeshType.None)
+                switch ((PanelAutoMeshType)meshType)
                 {
-                    PanelAutoMesh fragment = new PanelAutoMesh()
-                    {
-                        MeshType = (PanelAutoMeshType)meshType,
-                        N1 = n1,
-                        N2 = n2,
-                        MaxSize1 = maxSize1,
-                        MaxSize2 = maxSize2,
-                        PointOnEdgeFromLine = pointOnEdgeFromLine,
-                        PointOnEdgeFromPoint = pointOnEdgeFromPoint,
-                        ExtendCookieCutLines = extendCookieCutLines,
-                        Rotation = rotation.FromDegree(),
-                        MaxSizeGeneral = maxSizeGeneral,
-                        LocalAxesOnEdge = localAxesOnEdge,
-                        LocalAxesOnFace = localAxesOnFace,
-                        RestraintsOnEdge = restraintsOnEdge,
-                        RestraintsOnFace = restraintsOnFace,
-                        Group = group,
-                        SubMesh = subMesh,
-                        SubMeshSize = subMeshSize,
-                    };
-                    bhomPanel.AddFragment(fragment);
+                    case PanelAutoMeshType.NumberOfObjects:
+                        bhomPanel = (Panel)bhomPanel.AddFragment(new PanelAutoMeshByNumberOfObjects() { 
+                            N1 = n1,
+                            N2 = n2,
+                            LocalAxesOnEdge = localAxesOnEdge,
+                            LocalAxesOnFace = localAxesOnFace,
+                            RestraintsOnEdge = restraintsOnEdge,
+                            RestraintsOnFace = restraintsOnFace,
+                            Group = group,
+                            SubMesh = subMesh,
+                            SubMeshSize = subMeshSize
+                        });
+                        break;
+                    case PanelAutoMeshType.MaximumSize:
+                        bhomPanel = (Panel)bhomPanel.AddFragment(new PanelAutoMeshByMaximumSize()
+                        {
+                            MaxSize1 = maxSize1,
+                            MaxSize2 = maxSize2,
+                            LocalAxesOnEdge = localAxesOnEdge,
+                            LocalAxesOnFace = localAxesOnFace,
+                            RestraintsOnEdge = restraintsOnEdge,
+                            RestraintsOnFace = restraintsOnFace,
+                            Group = group,
+                            SubMesh = subMesh,
+                            SubMeshSize = subMeshSize
+                        });
+                        break;
+                    case PanelAutoMeshType.PointsOnEdges:
+                        bhomPanel = (Panel)bhomPanel.AddFragment(new PanelAutoMeshByPointsOnEdges()
+                        {
+                            PointOnEdgeFromLine = pointOnEdgeFromLine,
+                            PointOnEdgeFromPoint = pointOnEdgeFromPoint,
+                            LocalAxesOnEdge = localAxesOnEdge,
+                            LocalAxesOnFace = localAxesOnFace,
+                            RestraintsOnEdge = restraintsOnEdge,
+                            RestraintsOnFace = restraintsOnFace,
+                            Group = group,
+                            SubMesh = subMesh,
+                            SubMeshSize = subMeshSize
+                        }); ;
+                        break;
+                    case PanelAutoMeshType.CookieCutLines:
+                        bhomPanel = (Panel)bhomPanel.AddFragment(new PanelAutoMeshByCookieCutLines()
+                        {
+                            ExtendCookieCutLines = extendCookieCutLines,
+                            LocalAxesOnEdge = localAxesOnEdge,
+                            LocalAxesOnFace = localAxesOnFace,
+                            RestraintsOnEdge = restraintsOnEdge,
+                            RestraintsOnFace = restraintsOnFace,
+                            Group = group,
+                            SubMesh = subMesh,
+                            SubMeshSize = subMeshSize
+                        }) ;
+                        break;
+                    case PanelAutoMeshType.CookieCutPoints:
+                        bhomPanel = (Panel)bhomPanel.AddFragment(new PanelAutoMeshByCookieCutPoints()
+                        {
+                            Rotation = rotation.FromDegree(),
+                            LocalAxesOnEdge = localAxesOnEdge,
+                            LocalAxesOnFace = localAxesOnFace,
+                            RestraintsOnEdge = restraintsOnEdge,
+                            RestraintsOnFace = restraintsOnFace,
+                            Group = group,
+                            SubMesh = subMesh,
+                            SubMeshSize = subMeshSize
+                        }) ;
+                        break;
+                    case PanelAutoMeshType.GeneralDivide:
+                        bhomPanel = (Panel)bhomPanel.AddFragment(new PanelAutoMeshByGeneralDivide()
+                        {
+                            MaxSizeGeneral = maxSizeGeneral,
+                            LocalAxesOnEdge = localAxesOnEdge,
+                            LocalAxesOnFace = localAxesOnFace,
+                            RestraintsOnEdge = restraintsOnEdge,
+                            RestraintsOnFace = restraintsOnFace,
+                            Group = group,
+                            SubMesh = subMesh,
+                            SubMeshSize = subMeshSize
+                        });
+                        break;
+                    case PanelAutoMeshType.None:
+                    default:
+                        break;
                 }
 
                 // Edge Constraint
@@ -168,7 +230,7 @@ namespace BH.Adapter.SAP2000
 
                 m_model.AreaObj.GetEdgeConstraint(id, ref constraintExists);
                 if (constraintExists)
-                    bhomPanel.AddFragment(new PanelEdgeConstraint() { EdgeConstraint = true});
+                    bhomPanel = (Panel)bhomPanel.AddFragment(new PanelEdgeConstraint() { EdgeConstraint = true});
 
                 // Material Overwrite
 
@@ -192,16 +254,24 @@ namespace BH.Adapter.SAP2000
 
                 m_model.AreaObj.GetOffsets(id, ref offsetType, ref offsetPattern, ref offsetPatternSF, ref offset);
 
-                if (offsetType != (int)PanelOffsetType.None)
+                switch ((PanelOffsetType)offsetType)
                 {
-                    PanelOffset fragment = new PanelOffset()
-                    {
-                        OffsetType = (PanelOffsetType)offsetType,
-                        OffsetPattern = offsetPattern,
-                        OffsetPatternSF = offsetPatternSF,
-                        Offset = offset
-                    };
-                    bhomPanel.AddFragment(fragment);
+                    case PanelOffsetType.ByJointPattern:
+                        bhomPanel = (Panel)bhomPanel.AddFragment(new PanelOffsetByJointPattern()
+                        {
+                            OffsetPattern = offsetPattern,
+                            OffsetPatternSF = offsetPatternSF
+                        });
+                        break;
+                    case PanelOffsetType.ByPoint:
+                        bhomPanel = (Panel)bhomPanel.AddFragment(new PanelOffsetByPoint()
+                        {
+                            Offset = offset,
+                        }) ;
+                        break;
+                    case PanelOffsetType.None:
+                    default:
+                        break;
                 }
 
                 //Add the panel to the list
