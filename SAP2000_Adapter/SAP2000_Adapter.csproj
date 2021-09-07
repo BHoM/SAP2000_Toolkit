@@ -126,6 +126,12 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Quantities_oM">
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Quantities_oM.dll</HintPath>
+      <Private>False</Private>
+	  <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    </Reference>
     <Reference Include="Results_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Results_Engine.dll</HintPath>
       <Private>False</Private>
