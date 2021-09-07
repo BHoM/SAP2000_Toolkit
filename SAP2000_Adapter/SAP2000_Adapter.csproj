@@ -173,7 +173,8 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
     <Reference Include="Units_Engine">
-      <HintPath>..\..\..\..\..\..\ProgramData\BHoM\Assemblies\Units_Engine.dll</HintPath>
+      <HintPath>C:\ProgramData\BHoM\Assemblies\Units_Engine.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
