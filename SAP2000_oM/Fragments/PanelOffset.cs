@@ -30,16 +30,22 @@ using BH.oM.Base;
 
 namespace BH.oM.Adapters.SAP2000.Elements
 {
-    public class PanelOffset : IFragment
-    { 
-        [Description("This is 0, 1 or 2, indicating the joint offset type.")]
-        public virtual PanelOffsetType OffsetType { get; set; } = PanelOffsetType.None;
+    public partial interface IPanelOffset : IFragment
+    {
 
-        [Description("This item applies only when OffsetType = 1. It is the name of the defined joint pattern that is used to calculate the joint offsets.")]
+    }
+
+    public class PanelOffsetByJointPattern : IPanelOffset
+    {
+        [Description("This is the name of the defined joint pattern that is used to calculate the joint offsets.")]
         public virtual string OffsetPattern { get; set; } = "";
-        [Description("This item applies only when OffsetType = 1. It is the scale factor applied to the joint pattern when calculating the joint offsets.")] 
+        [Description("This is the scale factor applied to the joint pattern when calculating the joint offsets.")]
         public virtual double OffsetPatternSF { get; set; } = 0;
-        [Description("This item applies only when OffsetType = 2. It is an array of joint offsets for each of the points that define the area object.")] 
+    }
+
+    public class PanelOffsetByPoint : IPanelOffset
+    {
+        [Description("This is an array of joint offsets for each of the points that define the area object.")]
         public virtual double[] Offset { get; set; } = null;
     }
 }
