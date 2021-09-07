@@ -34,6 +34,9 @@ namespace BH.oM.Adapters.SAP2000.Elements
 {
     public partial interface IPanelAutoMesh : IFragment
     {
+        [Description("meshType")]
+        PanelAutoMeshType MeshType { get; }
+
         [Description("If this item is True, and if both points along an edge of the original area " +
             "object have the same local axes, the program makes the local axes for added points " +
             "along the edge the same as the edge end points.")]
@@ -70,6 +73,8 @@ namespace BH.oM.Adapters.SAP2000.Elements
     }
     public class PanelAutoMeshByNumberOfObjects : IPanelAutoMesh
     {
+        public virtual PanelAutoMeshType MeshType { get; } = PanelAutoMeshType.NumberOfObjects;
+
         [Description("This is the number of objects " +
     "created along the edge of the meshed area object that runs from point 1 to point 2.")]
         public virtual int N1 { get; set; } = 0;
@@ -87,6 +92,8 @@ namespace BH.oM.Adapters.SAP2000.Elements
     }
     public class PanelAutoMeshByMaximumSize: IPanelAutoMesh
     {
+        public virtual PanelAutoMeshType MeshType { get; } = PanelAutoMeshType.MaximumSize;
+
         [Length]
         [Description("This is the maximum size of objects " +
     "created along the edge of the meshed area object that runs from point 1 to point 2.")]
@@ -106,6 +113,8 @@ namespace BH.oM.Adapters.SAP2000.Elements
     }
     public class PanelAutoMeshByPointsOnEdges : IPanelAutoMesh
     {
+        public virtual PanelAutoMeshType MeshType { get; } = PanelAutoMeshType.PointsOnEdges;
+
         [Description("If this is True, points on the area " +
             "object edges are determined from intersections of straight line objects included in " +
             "the group specified by the Group item with the area object edges.")]
@@ -125,6 +134,8 @@ namespace BH.oM.Adapters.SAP2000.Elements
     }
     public class PanelAutoMeshByCookieCutLines : IPanelAutoMesh
     {
+        public virtual PanelAutoMeshType MeshType { get; } = PanelAutoMeshType.CookieCutLines;
+
         [Description("If this item is True, " +
             "all straight line objects included in the group specified by the Group item " +
             "are extended to intersect the area object edges for the purpose of meshing the area object.")]
@@ -139,6 +150,8 @@ namespace BH.oM.Adapters.SAP2000.Elements
     }
     public class PanelAutoMeshByCookieCutPoints : IPanelAutoMesh
     {
+        public virtual PanelAutoMeshType MeshType { get; } = PanelAutoMeshType.CookieCutPoints;
+
         [Angle]
         [Description("This is an angle in radians that the meshing lines are rotated from their default orientation." +
             "By default these lines align with the area object local 1 and 2 axes.")]
@@ -153,6 +166,8 @@ namespace BH.oM.Adapters.SAP2000.Elements
     }
     public class PanelAutoMeshByGeneralDivide : IPanelAutoMesh
     {
+        public virtual PanelAutoMeshType MeshType { get; } = PanelAutoMeshType.GeneralDivide;
+
         [Length]
         [Description("This is the maximum size of objects created by " +
 "the General Divide Tool.")]

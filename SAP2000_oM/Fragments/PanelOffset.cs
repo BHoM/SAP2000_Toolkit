@@ -32,11 +32,13 @@ namespace BH.oM.Adapters.SAP2000.Elements
 {
     public partial interface IPanelOffset : IFragment
     {
-
+        PanelOffsetType OffsetType { get; }
     }
 
     public class PanelOffsetByJointPattern : IPanelOffset
     {
+        public virtual PanelOffsetType OffsetType { get; } = PanelOffsetType.ByJointPattern;
+
         [Description("This is the name of the defined joint pattern that is used to calculate the joint offsets.")]
         public virtual string OffsetPattern { get; set; } = "";
         [Description("This is the scale factor applied to the joint pattern when calculating the joint offsets.")]
@@ -45,6 +47,8 @@ namespace BH.oM.Adapters.SAP2000.Elements
 
     public class PanelOffsetByPoint : IPanelOffset
     {
+        public virtual PanelOffsetType OffsetType { get; } = PanelOffsetType.ByPoint;
+
         [Description("This is an array of joint offsets for each of the points that define the area object.")]
         public virtual double[] Offset { get; set; } = null;
     }
