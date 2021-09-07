@@ -23,10 +23,14 @@
 using BH.Engine.Geometry;
 using BH.Engine.Spatial;
 using BH.oM.Structure.Elements;
+using BH.Engine.Base;
+using BH.oM.Base;
 using BH.oM.Geometry;
+using BH.Engine.Units;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Adapters.SAP2000;
+using BH.oM.Adapters.SAP2000.Elements;
 using BH.Engine.Adapter;
 using System.Reflection;
 
@@ -111,8 +115,208 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
+            //Set AutoMesh
+            foreach (IFragment fragment in bhPanel.GetAllFragments())
+            {
+                if (SetPanelFragment(fragment as dynamic, name) == false)
+                {
+                    CreatePropertyError(fragment.GetType().ToString(), "Panel", name);
+                }
+            }
+
             return true;
         }
+
+        /***************************************************/
+
+        private bool SetPanelFragment(IFragment fragment, string name)
+        {
+            return false;
+        }
+
+        /***************************************************/
+
+        private bool SetPanelFragment(IPanelAutoMesh fragment, string name)
+        {
+            return false;
+        }
+
+        /***************************************************/
+
+        private bool SetPanelFragment(PanelAutoMeshByNumberOfObjects fragment, string name)
+        {
+            return m_model.AreaObj.SetAutoMesh(name,
+                (int)fragment.MeshType,
+                fragment.N1,
+                fragment.N2,
+                0,
+                0,
+                false,
+                false,
+                false,
+                0,
+                0,
+                fragment.LocalAxesOnEdge,
+                fragment.LocalAxesOnFace,
+                fragment.RestraintsOnEdge,
+                fragment.RestraintsOnFace,
+                fragment.Group,
+                fragment.SubMesh,
+                fragment.SubMeshSize) == 0;
+        }
+
+        /***************************************************/
+
+        private bool SetPanelFragment(PanelAutoMeshByMaximumSize fragment, string name)
+        {
+            return m_model.AreaObj.SetAutoMesh(name,
+                (int)fragment.MeshType,
+                2,
+                2,
+                fragment.MaxSize1,
+                fragment.MaxSize2,
+                false,
+                false,
+                false,
+                0,
+                0,
+                fragment.LocalAxesOnEdge,
+                fragment.LocalAxesOnFace,
+                fragment.RestraintsOnEdge,
+                fragment.RestraintsOnFace,
+                fragment.Group,
+                fragment.SubMesh,
+                fragment.SubMeshSize) == 0;
+        }
+
+        /***************************************************/
+
+        private bool SetPanelFragment(PanelAutoMeshByPointsOnEdges fragment, string name)
+        {
+            return m_model.AreaObj.SetAutoMesh(name,
+                (int)fragment.MeshType,
+                2,
+                2,
+                0,
+                0,
+                fragment.PointOnEdgeFromLine,
+                fragment.PointOnEdgeFromPoint,
+                false,
+                0,
+                0,
+                fragment.LocalAxesOnEdge,
+                fragment.LocalAxesOnFace,
+                fragment.RestraintsOnEdge,
+                fragment.RestraintsOnFace,
+                fragment.Group,
+                fragment.SubMesh,
+                fragment.SubMeshSize) == 0;
+        }
+
+        /***************************************************/
+
+        private bool SetPanelFragment(PanelAutoMeshByCookieCutLines fragment, string name)
+        {
+            return m_model.AreaObj.SetAutoMesh(name,
+                (int)fragment.MeshType,
+                2,
+                2,
+                0,
+                0,
+                false,
+                false,
+                fragment.ExtendCookieCutLines,
+                0,
+                0,
+                fragment.LocalAxesOnEdge,
+                fragment.LocalAxesOnFace,
+                fragment.RestraintsOnEdge,
+                fragment.RestraintsOnFace,
+                fragment.Group,
+                fragment.SubMesh,
+                fragment.SubMeshSize) == 0;
+        }
+
+        /***************************************************/
+
+        private bool SetPanelFragment(PanelAutoMeshByCookieCutPoints fragment, string name)
+        {
+            return m_model.AreaObj.SetAutoMesh(name,
+                (int)fragment.MeshType,
+                2,
+                2,
+                0,
+                0,
+                false,
+                false,
+                false,
+                fragment.Rotation.ToDegree(),
+                0,
+                fragment.LocalAxesOnEdge,
+                fragment.LocalAxesOnFace,
+                fragment.RestraintsOnEdge,
+                fragment.RestraintsOnFace,
+                fragment.Group,
+                fragment.SubMesh,
+                fragment.SubMeshSize) == 0;
+        }
+
+        /***************************************************/
+
+        private bool SetPanelFragment(PanelAutoMeshByGeneralDivide fragment, string name)
+        {
+            return m_model.AreaObj.SetAutoMesh(name,
+                (int)fragment.MeshType,
+                2,
+                2,
+                0,
+                0,
+                false,
+                false,
+                false,
+                0,
+                fragment.MaxSizeGeneral,
+                fragment.LocalAxesOnEdge,
+                fragment.LocalAxesOnFace,
+                fragment.RestraintsOnEdge,
+                fragment.RestraintsOnFace,
+                fragment.Group,
+                fragment.SubMesh,
+                fragment.SubMeshSize) == 0;
+        }
+
+        /***************************************************/
+
+        private bool SetPanelFragment(PanelEdgeConstraint fragment, string name)
+        {
+            return m_model.AreaObj.SetEdgeConstraint(name, fragment.EdgeConstraint) == 0;
+        }
+
+        /***************************************************/
+
+        private bool SetPanelFragment(IPanelOffset fragment, string name)
+        {
+            return false;
+        }
+
+        /***************************************************/
+
+        private bool SetPanelFragment(PanelOffsetByJointPattern fragment, string name)
+        {
+            double[] offsets = new double[4];
+            return m_model.AreaObj.SetOffsets(name, (int)fragment.OffsetType, fragment.OffsetPattern, fragment.OffsetPatternSF, ref offsets) == 0;
+        }
+
+        /***************************************************/
+
+        private bool SetPanelFragment(PanelOffsetByPoint fragment, string name)
+        {
+            double[] offsets = fragment.Offset;
+            bool success =  m_model.AreaObj.SetOffsets(name, (int)fragment.OffsetType, "", 0, ref offsets) == 0;
+            return success && offsets == fragment.Offset;
+        }
+
+        /***************************************************/
     }
 }
 
