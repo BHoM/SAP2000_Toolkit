@@ -25,6 +25,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BH.oM.Reflection.Attributes;
+using BH.oM.Quantities.Attributes;
 using System.ComponentModel;
 using BH.oM.Base;
 
@@ -85,10 +87,12 @@ namespace BH.oM.Adapters.SAP2000.Elements
     }
     public class PanelAutoMeshByMaximumSize: IPanelAutoMesh
     {
+        [Length]
         [Description("This is the maximum size of objects " +
     "created along the edge of the meshed area object that runs from point 1 to point 2.")]
         public virtual double MaxSize1 { get; set; } = 0;
 
+        [Length]
         [Description("This is the maximum size of objects " +
             "created along the edge of the meshed area object that runs from point 1 to point 3.")]
         public virtual double MaxSize2 { get; set; } = 0;
@@ -135,6 +139,7 @@ namespace BH.oM.Adapters.SAP2000.Elements
     }
     public class PanelAutoMeshByCookieCutPoints : IPanelAutoMesh
     {
+        [Angle]
         [Description("This is an angle in radians that the meshing lines are rotated from their default orientation." +
             "By default these lines align with the area object local 1 and 2 axes.")]
         public virtual double Rotation { get; set; } = 0;
@@ -148,7 +153,8 @@ namespace BH.oM.Adapters.SAP2000.Elements
     }
     public class PanelAutoMeshByGeneralDivide : IPanelAutoMesh
     {
-        [Description("This  It is the maximum size of objects created by " +
+        [Length]
+        [Description("This is the maximum size of objects created by " +
 "the General Divide Tool.")]
         public virtual double MaxSizeGeneral { get; set; } = 0;
         public virtual bool LocalAxesOnEdge { get; set; } = false;
