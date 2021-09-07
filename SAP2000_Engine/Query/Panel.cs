@@ -34,17 +34,17 @@ namespace BH.Engine.Adapters.SAP2000
 {
     public static partial class Query
     {
-        public static PanelAutoMesh PanelAutoMesh(this Panel panel)
+        public static IPanelAutoMesh PanelAutoMesh(this Panel panel)
         {
-            return panel.FindFragment<PanelAutoMesh>();
+            return panel.FindFragment<IPanelAutoMesh>();
         }
         public static PanelEdgeConstraint PanelEdgeConstraint(this Panel panel)
         {
             return panel.FindFragment<PanelEdgeConstraint>();
         }
-        public static PanelOffset PanelOffset(this Panel panel)
+        public static IPanelOffset PanelOffset(this Panel panel)
         {
-            return panel.FindFragment<PanelOffset>();
+            return panel.FindFragment<IPanelOffset>();
         }
 
     }
