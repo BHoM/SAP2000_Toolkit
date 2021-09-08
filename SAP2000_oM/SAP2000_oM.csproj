@@ -68,8 +68,6 @@
   <ItemGroup>
     <Compile Include="Config\SAP2000PushConfig.cs" />
     <Compile Include="Elements\AISCSteelUtilisation.cs" />
-    <Compile Include="Enums\PanelOffsetType.cs" />
-    <Compile Include="Enums\PanelAutoMeshType.cs" />
     <Compile Include="Enums\SteelDesignCode.cs" />
     <Compile Include="Enums\BarDesignProcedureType.cs" />
     <Compile Include="Enums\BarInsertionPointLocation.cs" />
