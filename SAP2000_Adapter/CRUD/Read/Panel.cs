@@ -28,7 +28,7 @@ using BH.oM.Dimensional;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Adapters.SAP2000;
-using BH.oM.Adapters.SAP2000.Elements;
+using BH.oM.Adapters.SAP2000.Fragments;
 using BH.Engine.Adapters.SAP2000;
 using BH.Engine.Adapter;
 using BH.Engine.Units;
@@ -114,7 +114,7 @@ namespace BH.Adapter.SAP2000
 
                 // Automesh
 
-                int meshType = (int)PanelAutoMeshType.None;
+                int meshType = 0;
                 int n1 = 0;
                 int n2 = 0;
                 double maxSize1 = 0;
@@ -137,9 +137,9 @@ namespace BH.Adapter.SAP2000
                     ref rotation, ref maxSizeGeneral, ref localAxesOnEdge, ref localAxesOnFace,
                     ref restraintsOnEdge, ref restraintsOnFace, ref group, ref subMesh, ref subMeshSize);
 
-                switch ((PanelAutoMeshType)meshType)
+                switch (meshType)
                 {
-                    case PanelAutoMeshType.NumberOfObjects:
+                    case 1:
                         bhomPanel = (Panel)bhomPanel.AddFragment(new PanelAutoMeshByNumberOfObjects() { 
                             N1 = n1,
                             N2 = n2,
@@ -152,7 +152,7 @@ namespace BH.Adapter.SAP2000
                             SubMeshSize = subMeshSize
                         });
                         break;
-                    case PanelAutoMeshType.MaximumSize:
+                    case 2:
                         bhomPanel = (Panel)bhomPanel.AddFragment(new PanelAutoMeshByMaximumSize()
                         {
                             MaxSize1 = maxSize1,
@@ -166,7 +166,7 @@ namespace BH.Adapter.SAP2000
                             SubMeshSize = subMeshSize
                         });
                         break;
-                    case PanelAutoMeshType.PointsOnEdges:
+                    case 3:
                         bhomPanel = (Panel)bhomPanel.AddFragment(new PanelAutoMeshByPointsOnEdges()
                         {
                             PointOnEdgeFromLine = pointOnEdgeFromLine,
@@ -180,7 +180,7 @@ namespace BH.Adapter.SAP2000
                             SubMeshSize = subMeshSize
                         }); ;
                         break;
-                    case PanelAutoMeshType.CookieCutLines:
+                    case 4:
                         bhomPanel = (Panel)bhomPanel.AddFragment(new PanelAutoMeshByCookieCutLines()
                         {
                             ExtendCookieCutLines = extendCookieCutLines,
@@ -193,7 +193,7 @@ namespace BH.Adapter.SAP2000
                             SubMeshSize = subMeshSize
                         }) ;
                         break;
-                    case PanelAutoMeshType.CookieCutPoints:
+                    case 5:
                         bhomPanel = (Panel)bhomPanel.AddFragment(new PanelAutoMeshByCookieCutPoints()
                         {
                             Rotation = rotation.FromDegree(),
@@ -206,7 +206,7 @@ namespace BH.Adapter.SAP2000
                             SubMeshSize = subMeshSize
                         }) ;
                         break;
-                    case PanelAutoMeshType.GeneralDivide:
+                    case 6:
                         bhomPanel = (Panel)bhomPanel.AddFragment(new PanelAutoMeshByGeneralDivide()
                         {
                             MaxSizeGeneral = maxSizeGeneral,
@@ -219,7 +219,7 @@ namespace BH.Adapter.SAP2000
                             SubMeshSize = subMeshSize
                         });
                         break;
-                    case PanelAutoMeshType.None:
+                    case 0:
                     default:
                         break;
                 }
@@ -234,42 +234,42 @@ namespace BH.Adapter.SAP2000
 
                 // Material Overwrite
 
-                string propName = "";
+                string matName = "";
 
-                m_model.AreaObj.GetMaterialOverwrite(id, ref propName);
+                m_model.AreaObj.GetMaterialOverwrite(id, ref matName);
 
-                if (propName != "None")
+                if (matName != "None")
                 {
                     ISurfaceProperty property = Engine.Base.Query.ShallowClone(bhomPanel.Property);
-                    property.Material = ReadMaterial(new List<string> { propName }).FirstOrDefault();
+                    property.Material = ReadMaterial(new List<string> { matName }).FirstOrDefault();
+                    property.Name = property.Name + "-" + matName;
                     bhomPanel.Property = property;
                 }
 
                 // Offsets
 
-                int offsetType = (int)PanelOffsetType.None;
+                int offsetType = 0;
                 string offsetPattern = "";
                 double offsetPatternSF = 0;
                 double[] offset = null;
 
                 m_model.AreaObj.GetOffsets(id, ref offsetType, ref offsetPattern, ref offsetPatternSF, ref offset);
 
-                switch ((PanelOffsetType)offsetType)
+                switch (offsetType)
                 {
-                    case PanelOffsetType.ByJointPattern:
+                    case 1:
                         bhomPanel = (Panel)bhomPanel.AddFragment(new PanelOffsetByJointPattern()
                         {
                             OffsetPattern = offsetPattern,
                             OffsetPatternSF = offsetPatternSF
                         });
                         break;
-                    case PanelOffsetType.ByPoint:
+                    case 2:
                         bhomPanel = (Panel)bhomPanel.AddFragment(new PanelOffsetByPoint()
                         {
                             Offset = offset,
                         }) ;
                         break;
-                    case PanelOffsetType.None:
                     default:
                         break;
                 }

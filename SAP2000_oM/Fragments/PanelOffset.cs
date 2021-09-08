@@ -25,30 +25,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BH.oM.Quantities.Attributes;
 using System.ComponentModel;
 using BH.oM.Base;
 
-namespace BH.oM.Adapters.SAP2000.Elements
+namespace BH.oM.Adapters.SAP2000.Fragments
 {
+    [Description("Base interface for panel offsets in SAP. Contains only the type of offset.")]
     public partial interface IPanelOffset : IFragment
     {
-        PanelOffsetType OffsetType { get; }
     }
 
     public class PanelOffsetByJointPattern : IPanelOffset
     {
-        public virtual PanelOffsetType OffsetType { get; } = PanelOffsetType.ByJointPattern;
-
         [Description("This is the name of the defined joint pattern that is used to calculate the joint offsets.")]
         public virtual string OffsetPattern { get; set; } = "";
+
+        [Length]
         [Description("This is the scale factor applied to the joint pattern when calculating the joint offsets.")]
         public virtual double OffsetPatternSF { get; set; } = 0;
     }
 
     public class PanelOffsetByPoint : IPanelOffset
     {
-        public virtual PanelOffsetType OffsetType { get; } = PanelOffsetType.ByPoint;
-
+        [Length]
         [Description("This is an array of joint offsets for each of the points that define the area object.")]
         public virtual double[] Offset { get; set; } = null;
     }

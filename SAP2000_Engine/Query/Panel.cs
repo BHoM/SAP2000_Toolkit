@@ -26,7 +26,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
-using BH.oM.Adapters.SAP2000.Elements;
+using BH.oM.Adapters.SAP2000.Fragments;
 using BH.oM.Adapters.SAP2000;
 using BH.Engine.Base;
 
