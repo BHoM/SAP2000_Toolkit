@@ -30,7 +30,7 @@ using BH.Engine.Units;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Adapters.SAP2000;
-using BH.oM.Adapters.SAP2000.Elements;
+using BH.oM.Adapters.SAP2000.Fragments;
 using BH.Engine.Adapter;
 using System.Reflection;
 
@@ -129,6 +129,13 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
+        private bool SetPanelFragment(SAP2000Id fragment, string name)
+        {
+            return true;
+        }
+
+        /***************************************************/
+
         private bool SetPanelFragment(IFragment fragment, string name)
         {
             return false;
@@ -146,7 +153,7 @@ namespace BH.Adapter.SAP2000
         private bool SetPanelFragment(PanelAutoMeshByNumberOfObjects fragment, string name)
         {
             return m_model.AreaObj.SetAutoMesh(name,
-                (int)fragment.MeshType,
+                1,
                 fragment.N1,
                 fragment.N2,
                 0,
@@ -170,7 +177,7 @@ namespace BH.Adapter.SAP2000
         private bool SetPanelFragment(PanelAutoMeshByMaximumSize fragment, string name)
         {
             return m_model.AreaObj.SetAutoMesh(name,
-                (int)fragment.MeshType,
+                2,
                 2,
                 2,
                 fragment.MaxSize1,
@@ -194,7 +201,7 @@ namespace BH.Adapter.SAP2000
         private bool SetPanelFragment(PanelAutoMeshByPointsOnEdges fragment, string name)
         {
             return m_model.AreaObj.SetAutoMesh(name,
-                (int)fragment.MeshType,
+                3,
                 2,
                 2,
                 0,
@@ -218,7 +225,7 @@ namespace BH.Adapter.SAP2000
         private bool SetPanelFragment(PanelAutoMeshByCookieCutLines fragment, string name)
         {
             return m_model.AreaObj.SetAutoMesh(name,
-                (int)fragment.MeshType,
+                4,
                 2,
                 2,
                 0,
@@ -242,7 +249,7 @@ namespace BH.Adapter.SAP2000
         private bool SetPanelFragment(PanelAutoMeshByCookieCutPoints fragment, string name)
         {
             return m_model.AreaObj.SetAutoMesh(name,
-                (int)fragment.MeshType,
+                5,
                 2,
                 2,
                 0,
@@ -266,7 +273,7 @@ namespace BH.Adapter.SAP2000
         private bool SetPanelFragment(PanelAutoMeshByGeneralDivide fragment, string name)
         {
             return m_model.AreaObj.SetAutoMesh(name,
-                (int)fragment.MeshType,
+                6,
                 2,
                 2,
                 0,
@@ -304,7 +311,7 @@ namespace BH.Adapter.SAP2000
         private bool SetPanelFragment(PanelOffsetByJointPattern fragment, string name)
         {
             double[] offsets = new double[4];
-            return m_model.AreaObj.SetOffsets(name, (int)fragment.OffsetType, fragment.OffsetPattern, fragment.OffsetPatternSF, ref offsets) == 0;
+            return m_model.AreaObj.SetOffsets(name, 1, fragment.OffsetPattern, fragment.OffsetPatternSF, ref offsets) == 0;
         }
 
         /***************************************************/
@@ -312,8 +319,8 @@ namespace BH.Adapter.SAP2000
         private bool SetPanelFragment(PanelOffsetByPoint fragment, string name)
         {
             double[] offsets = fragment.Offset;
-            bool success =  m_model.AreaObj.SetOffsets(name, (int)fragment.OffsetType, "", 0, ref offsets) == 0;
-            return success && offsets == fragment.Offset;
+            bool success =  m_model.AreaObj.SetOffsets(name, 2, "", 0, ref offsets) == 0;
+            return success && offsets.SequenceEqual(fragment.Offset);
         }
 
         /***************************************************/
