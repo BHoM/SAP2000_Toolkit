@@ -26,9 +26,9 @@ using BH.oM.Structure.Elements;
 using BH.Engine.Base;
 using BH.oM.Base;
 using BH.oM.Geometry;
-using BH.Engine.Units;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using BH.oM.Adapters.SAP2000;
 using BH.oM.Adapters.SAP2000.Fragments;
 using BH.Engine.Adapter;
@@ -257,7 +257,7 @@ namespace BH.Adapter.SAP2000
                 false,
                 false,
                 false,
-                fragment.Rotation.ToDegree(),
+                fragment.Rotation * 180 / Math.PI,
                 0,
                 fragment.LocalAxesOnEdge,
                 fragment.LocalAxesOnFace,
