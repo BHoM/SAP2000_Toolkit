@@ -31,7 +31,6 @@ using BH.oM.Adapters.SAP2000;
 using BH.oM.Adapters.SAP2000.Fragments;
 using BH.Engine.Adapters.SAP2000;
 using BH.Engine.Adapter;
-using BH.Engine.Units;
 using BH.Engine.Base;
 using System;
 using SAP2000v1;
@@ -196,7 +195,7 @@ namespace BH.Adapter.SAP2000
                     case 5:
                         bhomPanel = (Panel)bhomPanel.AddFragment(new PanelAutoMeshByCookieCutPoints()
                         {
-                            Rotation = rotation.FromDegree(),
+                            Rotation = rotation * Math.PI / 180,
                             LocalAxesOnEdge = localAxesOnEdge,
                             LocalAxesOnFace = localAxesOnFace,
                             RestraintsOnEdge = restraintsOnEdge,
@@ -204,7 +203,7 @@ namespace BH.Adapter.SAP2000
                             Group = group,
                             SubMesh = subMesh,
                             SubMeshSize = subMeshSize
-                        }) ;
+                        });
                         break;
                     case 6:
                         bhomPanel = (Panel)bhomPanel.AddFragment(new PanelAutoMeshByGeneralDivide()
