@@ -150,6 +150,8 @@ namespace BH.Adapter.SAP2000
                 return ReadBarVaryingDistributedLoad();
             else if (type == typeof(BarUniformTemperatureLoad))
                 return ReadBarUniformTemperatureLoad();
+            else if (type == typeof(BarDifferentialTemperatureLoad))
+                return ReadBarDifferentialTemperatureLoad();
             else if (type == typeof(ContourLoad))
                 return ReadContourLoad();
             else if (type == typeof(GeometricalLineLoad))
@@ -520,18 +522,82 @@ namespace BH.Adapter.SAP2000
                     Bar bhomBar = bhomBars[barNames[i]];
                     double tempChange = val[i];
 
-                    if (loadType[i] != 1)
-                        Engine.Reflection.Compute.RecordError("The BHoM currently only supports uniform temperature changes applied to bars, not temperature gradients across t" +
-                            "\nApplied SAP2000 gradients will be pulled as single temperature value into the BHoM.");
-
-                    loads.Add(new BarUniformTemperatureLoad()
+                    if (loadType[i] == 1)
                     {
-                        TemperatureChange = tempChange,
-                        Loadcase = bhomCases[caseNames[i]],
-                        Objects = new BHoMGroup<Bar> { Elements = { bhomBar } },
-                        Axis = LoadAxis.Global,
-                        Projected = false,
-                    });
+                        loads.Add(new BarUniformTemperatureLoad()
+                        {
+                            TemperatureChange = tempChange,
+                            Loadcase = bhomCases[caseNames[i]],
+                            Objects = new BHoMGroup<Bar> { Elements = { bhomBar } },
+                            Axis = LoadAxis.Global,
+                            Projected = false,
+                        });
+                    }
+                }
+            }
+
+            return loads;
+        }
+
+        /***************************************************/
+
+        private List<ILoad> ReadBarDifferentialTemperatureLoad(List<string> id = null)
+        {
+            List<ILoad> loads = new List<ILoad>();
+
+            Dictionary<string, Loadcase> bhomCases = ReadLoadcase().ToDictionary(x => x.Name.ToString());
+            Dictionary<string, Bar> bhomBars = ReadBars().ToDictionary(x => GetAdapterId<string>(x));
+
+            int count = 0;
+            string[] barNames = null;
+            string[] caseNames = null;
+            int[] loadType = null;
+            string[] jointPattern = null;
+            double[] val = null;
+
+            if (m_model.FrameObj.GetLoadTemperature("ALL", ref count, ref barNames, ref caseNames, ref loadType, ref val, ref jointPattern, eItemType.Group) == 0)
+            {
+                for (int i = 0; i < count; i++)
+                {
+                    Bar bhomBar = bhomBars[barNames[i]];
+
+                    if (jointPattern[i] == "None")
+                    {
+                        Engine.Reflection.Compute.RecordWarning("BarDifferentialTemperatureLoads cannot vary along the bar - only constant temperatures and variation across the bar are supported. The load has been ignored.");
+                    }
+                    else
+                    {
+                        switch (loadType[i])
+                        {
+                            case 2:
+                                double width = bhomBar.SectionProperty.Vpy + bhomBar.SectionProperty.Vy;
+                                loads.Add(new BarDifferentialTemperatureLoad()
+                                {
+                                    TemperatureProfile = new Dictionary<double, double>() { { 0, 0 }, { 1, val[i] * width } },
+                                    LoadDirection = DifferentialTemperatureLoadDirection.LocalY,
+                                    Loadcase = bhomCases[caseNames[i]],
+                                    Objects = new BHoMGroup<Bar> { Elements = { bhomBar } },
+                                    Axis = LoadAxis.Global,
+                                    Projected = false,
+                                });
+                                break;
+                            case 3:
+                                double height = bhomBar.SectionProperty.Vpz + bhomBar.SectionProperty.Vz;
+                                loads.Add(new BarDifferentialTemperatureLoad()
+                                {
+                                    TemperatureProfile = new Dictionary<double, double>() { { 0, 0 }, { 1, val[i] * height } },
+                                    LoadDirection = DifferentialTemperatureLoadDirection.LocalZ,
+                                        Loadcase = bhomCases[caseNames[i]],
+                                        Objects = new BHoMGroup<Bar> { Elements = { bhomBar } },
+                                        Axis = LoadAxis.Global,
+                                        Projected = false,
+                                    });
+                                break;
+                            case 1:
+                            default:
+                                break;
+                        }
+                    }
                 }
             }
 
