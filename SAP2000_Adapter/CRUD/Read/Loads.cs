@@ -170,7 +170,7 @@ namespace BH.Adapter.SAP2000
                 return ReadPointAcceleration();
             else if (type == typeof(GravityLoad))
                 return ReadGravityLoad();
-            else
+            else if (type is null)
             {
                 List<ILoad> loads = new List<ILoad>();
                 loads.AddRange(ReadPointLoad());
@@ -182,6 +182,10 @@ namespace BH.Adapter.SAP2000
                 loads.AddRange(ReadPointDispl());
                 return loads;
             }
+            else
+                Engine.Reflection.Compute.RecordError($"Could not read loads, reading loads of type: {type} is not implemented");
+
+            return new List<ILoad>();
         }
 
         /***************************************************/
