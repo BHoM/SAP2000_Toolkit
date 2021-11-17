@@ -591,7 +591,48 @@ namespace BH.Adapter.SAP2000
 
             return true;
         }
-        
+
+        /***************************************************/
+
+        private bool CreateLoad(BarDifferentialTemperatureLoad bhLoad)
+        {
+            List<Bar> bars = bhLoad.Objects.Elements.ToList();
+            string loadPat = GetAdapterId<string>(bhLoad.Loadcase);
+            string patternName = "None";
+            bool replace = SAPPushConfig.ReplaceLoads;
+            int myType = 1;
+
+            double tempUniform = bhLoad.GetUniformComponent();
+
+            // Loop through bars and set load for each bar
+            foreach (Bar bar in bars)
+            {
+                string barName = GetAdapterId<string>(bar);
+
+                double tempGradient = bhLoad.GetDifferentialComponent(bar, out myType);
+
+                if (double.IsNaN(tempGradient))
+                {
+                    CreateElementError("BarDifferentialTemperatureLoad", barName);
+                    continue; // skip this bar if it didn't work.
+                }
+
+                if (m_model.FrameObj.SetLoadTemperature(barName, loadPat, myType, tempGradient, patternName, replace, eItemType.Objects) != 0)
+                    CreateElementError("BarDifferentialTemperatureLoad", bar.Name);
+
+                if (tempUniform != 0)
+                {
+                    Engine.Reflection.Compute.RecordNote("BarDifferentialTemperatureLoad has been split into gradient and uniform components");
+                    if (m_model.FrameObj.SetLoadTemperature(barName, loadPat, 1, tempUniform, patternName, false, eItemType.Objects) != 0)                    
+                        CreateElementError("BarDifferentialTemperatureLoad", bar.Name);
+                }
+            }
+
+            SetAdapterId(bhLoad, null);
+
+            return true;
+        }
+
         /***************************************************/
 
         private bool CreateLoad(ILoad bhLoad)
