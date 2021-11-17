@@ -21,6 +21,7 @@
  */
 
 using BH.oM.Structure.Loads;
+using BH.oM.Structure.Elements;
 using SAP2000v1;
 using System;
 using System.Collections.Generic;
@@ -103,6 +104,55 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
+
+        public static double GetUniformComponent(this BarDifferentialTemperatureLoad load)
+        {
+            return load.TemperatureProfile[0];
+        }
+
+        /***************************************************/
+    
+        public static double GetDifferentialComponent(this BarDifferentialTemperatureLoad load, Bar bar, out int myType)
+        {
+            Dictionary<double, double> profile = load.TemperatureProfile;
+            double length;
+            myType = 1;
+
+            if (bar.SectionProperty == null)
+            {
+                Engine.Reflection.Compute.RecordError("Cannot assign a BarDifferentialTemperature load to a bar with no SectionProperty.");
+                return double.NaN;
+            }
+
+            switch (load.LoadDirection)
+            {
+                case DifferentialTemperatureLoadDirection.LocalY:
+                    length = bar.SectionProperty.Vy + bar.SectionProperty.Vpy;
+                    myType = 2;
+                    break;
+                case DifferentialTemperatureLoadDirection.LocalZ:
+                    length = bar.SectionProperty.Vz + bar.SectionProperty.Vpz;
+                    myType = 3;
+                    break;
+                default:
+                    Engine.Reflection.Compute.RecordError("Could not understand BarDifferentialTemperatureLoad Direction.");
+                    return double.NaN;
+
+            }
+
+            double temp = (profile[1] - profile[0])/length;
+
+            foreach (double key in profile.Keys)
+            {
+                if (profile[key] - profile[0] != key * temp) Engine.Reflection.Compute.RecordWarning("Only linear temperature gradients are allowed.");
+                break;
+            }
+
+            return temp;
+        }
+
+        /***************************************************/
+
     }
 }
 
