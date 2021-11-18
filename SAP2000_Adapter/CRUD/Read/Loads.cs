@@ -569,14 +569,14 @@ namespace BH.Adapter.SAP2000
                         switch (loadType[i])
                         {
                             case 2:
-                                topTemp = val[i] * (bhomBar.SectionProperty.Vpy + bhomBar.SectionProperty.Vy);
-                                bottomTemp = 0.0;
+                                topTemp = val[i] * (bhomBar.SectionProperty.Vpy + bhomBar.SectionProperty.Vy) / 2;
+                                bottomTemp = -val[i] * (bhomBar.SectionProperty.Vpy + bhomBar.SectionProperty.Vy) / 2;
 
                                 loads.Add(Engine.Structure.Create.BarDifferentialTemperatureLoad(bhomCases[caseNames[i]], topTemp, bottomTemp, DifferentialTemperatureLoadDirection.LocalY, new List<Bar> { bhomBar }));
                                 break;
                             case 3:
-                                topTemp = val[i] * (bhomBar.SectionProperty.Vpz + bhomBar.SectionProperty.Vz);
-                                bottomTemp = 0.0;
+                                topTemp = val[i] * (bhomBar.SectionProperty.Vpz + bhomBar.SectionProperty.Vz) / 2;
+                                bottomTemp = -val[i] * (bhomBar.SectionProperty.Vpz + bhomBar.SectionProperty.Vz) / 2;
 
                                 loads.Add(Engine.Structure.Create.BarDifferentialTemperatureLoad(bhomCases[caseNames[i]], topTemp, bottomTemp, DifferentialTemperatureLoadDirection.LocalZ, new List<Bar> { bhomBar }));
                                 break;
