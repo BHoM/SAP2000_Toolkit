@@ -551,6 +551,8 @@ namespace BH.Adapter.SAP2000
             int[] loadType = null;
             string[] jointPattern = null;
             double[] val = null;
+            double topTemp;
+            double bottomTemp;
 
             if (m_model.FrameObj.GetLoadTemperature("ALL", ref count, ref barNames, ref caseNames, ref loadType, ref val, ref jointPattern, eItemType.Group) == 0)
             {
@@ -567,28 +569,16 @@ namespace BH.Adapter.SAP2000
                         switch (loadType[i])
                         {
                             case 2:
-                                double width = bhomBar.SectionProperty.Vpy + bhomBar.SectionProperty.Vy;
-                                loads.Add(new BarDifferentialTemperatureLoad()
-                                {
-                                    TemperatureProfile = new Dictionary<double, double>() { { 0, 0 }, { 1, val[i] * width } },
-                                    LoadDirection = DifferentialTemperatureLoadDirection.LocalY,
-                                    Loadcase = bhomCases[caseNames[i]],
-                                    Objects = new BHoMGroup<Bar> { Elements = { bhomBar } },
-                                    Axis = LoadAxis.Global,
-                                    Projected = false,
-                                });
+                                topTemp = val[i] * (bhomBar.SectionProperty.Vpy + bhomBar.SectionProperty.Vy);
+                                bottomTemp = 0.0;
+
+                                loads.Add(Engine.Structure.Create.BarDifferentialTemperatureLoad(bhomCases[caseNames[i]], topTemp, bottomTemp, DifferentialTemperatureLoadDirection.LocalY, new List<Bar> { bhomBar }));
                                 break;
                             case 3:
-                                double height = bhomBar.SectionProperty.Vpz + bhomBar.SectionProperty.Vz;
-                                loads.Add(new BarDifferentialTemperatureLoad()
-                                {
-                                    TemperatureProfile = new Dictionary<double, double>() { { 0, 0 }, { 1, val[i] * height } },
-                                    LoadDirection = DifferentialTemperatureLoadDirection.LocalZ,
-                                        Loadcase = bhomCases[caseNames[i]],
-                                        Objects = new BHoMGroup<Bar> { Elements = { bhomBar } },
-                                        Axis = LoadAxis.Global,
-                                        Projected = false,
-                                    });
+                                topTemp = val[i] * (bhomBar.SectionProperty.Vpz + bhomBar.SectionProperty.Vz);
+                                bottomTemp = 0.0;
+
+                                loads.Add(Engine.Structure.Create.BarDifferentialTemperatureLoad(bhomCases[caseNames[i]], topTemp, bottomTemp, DifferentialTemperatureLoadDirection.LocalZ, new List<Bar> { bhomBar }));
                                 break;
                             case 1:
                             default:
