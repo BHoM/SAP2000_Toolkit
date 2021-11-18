@@ -107,7 +107,7 @@ namespace BH.Adapter.SAP2000
 
         public static double GetUniformComponent(this BarDifferentialTemperatureLoad load)
         {
-            return load.TemperatureProfile[0];
+            return (load.TemperatureProfile[0] + load.TemperatureProfile[1])/2;
         }
 
         /***************************************************/
@@ -144,7 +144,7 @@ namespace BH.Adapter.SAP2000
 
             foreach (double key in profile.Keys)
             {
-                if (profile[key] - profile[0] != key * temp) Engine.Reflection.Compute.RecordWarning("Only linear temperature gradients are allowed.");
+                if (profile[key] - GetUniformComponent(load) != key * temp) Engine.Reflection.Compute.RecordWarning("Only linear temperature gradients are allowed.");
                 break;
             }
 
