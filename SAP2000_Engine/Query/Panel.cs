@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This file is part of the Buildings and Habitats object Model (BHoM)
  * Copyright (c) 2015 - 2021, the respective contributors. All rights reserved.
  *
@@ -19,7 +19,6 @@
  * You should have received a copy of the GNU Lesser General Public License     
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,14 +37,15 @@ namespace BH.Engine.Adapters.SAP2000
         {
             return panel.FindFragment<IPanelAutoMesh>();
         }
+
         public static PanelEdgeConstraint PanelEdgeConstraint(this Panel panel)
         {
             return panel.FindFragment<PanelEdgeConstraint>();
         }
+
         public static IPanelOffset PanelOffset(this Panel panel)
         {
             return panel.FindFragment<IPanelOffset>();
         }
-
     }
 }
