@@ -27,22 +27,33 @@ using System.Threading.Tasks;
 using BH.oM.Structure.Elements;
 using BH.oM.Adapters.SAP2000.Fragments;
 using BH.oM.Adapters.SAP2000;
+using System.ComponentModel;
+using BH.oM.Reflection.Attributes;
 using BH.Engine.Base;
 
 namespace BH.Engine.Adapters.SAP2000
 {
     public static partial class Query
     {
+        [Description("Returns the SAP2000 PanelAutoMesh settings for a panel. You can also use the method FindFragment() with the type IPanelAutoMesh as an argument.")]
+        [Input("panel", "A panel which was either pulled from SAP2000 or which has had SAP2000 settings added.")]
+        [Output("PanelAutoMesh", "A fragment containing SAP2000 PanelAutoMesh settings")]
         public static IPanelAutoMesh PanelAutoMesh(this Panel panel)
         {
             return panel.FindFragment<IPanelAutoMesh>();
         }
 
+        [Description("Returns the SAP2000 PanelEdgeConstraint settings for a panel. You can also use the method FindFragment() with the type PanelEdgeConstraint as an argument.")]
+        [Input("panel", "A panel which was either pulled from SAP2000 or which has had SAP2000 settings added.")]
+        [Output("PanelEdgeConstraint", "A fragment containing SAP2000 PanelEdgeConstraint settings")]
         public static PanelEdgeConstraint PanelEdgeConstraint(this Panel panel)
         {
             return panel.FindFragment<PanelEdgeConstraint>();
         }
 
+        [Description("Returns the SAP2000 PanelOffset settings for a panel. You can also use the method FindFragment() with the type IPanelOffset as an argument.")]
+        [Input("panel", "A panel which was either pulled from SAP2000 or which has had SAP2000 settings added.")]
+        [Output("PanelOffset", "A fragment containing SAP2000 PanelOffset settings")]
         public static IPanelOffset PanelOffset(this Panel panel)
         {
             return panel.FindFragment<IPanelOffset>();
