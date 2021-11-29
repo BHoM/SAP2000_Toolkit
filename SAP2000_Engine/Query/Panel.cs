@@ -37,26 +37,26 @@ namespace BH.Engine.Adapters.SAP2000
     {
         [Description("Returns the SAP2000 PanelAutoMesh settings for a panel. You can also use the method FindFragment() with the type IPanelAutoMesh as an argument.")]
         [Input("panel", "A panel which was either pulled from SAP2000 or which has had SAP2000 settings added.")]
-        [Output("PanelAutoMesh", "A fragment containing SAP2000 PanelAutoMesh settings")]
+        [Output("PanelAutoMesh", "A fragment containing SAP2000 PanelAutoMesh settings.")]
         public static IPanelAutoMesh PanelAutoMesh(this Panel panel)
         {
-            return panel.FindFragment<IPanelAutoMesh>();
+            return panel?.FindFragment<IPanelAutoMesh>();
         }
 
         [Description("Returns the SAP2000 PanelEdgeConstraint settings for a panel. You can also use the method FindFragment() with the type PanelEdgeConstraint as an argument.")]
         [Input("panel", "A panel which was either pulled from SAP2000 or which has had SAP2000 settings added.")]
-        [Output("PanelEdgeConstraint", "A fragment containing SAP2000 PanelEdgeConstraint settings")]
+        [Output("PanelEdgeConstraint", "A fragment containing SAP2000 PanelEdgeConstraint settings.")]
         public static PanelEdgeConstraint PanelEdgeConstraint(this Panel panel)
         {
-            return panel.FindFragment<PanelEdgeConstraint>();
+            return panel?.FindFragment<PanelEdgeConstraint>();
         }
 
         [Description("Returns the SAP2000 PanelOffset settings for a panel. You can also use the method FindFragment() with the type IPanelOffset as an argument.")]
         [Input("panel", "A panel which was either pulled from SAP2000 or which has had SAP2000 settings added.")]
-        [Output("PanelOffset", "A fragment containing SAP2000 PanelOffset settings")]
+        [Output("PanelOffset", "A fragment containing SAP2000 PanelOffset settings.")]
         public static IPanelOffset PanelOffset(this Panel panel)
         {
-            return panel.FindFragment<IPanelOffset>();
+            return panel?.FindFragment<IPanelOffset>();
         }
     }
 }
