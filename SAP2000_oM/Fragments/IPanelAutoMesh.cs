@@ -21,10 +21,12 @@
  */
 using BH.oM.Base;
 using System.ComponentModel;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.oM.Adapters.SAP2000.Fragments
 {
     [Description("Base interface for panel auto mesh settings in SAP2000. Contains the type of auto mesh and the properties common to all types.")]
+    [Unique]
     public interface IPanelAutoMesh : IFragment
     {
         [Description("If this item is True, and if both points along an edge of the original area " + "object have the same local axes, the program makes the local axes for added points " + "along the edge the same as the edge end points.")]
