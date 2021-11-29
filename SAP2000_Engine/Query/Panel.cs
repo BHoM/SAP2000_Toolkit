@@ -30,6 +30,7 @@ using BH.oM.Adapters.SAP2000;
 using System.ComponentModel;
 using BH.oM.Reflection.Attributes;
 using BH.Engine.Base;
+using BH.oM.Base;
 
 namespace BH.Engine.Adapters.SAP2000
 {
@@ -40,7 +41,9 @@ namespace BH.Engine.Adapters.SAP2000
         [Output("PanelAutoMesh", "A fragment containing SAP2000 PanelAutoMesh settings.")]
         public static IPanelAutoMesh PanelAutoMesh(this Panel panel)
         {
-            return panel?.FindFragment<IPanelAutoMesh>();
+            List<IFragment> fragments = panel?.GetAllFragments(typeof(IPanelAutoMesh));
+            if (fragments.Count > 1) Reflection.Compute.RecordWarning($"the panel {panel.Name} has more than one PanelOffset defined, which is not allowed. Only the first has been returned. Use GetAllFragments() to extract others.");
+            return fragments.Select(x => x as IPanelAutoMesh).FirstOrDefault();
         }
 
         [Description("Returns the SAP2000 PanelEdgeConstraint settings for a panel. You can also use the method FindFragment() with the type PanelEdgeConstraint as an argument.")]
@@ -56,7 +59,9 @@ namespace BH.Engine.Adapters.SAP2000
         [Output("PanelOffset", "A fragment containing SAP2000 PanelOffset settings.")]
         public static IPanelOffset PanelOffset(this Panel panel)
         {
-            return panel?.FindFragment<IPanelOffset>();
+            List<IFragment> fragments = panel?.GetAllFragments(typeof(IPanelOffset));
+            if (fragments.Count > 1) Reflection.Compute.RecordWarning($"the panel {panel.Name} has more than one PanelOffset defined, which is not allowed. Only the first has been returned. Use GetAllFragments() to extract others.");
+            return fragments.Select(x => x as IPanelOffset).FirstOrDefault();
         }
     }
 }
