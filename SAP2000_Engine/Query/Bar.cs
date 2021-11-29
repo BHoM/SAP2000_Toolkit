@@ -38,18 +38,18 @@ namespace BH.Engine.Adapters.SAP2000
     {
         [Description("Returns the SAP2000 BarAutoMesh settings for a bar. You can also use the method FindFragment() with the type BarAutoMesh as an argument.")]
         [Input("bar", "A Bar which was either pulled from SAP2000 or which has had SAP2000 settings added.")]
-        [Output("BarAutoMesh", "A fragment containing SAP2000 BarAutoMesh settings")]
+        [Output("BarAutoMesh", "A fragment containing SAP2000 BarAutoMesh settings.")]
         public static BarAutoMesh BarAutoMesh(this Bar bar)
         {
-            return bar.FindFragment<BarAutoMesh>();
+            return bar?.FindFragment<BarAutoMesh>();
         }
 
         [Description("Returns the SAP2000 BarDesignProcedure settings for a bar. You can also use the method FindFragment() with the type BarDesignProcedure as an argument.")]
         [Input("bar", "A Bar which was either pulled from SAP2000 or which has had SAP2000 settings added.")]
-        [Output("BarDesignProcedure", "A fragment containing SAP2000 BarDesignProcedure settings")]
+        [Output("BarDesignProcedure", "A fragment containing SAP2000 BarDesignProcedure settings.")]
         public static BarDesignProcedure BarDesignProcedure(this Bar bar)
         {
-            return bar.FindFragment<BarDesignProcedure>();
+            return bar?.FindFragment<BarDesignProcedure>();
         }
 
         [Description("Returns the SAP2000 BarInsertionPointLocation settings for a bar. You can also use the method FindFragment() with the type BarInsertionPoint as an argument.")]
