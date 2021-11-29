@@ -77,7 +77,6 @@ namespace BH.Adapter.SAP2000
                 double tw = 0;
                 double tfb = 0;
                 double t2b = 0;
-                double dis = 0;
                 double radius = 0;
                 double angle = 0;
                 int color = 0;

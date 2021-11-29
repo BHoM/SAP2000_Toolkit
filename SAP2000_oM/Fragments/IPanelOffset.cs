@@ -21,10 +21,12 @@
  */
 using System.ComponentModel;
 using BH.oM.Base;
+using BH.oM.Reflection.Attributes;
 
 namespace BH.oM.Adapters.SAP2000.Fragments
 {
     [Description("Base interface for panel offsets in SAP. Contains only the type of offset.")]
+    [Unique]
     public partial interface IPanelOffset : IFragment
     {
     }
