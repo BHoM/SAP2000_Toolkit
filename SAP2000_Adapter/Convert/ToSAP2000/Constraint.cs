@@ -55,7 +55,7 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        public static bool ToSAP(this BarRelease release, ref bool[] startRestraint, ref double[] startSpring, ref bool[] endRestraint, ref double[] endSpring)
+        public static bool ToSAP(this BarRelease release, ref bool[] startRelease, ref double[] startSpring, ref bool[] endRelease, ref double[] endSpring)
         {
             if (release.StartRelease == null)
             {
@@ -63,13 +63,13 @@ namespace BH.Adapter.SAP2000
                 return false;
             }
 
-            startRestraint = new bool[6];
-            startRestraint[0] = release.StartRelease.TranslationX == DOFType.Free;
-            startRestraint[1] = release.StartRelease.TranslationY == DOFType.Free;
-            startRestraint[2] = release.StartRelease.TranslationZ == DOFType.Free;
-            startRestraint[3] = release.StartRelease.RotationX == DOFType.Free;
-            startRestraint[4] = release.StartRelease.RotationY == DOFType.Free;
-            startRestraint[5] = release.StartRelease.RotationZ == DOFType.Free;
+            startRelease = new bool[6];
+            startRelease[0] = release.StartRelease.TranslationX != DOFType.Fixed;
+            startRelease[1] = release.StartRelease.TranslationY != DOFType.Fixed;
+            startRelease[2] = release.StartRelease.TranslationZ != DOFType.Fixed;
+            startRelease[3] = release.StartRelease.RotationX != DOFType.Fixed;
+            startRelease[4] = release.StartRelease.RotationY != DOFType.Fixed;
+            startRelease[5] = release.StartRelease.RotationZ != DOFType.Fixed;
 
             startSpring = new double[6];
             startSpring[0] = release.StartRelease.TranslationalStiffnessX;
@@ -86,13 +86,13 @@ namespace BH.Adapter.SAP2000
                 return false;
             }
 
-            endRestraint = new bool[6];
-            endRestraint[0] = release.EndRelease.TranslationX == DOFType.Free;
-            endRestraint[1] = release.EndRelease.TranslationY == DOFType.Free;
-            endRestraint[2] = release.EndRelease.TranslationZ == DOFType.Free;
-            endRestraint[3] = release.EndRelease.RotationX == DOFType.Free;
-            endRestraint[4] = release.EndRelease.RotationY == DOFType.Free;
-            endRestraint[5] = release.EndRelease.RotationZ == DOFType.Free;
+            endRelease = new bool[6];
+            endRelease[0] = release.EndRelease.TranslationX != DOFType.Fixed;
+            endRelease[1] = release.EndRelease.TranslationY != DOFType.Fixed;
+            endRelease[2] = release.EndRelease.TranslationZ != DOFType.Fixed;
+            endRelease[3] = release.EndRelease.RotationX != DOFType.Fixed;
+            endRelease[4] = release.EndRelease.RotationY != DOFType.Fixed;
+            endRelease[5] = release.EndRelease.RotationZ != DOFType.Fixed;
 
             endSpring = new double[6];
             endSpring[0] = release.EndRelease.TranslationalStiffnessX;
@@ -102,8 +102,8 @@ namespace BH.Adapter.SAP2000
             endSpring[4] = release.EndRelease.RotationalStiffnessY;
             endSpring[5] = release.EndRelease.RotationalStiffnessZ;
 
-            bool[] startReleased = startRestraint.Zip(startSpring, (x, y) => x && y == 0).ToArray();
-            bool[] endReleased = endRestraint.Zip(endSpring, (x, y) => x && y == 0).ToArray();
+            bool[] startReleased = startRelease.Zip(startSpring, (x, y) => x && y == 0).ToArray();
+            bool[] endReleased = endRelease.Zip(endSpring, (x, y) => x && y == 0).ToArray();
 
             if (startReleased[0] && endReleased[0])
             { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationX for both ends"); return false; }
