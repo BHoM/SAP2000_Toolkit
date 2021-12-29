@@ -30,52 +30,24 @@ namespace BH.oM.Adapters.SAP2000.Fragments
     public interface IPanelAutoMesh : IFragment
     {
         [Description("If this item is True, and if both points along an edge of the original area " + "object have the same local axes, the program makes the local axes for added points " + "along the edge the same as the edge end points.")]
-        bool LocalAxesOnEdge
-        {
-            get;
-            set;
-        }
+        bool LocalAxesOnEdge { get; set; }
 
         [Description("If this item is True, and if all points around the perimeter of the original " + "area object have the same local axes, the program makes the local axes for all added " + "points the same as the perimeter points.")]
-        bool LocalAxesOnFace
-        {
-            get;
-            set;
-        }
+        bool LocalAxesOnFace { get; set; }
 
         [Description("If this item is True, and if both points along an edge of the original area " + "object have the same restraint/constraint, then, if the added point and the adjacent " + "corner points have the same local axes definition, the program includes the " + "restraint/constraint for added points along the edge.")]
-        bool RestraintsOnEdge
-        {
-            get;
-            set;
-        }
+        bool RestraintsOnEdge { get; set; }
 
         [Description("If this item is True, and if all points around the perimeter of the original " + "area object have the same restraint/constraint, then, if an added point and the " + "perimeter points have the same local axes definition, the program includes the " + "restraint/constraint for the added point.")]
-        bool RestraintsOnFace
-        {
-            get;
-            set;
-        }
+        bool RestraintsOnFace { get; set; }
 
         [Description("The name of a defined group. Some of the meshing options make use of point " + "and line objects included in this group.")]
-        string Group
-        {
-            get;
-            set;
-        }
+        string Group { get; set; }
 
         [Description("If this item is True, after initial meshing, the program further meshes any area " + "objects that have an edge longer than the length specified by the SubMeshSize item.")]
-        bool SubMesh
-        {
-            get;
-            set;
-        }
+        bool SubMesh { get; set; }
 
         [Description("This item applies when the SubMesh item is True. It is the maximum size of area " + "objects to remain when the auto meshing is complete.")]
-        double SubMeshSize
-        {
-            get;
-            set;
-        }
+        double SubMeshSize { get; set; }
     }
 }
