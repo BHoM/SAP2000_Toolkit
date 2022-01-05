@@ -65,19 +65,19 @@ namespace BH.Adapter.SAP2000
 
             startRelease = new bool[6];
             startRelease[0] = release.StartRelease.TranslationX != DOFType.Fixed;
-            startRelease[1] = release.StartRelease.TranslationY != DOFType.Fixed;
-            startRelease[2] = release.StartRelease.TranslationZ != DOFType.Fixed;
+            startRelease[1] = release.StartRelease.TranslationZ != DOFType.Fixed;
+            startRelease[2] = release.StartRelease.TranslationY != DOFType.Fixed;
             startRelease[3] = release.StartRelease.RotationX != DOFType.Fixed;
-            startRelease[4] = release.StartRelease.RotationY != DOFType.Fixed;
-            startRelease[5] = release.StartRelease.RotationZ != DOFType.Fixed;
+            startRelease[4] = release.StartRelease.RotationZ != DOFType.Fixed;
+            startRelease[5] = release.StartRelease.RotationY != DOFType.Fixed;
 
             startSpring = new double[6];
             startSpring[0] = release.StartRelease.TranslationalStiffnessX;
-            startSpring[1] = release.StartRelease.TranslationalStiffnessY;
-            startSpring[2] = release.StartRelease.TranslationalStiffnessZ;
+            startSpring[1] = release.StartRelease.TranslationalStiffnessZ;
+            startSpring[2] = release.StartRelease.TranslationalStiffnessY;
             startSpring[3] = release.StartRelease.RotationalStiffnessX;
-            startSpring[4] = release.StartRelease.RotationalStiffnessY;
-            startSpring[5] = release.StartRelease.RotationalStiffnessZ;
+            startSpring[4] = release.StartRelease.RotationalStiffnessZ;
+            startSpring[5] = release.StartRelease.RotationalStiffnessY;
 
 
             if (release.EndRelease == null)
@@ -88,19 +88,19 @@ namespace BH.Adapter.SAP2000
 
             endRelease = new bool[6];
             endRelease[0] = release.EndRelease.TranslationX != DOFType.Fixed;
-            endRelease[1] = release.EndRelease.TranslationY != DOFType.Fixed;
-            endRelease[2] = release.EndRelease.TranslationZ != DOFType.Fixed;
+            endRelease[1] = release.EndRelease.TranslationZ != DOFType.Fixed;
+            endRelease[2] = release.EndRelease.TranslationY != DOFType.Fixed;
             endRelease[3] = release.EndRelease.RotationX != DOFType.Fixed;
-            endRelease[4] = release.EndRelease.RotationY != DOFType.Fixed;
-            endRelease[5] = release.EndRelease.RotationZ != DOFType.Fixed;
+            endRelease[4] = release.EndRelease.RotationZ != DOFType.Fixed;
+            endRelease[5] = release.EndRelease.RotationY != DOFType.Fixed;
 
             endSpring = new double[6];
             endSpring[0] = release.EndRelease.TranslationalStiffnessX;
-            endSpring[1] = release.EndRelease.TranslationalStiffnessY;
-            endSpring[2] = release.EndRelease.TranslationalStiffnessZ;
+            endSpring[1] = release.EndRelease.TranslationalStiffnessZ;
+            endSpring[2] = release.EndRelease.TranslationalStiffnessY;
             endSpring[3] = release.EndRelease.RotationalStiffnessX;
-            endSpring[4] = release.EndRelease.RotationalStiffnessY;
-            endSpring[5] = release.EndRelease.RotationalStiffnessZ;
+            endSpring[4] = release.EndRelease.RotationalStiffnessZ;
+            endSpring[5] = release.EndRelease.RotationalStiffnessY;
 
             bool[] startReleased = startRelease.Zip(startSpring, (x, y) => x && y == 0).ToArray();
             bool[] endReleased = endRelease.Zip(endSpring, (x, y) => x && y == 0).ToArray();
