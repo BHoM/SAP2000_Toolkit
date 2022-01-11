@@ -120,7 +120,7 @@ namespace BH.Adapter.SAP2000
 
             if (bar.SectionProperty == null)
             {
-                Engine.Reflection.Compute.RecordError("Cannot assign a BarDifferentialTemperature load to a bar with no SectionProperty.");
+                Engine.Base.Compute.RecordError("Cannot assign a BarDifferentialTemperature load to a bar with no SectionProperty.");
                 return double.NaN;
             }
 
@@ -135,7 +135,7 @@ namespace BH.Adapter.SAP2000
                     myType = 3;
                     break;
                 default:
-                    Engine.Reflection.Compute.RecordError("Could not understand BarDifferentialTemperatureLoad Direction.");
+                    Engine.Base.Compute.RecordError("Could not understand BarDifferentialTemperatureLoad Direction.");
                     return double.NaN;
 
             }
@@ -144,7 +144,7 @@ namespace BH.Adapter.SAP2000
 
             foreach (double key in profile.Keys)
             {
-                if (profile[key] - GetUniformComponent(load) != key * temp) Engine.Reflection.Compute.RecordWarning("Only linear temperature gradients are allowed.");
+                if (profile[key] - GetUniformComponent(load) != key * temp) Engine.Base.Compute.RecordWarning("Only linear temperature gradients are allowed.");
                 break;
             }
 

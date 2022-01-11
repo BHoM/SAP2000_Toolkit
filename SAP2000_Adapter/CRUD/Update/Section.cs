@@ -47,7 +47,7 @@ namespace BH.Adapter.SAP2000
 
                 if (!names.Contains(propertyName))
                 {
-                    Engine.Reflection.Compute.RecordWarning($"Failed to update SectionProperty: { propertyName }, no section with that name found in SAP2000.");
+                    Engine.Base.Compute.RecordWarning($"Failed to update SectionProperty: { propertyName }, no section with that name found in SAP2000.");
                     continue;
                 }
 

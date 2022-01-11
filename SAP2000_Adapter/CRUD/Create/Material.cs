@@ -100,7 +100,7 @@ namespace BH.Adapter.SAP2000
             switch (matType)
             {
                 case eMatType.Aluminum:
-                    Engine.Reflection.Compute.RecordWarning("BHoM material aluminum does not have SAP2000 material parameters yet.");
+                    Engine.Base.Compute.RecordWarning("BHoM material aluminum does not have SAP2000 material parameters yet.");
                     break;
                 case eMatType.Steel:
                     // try/catch for casting to steel?
@@ -136,7 +136,7 @@ namespace BH.Adapter.SAP2000
                     }
                     break;
                 default:
-                    Engine.Reflection.Compute.RecordWarning("BHoM material type not found, no additional design material parameters passed to SAP2000.");
+                    Engine.Base.Compute.RecordWarning("BHoM material type not found, no additional design material parameters passed to SAP2000.");
                     m_model.PropMaterial.SetONoDesign(bhName, 0, 0, 0);
                     break;
             }
@@ -161,20 +161,20 @@ namespace BH.Adapter.SAP2000
                 case MaterialType.Concrete:
                     return eMatType.Concrete;
                 case MaterialType.Timber:
-                    Engine.Reflection.Compute.RecordWarning("SAP2000 does not contain a definition for Timber materials, the material has been set to type 'Other' with 'Orthotropic' directional symmetry");
+                    Engine.Base.Compute.RecordWarning("SAP2000 does not contain a definition for Timber materials, the material has been set to type 'Other' with 'Orthotropic' directional symmetry");
                     return eMatType.NoDesign;
                 case MaterialType.Rebar:
                     return eMatType.Rebar;
                 case MaterialType.Tendon:
                     return eMatType.Tendon;
                 case MaterialType.Glass:
-                    Engine.Reflection.Compute.RecordWarning("SAP2000 does not contain a definition for Glass materials, the material has been set to type 'Other'");
+                    Engine.Base.Compute.RecordWarning("SAP2000 does not contain a definition for Glass materials, the material has been set to type 'Other'");
                     return eMatType.NoDesign;
                 case MaterialType.Cable:
-                    Engine.Reflection.Compute.RecordWarning("SAP2000 does not contain a definition for Cable materials, the material has been set to type 'Steel'");
+                    Engine.Base.Compute.RecordWarning("SAP2000 does not contain a definition for Cable materials, the material has been set to type 'Steel'");
                     return eMatType.Steel;
                 default:
-                    Engine.Reflection.Compute.RecordWarning("BHoM material type not found, the material has been set to type 'Other'");
+                    Engine.Base.Compute.RecordWarning("BHoM material type not found, the material has been set to type 'Other'");
                     return eMatType.NoDesign;
             }
         }

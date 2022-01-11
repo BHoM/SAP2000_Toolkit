@@ -44,7 +44,7 @@ namespace BH.Adapter.SAP2000
             //Check for dealbreaking validity problems
             if (bhNode.Position == null)
             {
-                Engine.Reflection.Compute.RecordError($"Node {bhNode.Name} has no position. Nothing was created.");
+                Engine.Base.Compute.RecordError($"Node {bhNode.Name} has no position. Nothing was created.");
                 return false;
             }
 
@@ -57,7 +57,7 @@ namespace BH.Adapter.SAP2000
 
             // Set Adapter ID
             if (name != bhNode.Name & bhNode.Name != "")
-                Engine.Reflection.Compute.RecordNote($"Node {bhNode.Name} was assigned SAP2000_id of {name}");
+                Engine.Base.Compute.RecordNote($"Node {bhNode.Name} was assigned SAP2000_id of {name}");
 
             string guid = null;
             m_model.PointObj.GetGUID(name, ref guid);

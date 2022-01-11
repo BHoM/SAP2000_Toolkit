@@ -145,13 +145,13 @@ namespace BH.Adapter.SAP2000
                                 case 3:
                                 default:
                                     bhMaterial = Engine.Structure.Create.Steel(id);
-                                    Engine.Reflection.Compute.RecordWarning("Could not extract structural properties for material " + id);
+                                    Engine.Base.Compute.RecordWarning("Could not extract structural properties for material " + id);
                                     break;
                             }
                             break;
                         default:
                             bhMaterial = Engine.Structure.Create.Steel(id);
-                            Engine.Reflection.Compute.RecordWarning("Could not extract structural properties for material " + id);
+                            Engine.Base.Compute.RecordWarning("Could not extract structural properties for material " + id);
                             break;
                     }
 

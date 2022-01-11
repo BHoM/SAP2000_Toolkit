@@ -30,28 +30,28 @@ namespace BH.Adapter.SAP2000
 
         private void CreateElementError(string elemType, string elemName)
         {
-            Engine.Reflection.Compute.RecordError("Failed to create the element of type " + elemType + ", with id: " + elemName);
+            Engine.Base.Compute.RecordError("Failed to create the element of type " + elemType + ", with id: " + elemName);
         }
 
         /***************************************************/
 
         private void CreatePropertyError(string failedProperty, string elemType, string elemName)
         {
-            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Reflection.Debugging.EventType.Error);
+            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Base.Debugging.EventType.Error);
         }
 
         /***************************************************/
 
         private void CreatePropertyWarning(string failedProperty, string elemType, string elemName)
         {
-            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Reflection.Debugging.EventType.Warning);
+            CreatePropertyEvent(failedProperty, elemType, elemName, oM.Base.Debugging.EventType.Warning);
         }
 
         /***************************************************/
 
-        private void CreatePropertyEvent(string failedProperty, string elemType, string elemName, oM.Reflection.Debugging.EventType eventType)
+        private void CreatePropertyEvent(string failedProperty, string elemType, string elemName, oM.Base.Debugging.EventType eventType)
         {
-            Engine.Reflection.Compute.RecordEvent("Failed to set property " + failedProperty + " for the " + elemType + " with id: " + elemName, eventType);
+            Engine.Base.Compute.RecordEvent("Failed to set property " + failedProperty + " for the " + elemType + " with id: " + elemName, eventType);
         }
 
         /***************************************************/

@@ -126,7 +126,7 @@ namespace BH.Adapter.SAP2000
 
                 if (myAxCSys != "GLOBAL" || myPlCSys != "GLOBAL")
                 {
-                    Engine.Reflection.Compute.RecordWarning("No support for reading node orientations not in Global Coordinates. Node orientation set to default");
+                    Engine.Base.Compute.RecordWarning("No support for reading node orientations not in Global Coordinates. Node orientation set to default");
                     return basis;
                 }
 
@@ -197,7 +197,7 @@ namespace BH.Adapter.SAP2000
                 }
                 catch
                 {
-                    Engine.Reflection.Compute.RecordWarning($"Could not create basis for node {id}. Returning XY basis. Vectors were {vec1.ToString()}, {vec2.ToString()}, {vec3.ToString()}. Plane was {myPlane2}");
+                    Engine.Base.Compute.RecordWarning($"Could not create basis for node {id}. Returning XY basis. Vectors were {vec1.ToString()}, {vec2.ToString()}, {vec3.ToString()}. Plane was {myPlane2}");
                     basis = Basis.XY;
                 }
             }

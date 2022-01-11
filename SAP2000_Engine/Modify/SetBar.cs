@@ -39,13 +39,13 @@ namespace BH.Engine.Adapters.SAP2000
             if (numSegs < 0)
             {
                 numSegs = 0;
-                Engine.Reflection.Compute.RecordWarning("Number of segments must be positive or zero. If zero, number of elements is not checked when automatic meshing is done.");
+                Engine.Base.Compute.RecordWarning("Number of segments must be positive or zero. If zero, number of elements is not checked when automatic meshing is done.");
             }
 
             if (autoMeshMaxLength < 0)
             {
                 autoMeshMaxLength = 0.0;
-                Engine.Reflection.Compute.RecordWarning("Max length must be positive. If zero, element length is not checked when automatic meshing is done.");
+                Engine.Base.Compute.RecordWarning("Max length must be positive. If zero, element length is not checked when automatic meshing is done.");
             }
 
             return (Bar)bar.AddFragment(new BarAutoMesh { AutoMesh = autoMesh, AutoMeshAtPoints = autoMeshAtPoints, AutoMeshAtLines = autoMeshAtLines, NumSegs = numSegs, AutoMeshMaxLength = autoMeshMaxLength }, true);

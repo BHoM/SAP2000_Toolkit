@@ -96,14 +96,14 @@ namespace BH.Adapter.SAP2000
                     {
                         if (advanced)
                         {
-                            Engine.Reflection.Compute.RecordWarning("Advanced local axes are not yet supported by this toolkit. Bar " + id + " has been created with orientation angle = 0");
+                            Engine.Base.Compute.RecordWarning("Advanced local axes are not yet supported by this toolkit. Bar " + id + " has been created with orientation angle = 0");
                             angle = 0;
                         }
                         bhomBar.OrientationAngle = angle * System.Math.PI / 180;
                     }
                     else
                     {
-                        Engine.Reflection.Compute.RecordWarning("Could not get local axes for bar " + id + ". Orientation angle is 0 by default");
+                        Engine.Base.Compute.RecordWarning("Could not get local axes for bar " + id + ". Orientation angle is 0 by default");
                     }
 
                     // Get the groups the bar is assigned to

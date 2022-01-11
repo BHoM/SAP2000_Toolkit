@@ -50,7 +50,7 @@ namespace BH.Adapter.SAP2000
             // Check for dealbreaking BHoM validity
             if (bhBar.StartNode == null || bhBar.EndNode == null)
             {
-                Engine.Reflection.Compute.RecordError($"Bar {bhBar.Name} failed to push because its nodes are null");
+                Engine.Base.Compute.RecordError($"Bar {bhBar.Name} failed to push because its nodes are null");
                 return false;
             }
 
@@ -59,7 +59,7 @@ namespace BH.Adapter.SAP2000
 
             if (startId == null || endId == null)
             {
-                Engine.Reflection.Compute.RecordError($"Bar {bhBar.Name} failed to push because its nodes were not found in SAP2000. Check that geometry is valid.");
+                Engine.Base.Compute.RecordError($"Bar {bhBar.Name} failed to push because its nodes were not found in SAP2000. Check that geometry is valid.");
                 return false;
             }
 
@@ -72,7 +72,7 @@ namespace BH.Adapter.SAP2000
 
             // Set AdapterID
             if (name != bhBar.Name & bhBar.Name != "")
-                Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} was assigned SAP2000_id of {name}");
+                Engine.Base.Compute.RecordNote($"Bar {bhBar.Name} was assigned SAP2000_id of {name}");
 
             string guid = null;
             m_model.FrameObj.GetGUID(name, ref guid);
@@ -210,7 +210,7 @@ namespace BH.Adapter.SAP2000
                     }
                     else
                     {
-                        Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} with SAP id {name} was set with a design procedure automatically based on its material (Steel/Concrete/Cold Form/Aluminum) regardless of selected input.");
+                        Engine.Base.Compute.RecordNote($"Bar {bhBar.Name} with SAP id {name} was set with a design procedure automatically based on its material (Steel/Concrete/Cold Form/Aluminum) regardless of selected input.");
                     }
                 }
                 else
@@ -222,7 +222,7 @@ namespace BH.Adapter.SAP2000
                     }
                     else
                     {
-                        Engine.Reflection.Compute.RecordNote($"Bar {bhBar.Name} with SAP id {name} does not have a design procedure.");
+                        Engine.Base.Compute.RecordNote($"Bar {bhBar.Name} with SAP id {name} does not have a design procedure.");
                     }
                 }
             }
