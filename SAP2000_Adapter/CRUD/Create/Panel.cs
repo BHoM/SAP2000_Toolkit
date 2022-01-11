@@ -51,7 +51,7 @@ namespace BH.Adapter.SAP2000
             }
             catch
             {
-                Engine.Reflection.Compute.RecordError($"Panel {bhPanel.Name} could not be created, because its geometry could not be determined");
+                Engine.Base.Compute.RecordError($"Panel {bhPanel.Name} could not be created, because its geometry could not be determined");
                 return false;
             }
 
@@ -72,7 +72,7 @@ namespace BH.Adapter.SAP2000
 
             // Set AdapterID
             if (name != bhPanel.Name & bhPanel.Name != "")
-                Engine.Reflection.Compute.RecordNote($"Panel {bhPanel.Name} was assigned SAP2000_id of {name}");
+                Engine.Base.Compute.RecordNote($"Panel {bhPanel.Name} was assigned SAP2000_id of {name}");
 
             string guid = null;
             m_model.AreaObj.GetGUID(name, ref guid);

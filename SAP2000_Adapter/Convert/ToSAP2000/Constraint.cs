@@ -59,7 +59,7 @@ namespace BH.Adapter.SAP2000
         {
             if (release.StartRelease == null)
             {
-                Engine.Reflection.Compute.RecordNote("Start Release was null, no release was set");
+                Engine.Base.Compute.RecordNote("Start Release was null, no release was set");
                 return false;
             }
 
@@ -82,7 +82,7 @@ namespace BH.Adapter.SAP2000
 
             if (release.EndRelease == null)
             {
-                Engine.Reflection.Compute.RecordNote("End Release was null, no release was set");
+                Engine.Base.Compute.RecordNote("End Release was null, no release was set");
                 return false;
             }
 
@@ -106,17 +106,17 @@ namespace BH.Adapter.SAP2000
             bool[] endReleased = endRelease.Zip(endSpring, (x, y) => x && y == 0).ToArray();
 
             if (startReleased[0] && endReleased[0])
-            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationX for both ends"); return false; }
+            { Engine.Base.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationX for both ends"); return false; }
             if (startReleased[1] && endReleased[1])
-            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationZ for both ends"); return false; }
+            { Engine.Base.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationZ for both ends"); return false; }
             if (startReleased[2] && endReleased[2])
-            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationY for both ends"); return false; }
+            { Engine.Base.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationY for both ends"); return false; }
             if (startReleased[3] && endReleased[3])
-            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release RotationX for both ends"); return false; }
+            { Engine.Base.Compute.RecordWarning($"Unstable releases have not been set, can not release RotationX for both ends"); return false; }
             if (startReleased[4] && endReleased[4] && (startReleased[2] || endReleased[2]))
-            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationY when RotationZ is released for both ends"); return false; }
+            { Engine.Base.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationY when RotationZ is released for both ends"); return false; }
             if (startReleased[5] && endReleased[5] && (startReleased[1] || endReleased[1]))
-            { Engine.Reflection.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationZ when RotationY is released for both ends"); return false; }
+            { Engine.Base.Compute.RecordWarning($"Unstable releases have not been set, can not release TranslationZ when RotationY is released for both ends"); return false; }
 
             return true;
         }

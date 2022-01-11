@@ -47,7 +47,7 @@ namespace BH.Adapter.SAP2000
 
             if (bhomSection.Material == null)
             {
-                Engine.Reflection.Compute.RecordWarning($"Section {propName} had no material defined. Using a default material.");
+                Engine.Base.Compute.RecordWarning($"Section {propName} had no material defined. Using a default material.");
             }
 
             SetSection(bhomSection as dynamic);
@@ -68,7 +68,7 @@ namespace BH.Adapter.SAP2000
             string name = bhomSection.DescriptionOrName();
             if (bhomSection.SectionProfile == null)
             {
-                Engine.Reflection.Compute.RecordWarning($"Profile for {name} is null. Section was not created");
+                Engine.Base.Compute.RecordWarning($"Profile for {name} is null. Section was not created");
                 return;
             }
 
@@ -87,7 +87,7 @@ namespace BH.Adapter.SAP2000
 
         private void SetSection(ISectionProperty bhomSection)
         {
-            Engine.Reflection.Compute.RecordError($"Sections of type {bhomSection.GetType().Name} are not explicitly supported by SAP2000. Section with name {bhomSection.DescriptionOrName()} will be pushed as an explicit section.");
+            Engine.Base.Compute.RecordError($"Sections of type {bhomSection.GetType().Name} are not explicitly supported by SAP2000. Section with name {bhomSection.DescriptionOrName()} will be pushed as an explicit section.");
             SetGeneral(bhomSection);
         }
 
@@ -167,7 +167,7 @@ namespace BH.Adapter.SAP2000
 
         private bool SetProfile(FreeFormProfile bhomProfile, string sectionName, string matName)
         {
-            Engine.Reflection.Compute.RecordError("FreeFormProfile is not yet implemented in SAP2000 adapter");
+            Engine.Base.Compute.RecordError("FreeFormProfile is not yet implemented in SAP2000 adapter");
             return false;
         }
 
@@ -183,7 +183,7 @@ namespace BH.Adapter.SAP2000
 
         private bool SetProfile(KiteProfile bhomProfile, string sectionName, string matName)
         {
-            Engine.Reflection.Compute.RecordError("KiteProfile is not yet implemented in SAP2000 adapter");
+            Engine.Base.Compute.RecordError("KiteProfile is not yet implemented in SAP2000 adapter");
             return false;
         }
 
@@ -228,7 +228,7 @@ namespace BH.Adapter.SAP2000
 
         private bool SetProfile(GenericSection bhomProfile, string sectionName, string matName)
         {
-            Engine.Reflection.Compute.RecordError("GenericSection is not yet implemented in SAP2000 adapter");
+            Engine.Base.Compute.RecordError("GenericSection is not yet implemented in SAP2000 adapter");
             return false;
         }
 
@@ -287,7 +287,7 @@ namespace BH.Adapter.SAP2000
 
                 if (m_model.PropFrame.SetModifiers(propertyName, ref sap2000Mods) != 0)
                 {
-                    Engine.Reflection.Compute.RecordError($"Could not add user specified section modifiers for {bhomSection.DescriptionOrName()}.");
+                    Engine.Base.Compute.RecordError($"Could not add user specified section modifiers for {bhomSection.DescriptionOrName()}.");
                 }
             }
         }

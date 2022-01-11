@@ -23,7 +23,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Adapter;
-using BH.oM.Reflection;
+using BH.oM.Base;
 using BH.oM.Adapter.Commands;
 using BH.oM.Structure.Loads;
 using SAP2000v1;
@@ -83,7 +83,7 @@ namespace BH.Adapter.SAP2000
             }
             else
             {
-                Engine.Reflection.Compute.RecordError("File does not exist");
+                Engine.Base.Compute.RecordError("File does not exist");
                 return false;
             }
         }
@@ -100,7 +100,7 @@ namespace BH.Adapter.SAP2000
         public bool RunCommand(AnalyseLoadCases command)
         {
             if (command.LoadCases == null || command.LoadCases.Count() == 0)
-                Engine.Reflection.Compute.RecordNote("No cases provided, all cases will be run");
+                Engine.Base.Compute.RecordNote("No cases provided, all cases will be run");
 
             return Analyse(command.LoadCases);
         }
@@ -127,7 +127,7 @@ namespace BH.Adapter.SAP2000
             {
                 if (m_app.SapModel.GetModelFilepath() == "")
                 {
-                    Engine.Reflection.Compute.RecordError($"Application not exited. File does not have a name. Please manually save the file or use the {nameof(SaveAs)} command before trying to Exit the application. If you want to close the application anyway, please toggle {nameof(Exit.SaveBeforeClose)} to false.");
+                    Engine.Base.Compute.RecordError($"Application not exited. File does not have a name. Please manually save the file or use the {nameof(SaveAs)} command before trying to Exit the application. If you want to close the application anyway, please toggle {nameof(Exit.SaveBeforeClose)} to false.");
                     return false;
                 }
             }
@@ -142,7 +142,7 @@ namespace BH.Adapter.SAP2000
 
         public bool RunCommand(IExecuteCommand command)
         {
-            Engine.Reflection.Compute.RecordWarning($"The command {command.GetType().Name} is not supported by this Adapter.");
+            Engine.Base.Compute.RecordWarning($"The command {command.GetType().Name} is not supported by this Adapter.");
             return false;
         }
 
@@ -157,7 +157,7 @@ namespace BH.Adapter.SAP2000
             //Check if the model has been saved
             if (m_model.GetModelFilename(true) == "(Untitled)")
             {
-                Engine.Reflection.Compute.RecordWarning("SAP2000 requires the model to be saved before being analysed. Please save the model and try running again.");
+                Engine.Base.Compute.RecordWarning("SAP2000 requires the model to be saved before being analysed. Please save the model and try running again.");
                 return false;
             }
 
@@ -167,7 +167,7 @@ namespace BH.Adapter.SAP2000
 
                 if (!success)
                 {
-                    Engine.Reflection.Compute.RecordWarning("Failed to set up cases to run. Model has not been analysed");
+                    Engine.Base.Compute.RecordWarning("Failed to set up cases to run. Model has not been analysed");
                     return false;
                 }
             }
@@ -188,7 +188,7 @@ namespace BH.Adapter.SAP2000
                         name = (item as ICase).Name;
                     else
                     {
-                        Engine.Reflection.Compute.RecordWarning("Can not set up cases for running of type " + item.GetType().Name + ". Item " + item.ToString() + " will be ignored. Please provide case names or BHoM cases to be run");
+                        Engine.Base.Compute.RecordWarning("Can not set up cases for running of type " + item.GetType().Name + ". Item " + item.ToString() + " will be ignored. Please provide case names or BHoM cases to be run");
                         continue;
                     }
 
@@ -197,7 +197,7 @@ namespace BH.Adapter.SAP2000
 
                     if (!caseSuccess)
                     {
-                        Engine.Reflection.Compute.RecordWarning("Failed to set case " + name + "for running. Please check that the case exists in the model");
+                        Engine.Base.Compute.RecordWarning("Failed to set case " + name + "for running. Please check that the case exists in the model");
                     }
                 }
 

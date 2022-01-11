@@ -55,13 +55,13 @@ namespace BH.Adapter.SAP2000
                 case BarResultType.BarDisplacement:
                     return ReadBarDisplacements(barIds, request.Divisions);
                 case BarResultType.BarDeformation:
-                    Engine.Reflection.Compute.RecordError("SAP2000 cannot export localised BarDeformations." +
+                    Engine.Base.Compute.RecordError("SAP2000 cannot export localised BarDeformations." +
                     "To get the full displacement of the bars in global coordinates, try pulling BarDisplacements");
                     return new List<IResult>();
                 case BarResultType.BarStrain:
                 case BarResultType.BarStress:
                 default:
-                    Engine.Reflection.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
+                    Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
             }
         }
@@ -76,7 +76,7 @@ namespace BH.Adapter.SAP2000
             List<BarDisplacement> displacements  = new List<BarDisplacement>();
             if (divisions != 0)
             {
-                Engine.Reflection.Compute.RecordWarning("Displacements will only be extracted at SAP2000 calculation nodes." +
+                Engine.Base.Compute.RecordWarning("Displacements will only be extracted at SAP2000 calculation nodes." +
                                                     "'Divisions' parameter will not be considered in result extraction");
             }
 
@@ -105,7 +105,7 @@ namespace BH.Adapter.SAP2000
 
                 if (m_model.FrameObj.GetElm(barIds[i], ref div, ref intElems, ref di, ref dj) != 0)
                 {
-                    Engine.Reflection.Compute.RecordWarning($"Could not get output stations for bar {barIds[i]}.");
+                    Engine.Base.Compute.RecordWarning($"Could not get output stations for bar {barIds[i]}.");
                 }
                 else
                 {
@@ -143,7 +143,7 @@ namespace BH.Adapter.SAP2000
                                                             ref ry,
                                                             ref rz) != 0)
                         {
-                            Engine.Reflection.Compute.RecordWarning($"Could not extract results for an output station in bar {barIds[i]}.");
+                            Engine.Base.Compute.RecordWarning($"Could not extract results for an output station in bar {barIds[i]}.");
                         }
                         else
                         {
@@ -169,7 +169,7 @@ namespace BH.Adapter.SAP2000
             List<BarForce> barForces = new List<BarForce>();
             if (divisions != 0)
             {
-                Engine.Reflection.Compute.RecordWarning("Forces will only be extracted at SAP2000 calculation nodes." +
+                Engine.Base.Compute.RecordWarning("Forces will only be extracted at SAP2000 calculation nodes." +
                                                     "'Divisions' parameter will not be considered in result extraction");
             }
 
@@ -213,7 +213,7 @@ namespace BH.Adapter.SAP2000
                                                      ref m2,
                                                      ref m3) != 0)
                 {
-                    Engine.Reflection.Compute.RecordError($"Could not extract results for an output station in bar {barIds}.");
+                    Engine.Base.Compute.RecordError($"Could not extract results for an output station in bar {barIds}.");
                 }
                 else
                 {
@@ -264,7 +264,7 @@ namespace BH.Adapter.SAP2000
             }
             else
             {
-                Engine.Reflection.Compute.RecordError($"could not determine length of bar {barId}. Something has gone terribly wrong.");
+                Engine.Base.Compute.RecordError($"could not determine length of bar {barId}. Something has gone terribly wrong.");
                 return 1;
             }
 

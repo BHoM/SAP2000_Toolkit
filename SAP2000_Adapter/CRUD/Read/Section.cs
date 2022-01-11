@@ -183,12 +183,12 @@ namespace BH.Adapter.SAP2000
                 IMaterialFragment material = null;
                 if (!bhomMaterials.TryGetValue(materialName, out material))
                 {
-                    Engine.Reflection.Compute.RecordWarning($"Could not get material for SectionProperty {id}. A generic has been returned.");
+                    Engine.Base.Compute.RecordWarning($"Could not get material for SectionProperty {id}. A generic has been returned.");
                 }                
 
                 if (bhomProfile == null)
                 {
-                    Engine.Reflection.Compute.RecordWarning("Reading sections of type " + propertyType.ToString() + " is not supported. An empty section with a default material has been returned.");
+                    Engine.Base.Compute.RecordWarning("Reading sections of type " + propertyType.ToString() + " is not supported. An empty section with a default material has been returned.");
                     constructor = "explicit";
                 }
 
@@ -270,7 +270,7 @@ namespace BH.Adapter.SAP2000
             m_model.PropFrame.GetNonPrismatic(id, ref nSegments, ref startSec, ref endSec, ref myLength, ref myType, ref EI33, ref EI22, ref color, ref notes, ref guid);
 
             if (myType.Any(x => x != 1))
-                Engine.Reflection.Compute.RecordNote($"BhoM only supports Non-prismatic sections with relative length values; {id} is being converted to relative length, check results.");
+                Engine.Base.Compute.RecordNote($"BhoM only supports Non-prismatic sections with relative length values; {id} is being converted to relative length, check results.");
 
             List<double> positions = new List<double>() { 0 };
             List<int> interpolationOrder = new List<int>() { };
@@ -289,11 +289,11 @@ namespace BH.Adapter.SAP2000
             if (startProps.Count() >= 1)
             {
                 material = startProps.First().Material;
-                if (startProps.Count() > 1) Engine.Reflection.Compute.RecordWarning($"Tapered section {id} has more than one material, only the first will be returned");
+                if (startProps.Count() > 1) Engine.Base.Compute.RecordWarning($"Tapered section {id} has more than one material, only the first will be returned");
             }
             else
             {
-                Engine.Reflection.Compute.RecordWarning($"Tapered section {id} has no materials defined, null material will be returned.");
+                Engine.Base.Compute.RecordWarning($"Tapered section {id} has no materials defined, null material will be returned.");
             }
 
             Dictionary<string, IProfile> profileDict = propList.ToDictionary(x => x.DescriptionOrName(), x => (x as IGeometricalSection)?.SectionProfile);
@@ -324,7 +324,7 @@ namespace BH.Adapter.SAP2000
 
             if (profiles.Any(x => x == null))
             {
-                Engine.Reflection.Compute.RecordWarning("Some of the sub-sections for tapered section {id} were not defined, so the section could not be read");
+                Engine.Base.Compute.RecordWarning("Some of the sub-sections for tapered section {id} were not defined, so the section could not be read");
                 return new ExplicitSection()
                 {
                     Material = material,
@@ -355,7 +355,7 @@ namespace BH.Adapter.SAP2000
             }
             else
             {
-                Engine.Reflection.Compute.RecordWarning($"Could not get section modifiers for SectionProperty {id}. No section property modifiers have been set in the BHoM.");
+                Engine.Base.Compute.RecordWarning($"Could not get section modifiers for SectionProperty {id}. No section property modifiers have been set in the BHoM.");
             }
 
             return sectionModifier;

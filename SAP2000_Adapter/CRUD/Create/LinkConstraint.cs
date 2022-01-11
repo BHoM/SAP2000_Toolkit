@@ -49,7 +49,7 @@ namespace BH.Adapter.SAP2000
             bhLinkConstraint.ToSAP2000(out dof, out fix, out stiff, out damp, out dj2, out dj3);
 
             if (m_model.PropLink.SetLinear(name, ref dof, ref fix, ref stiff, ref damp, dj2, dj3) != 0)
-                Engine.Reflection.Compute.RecordWarning($"SAP returned an error pushing LinkConstraint {name}. Check results.");
+                Engine.Base.Compute.RecordWarning($"SAP returned an error pushing LinkConstraint {name}. Check results.");
 
             SetAdapterId(bhLinkConstraint, name);
             

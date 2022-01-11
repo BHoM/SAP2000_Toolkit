@@ -24,7 +24,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Adapter;
 using BH.oM.Adapters.SAP2000;
-using BH.oM.Reflection;
+using BH.oM.Base;
 using BH.oM.Adapter.Commands;
 using BH.oM.Structure.Loads;
 using SAP2000v1;

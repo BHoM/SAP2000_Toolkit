@@ -160,7 +160,7 @@ namespace BH.Adapter.SAP2000
             {
                 List<string> result = ids.Intersect(sapIds).ToList();
                 if (result.Count() != ids.Count())
-                    Engine.Reflection.Compute.RecordWarning("Some requested SAP2000 ids were not present in the model.");
+                    Engine.Base.Compute.RecordWarning("Some requested SAP2000 ids were not present in the model.");
                 return result;
             }
         }

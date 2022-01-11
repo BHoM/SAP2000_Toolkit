@@ -65,7 +65,7 @@ namespace BH.Adapter.SAP2000
 
 
                 if (m_model.PropArea.GetShell_1(id, ref shellType, ref includeDrillingDOF, ref materialName, ref matAng, ref thickness, ref bending, ref color, ref notes, ref guid) != 0)
-                    Engine.Reflection.Compute.RecordWarning($"Error while pulling Surface Property {id}. Check results carefully.");
+                    Engine.Base.Compute.RecordWarning($"Error while pulling Surface Property {id}. Check results carefully.");
                               
                 ConstantThickness bhSurfProp = new ConstantThickness();
 

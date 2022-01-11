@@ -42,7 +42,7 @@ namespace BH.Adapter.SAP2000
             {
                 matName = GetAdapterId<string>(surfaceProperty.Material);
             }
-            else Engine.Reflection.Compute.RecordWarning($"SurfaceProperty {propName} had no material defined. Using a default material.");
+            else Engine.Base.Compute.RecordWarning($"SurfaceProperty {propName} had no material defined. Using a default material.");
 
             SAP2000Id sap2000id = new SAP2000Id();
             

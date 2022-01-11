@@ -54,7 +54,7 @@ namespace BH.Adapter.SAP2000
                 case NodeResultType.NodeAcceleration:
                 case NodeResultType.NodeVelocity:
                 default:
-                    Engine.Reflection.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
+                    Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
             }
         }

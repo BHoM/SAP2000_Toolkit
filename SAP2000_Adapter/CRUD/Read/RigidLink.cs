@@ -75,7 +75,7 @@ namespace BH.Adapter.SAP2000
                     }
                     else
                     {
-                        Engine.Reflection.Compute.RecordWarning("Could not get link property for RigidLink " + id + ".");
+                        Engine.Base.Compute.RecordWarning("Could not get link property for RigidLink " + id + ".");
                     }
                     
                     // Get the groups the link is assigned to

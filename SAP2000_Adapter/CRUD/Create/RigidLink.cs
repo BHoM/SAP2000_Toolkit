@@ -40,7 +40,7 @@ namespace BH.Adapter.SAP2000
             SAP2000Id sap2000id = new SAP2000Id();
 
             if (subLinks.Count > 1)
-                Engine.Reflection.Compute.RecordNote($"The RigidLink {bhLink.Name} was split into {subLinks.Count} separate links. They will be added to a new group called \"BHoM_Link_{bhLink.Name}\"");
+                Engine.Base.Compute.RecordNote($"The RigidLink {bhLink.Name} was split into {subLinks.Count} separate links. They will be added to a new group called \"BHoM_Link_{bhLink.Name}\"");
 
             foreach (RigidLink subLink in subLinks)
             {
@@ -54,7 +54,7 @@ namespace BH.Adapter.SAP2000
                 {
                     //Check if SAP respected the link name.
                     if (subLink.Name != "" && subLink.Name != name)
-                        Engine.Reflection.Compute.RecordNote($"RigidLink {bhLink.Name} was assigned SAP2000_id of {name}");
+                        Engine.Base.Compute.RecordNote($"RigidLink {bhLink.Name} was assigned SAP2000_id of {name}");
                     
                     //Attempt to set property (if property has been pushed)
                     if(subLink.Constraint != null)

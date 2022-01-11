@@ -34,7 +34,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BH.Engine.Reflection;
+using BH.Engine.Base;
 using System.Threading;
 using BH.Engine.Adapter;
 using System.IO;
@@ -137,7 +137,7 @@ namespace BH.Adapter.SAP2000
         {
            if (ids != null)
             {
-                Engine.Reflection.Compute.RecordWarning("Id filtering is not implemented for loads, all loads will be returned.");
+                Engine.Base.Compute.RecordWarning("Id filtering is not implemented for loads, all loads will be returned.");
             }
 
             if (type == typeof(PointLoad))
@@ -183,7 +183,7 @@ namespace BH.Adapter.SAP2000
                 return loads;
             }
             else
-                Engine.Reflection.Compute.RecordError($"Could not read loads, reading loads of type: {type} is not implemented");
+                Engine.Base.Compute.RecordError($"Could not read loads, reading loads of type: {type} is not implemented");
 
             return new List<ILoad>();
         }
@@ -277,7 +277,7 @@ namespace BH.Adapter.SAP2000
 
         private List<ILoad> ReadPointVelocity(List<string> ids = null)
         {
-            Engine.Reflection.Compute.RecordError("Read PointVelocity is not implemented!");
+            Engine.Base.Compute.RecordError("Read PointVelocity is not implemented!");
             return new List<ILoad>();
         }
 
@@ -285,7 +285,7 @@ namespace BH.Adapter.SAP2000
 
         private List<ILoad> ReadPointAcceleration(List<string> ids = null)
         {
-            Engine.Reflection.Compute.RecordError("Read PointVelocity is not implemented!");
+            Engine.Base.Compute.RecordError("Read PointVelocity is not implemented!");
             return new List<ILoad>();
         }
 
@@ -352,7 +352,7 @@ namespace BH.Adapter.SAP2000
                                 force.Z = -val;
                                 break;
                             default:
-                                Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
+                                Engine.Base.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
                                 break;
                         }
                         switch (myTypes[i])
@@ -376,7 +376,7 @@ namespace BH.Adapter.SAP2000
                                 });
                                 break;
                             default:
-                                Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myTypes[i].ToString());
+                                Engine.Base.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myTypes[i].ToString());
                                 break;
                         }
                     }
@@ -460,7 +460,7 @@ namespace BH.Adapter.SAP2000
                                 forceB.Z = -val2[i];
                                 break;
                             default:
-                                Engine.Reflection.Compute.RecordWarning("That load direction is not yet supported. Dir = " + dir[i].ToString());
+                                Engine.Base.Compute.RecordWarning("That load direction is not yet supported. Dir = " + dir[i].ToString());
                                 break;
                         }
 
@@ -493,7 +493,7 @@ namespace BH.Adapter.SAP2000
                                 });
                                 break;
                             default:
-                                Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myTypes[i].ToString());
+                                Engine.Base.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + myTypes[i].ToString());
                                 break;
                         }
                     }
@@ -562,7 +562,7 @@ namespace BH.Adapter.SAP2000
 
                     if (jointPattern[i] == "None")
                     {
-                        Engine.Reflection.Compute.RecordWarning("BarDifferentialTemperatureLoads cannot vary along the bar - only constant temperatures and variation across the bar are supported. The load has been ignored.");
+                        Engine.Base.Compute.RecordWarning("BarDifferentialTemperatureLoads cannot vary along the bar - only constant temperatures and variation across the bar are supported. The load has been ignored.");
                     }
                     else
                     {
@@ -641,7 +641,7 @@ namespace BH.Adapter.SAP2000
                             force.Z = -val[i];
                             break;
                         default:
-                            Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
+                            Engine.Base.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
                             break;
                     }
                     switch (loadTypes[i])
@@ -667,7 +667,7 @@ namespace BH.Adapter.SAP2000
                             });
                             break;
                         default:
-                            Engine.Reflection.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + loadTypes[i].ToString());
+                            Engine.Base.Compute.RecordWarning("Could not create the load. It's not 'MyType'. MyType = " + loadTypes[i].ToString());
                             break;
                     }
                 }
@@ -784,7 +784,7 @@ namespace BH.Adapter.SAP2000
                             force.Z = -val[i];
                             break;
                         default:
-                            BH.Engine.Reflection.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
+                            BH.Engine.Base.Compute.RecordWarning("That load direction is not supported. Dir = " + dir[i].ToString());
                             break;
                     }
 
@@ -824,8 +824,8 @@ namespace BH.Adapter.SAP2000
                             Axis = BH.oM.Structure.Loads.LoadAxis.Global,
                         });
 
-                        BH.Engine.Reflection.Compute.RecordNote("SAP2000 can only handle gravity loads in the Z direction.");
-                        BH.Engine.Reflection.Compute.RecordNote("SAP2000 handles gravity loads via load patterns, " +
+                        BH.Engine.Base.Compute.RecordNote("SAP2000 can only handle gravity loads in the Z direction.");
+                        BH.Engine.Base.Compute.RecordNote("SAP2000 handles gravity loads via load patterns, " +
                                                                 "so the returned gravity loads correlate to load patterns. " +
                                                                 "Gravity loads are applied to all members.");
                     }
@@ -868,7 +868,7 @@ namespace BH.Adapter.SAP2000
                         }
                         catch { }
 
-                        Engine.Reflection.Compute.RecordWarning("Temperature gradient not currently implemented in the BHoM. An attempt has been made to convert SAP2000's gradient to a constant temperature change.");
+                        Engine.Base.Compute.RecordWarning("Temperature gradient not currently implemented in the BHoM. An attempt has been made to convert SAP2000's gradient to a constant temperature change.");
                     }
 
                     loads.Add(new AreaUniformTemperatureLoad()
@@ -887,7 +887,7 @@ namespace BH.Adapter.SAP2000
 
         private List<ILoad> ReadContourLoad(List<string> ids = null)
         {
-            Engine.Reflection.Compute.RecordError("ContourLoads are mapped to Null Areas with AreaLoads, so we can't be sure the object was originally a ContourLoad or not - suggest pulling AreaUniformlyDistributedLoad and filtering for null properties.");
+            Engine.Base.Compute.RecordError("ContourLoads are mapped to Null Areas with AreaLoads, so we can't be sure the object was originally a ContourLoad or not - suggest pulling AreaUniformlyDistributedLoad and filtering for null properties.");
             return new List<ILoad>();
         }
 
@@ -895,7 +895,7 @@ namespace BH.Adapter.SAP2000
 
         private List<ILoad> ReadGeometricalLineLoad(List<string> ids = null)
         {
-            Engine.Reflection.Compute.RecordError("GeometricalLineLoads are mapped to Null Frames with Uniform Loads, so we can't be sure the object was originally a GeometricalLineLoads or not - suggest pulling BarUniformlyDistributedLoad and filtering for null properties.");
+            Engine.Base.Compute.RecordError("GeometricalLineLoads are mapped to Null Frames with Uniform Loads, so we can't be sure the object was originally a GeometricalLineLoads or not - suggest pulling BarUniformlyDistributedLoad and filtering for null properties.");
             return new List<ILoad>();
         }
 
