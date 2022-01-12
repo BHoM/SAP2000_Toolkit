@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -34,82 +34,102 @@
     <Reference Include="Acoustic_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Acoustic_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Adapter_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Adapter_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Analytical_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Analytical_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Architecture_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Architecture_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="BHoM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="BHoM_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\BHoM_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Dimensional_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Dimensional_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Environment_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Environment_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Geometry_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Geometry_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Geometry_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Graphics_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Graphics_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Humans_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Humans_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Library_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Library_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Physical_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Physical_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Physical_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Planning_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Planning_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Results_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Results_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Serialiser_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Serialiser_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Structure_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Structure_Engine.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Structure_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Structure_oM.dll</HintPath>
       <Private>False</Private>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
