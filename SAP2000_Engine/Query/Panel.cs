@@ -28,7 +28,7 @@ using BH.oM.Structure.Elements;
 using BH.oM.Adapters.SAP2000.Fragments;
 using BH.oM.Adapters.SAP2000;
 using System.ComponentModel;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 using BH.Engine.Base;
 using BH.oM.Base;
 
@@ -42,7 +42,7 @@ namespace BH.Engine.Adapters.SAP2000
         public static IPanelAutoMesh PanelAutoMesh(this Panel panel)
         {
             List<IFragment> fragments = panel?.GetAllFragments(typeof(IPanelAutoMesh));
-            if (fragments.Count > 1) Reflection.Compute.RecordWarning($"the panel {panel.Name} has more than one PanelOffset defined, which is not allowed. Only the first has been returned. Use GetAllFragments() to extract others.");
+            if (fragments.Count > 1) Compute.RecordWarning($"the panel {panel.Name} has more than one PanelOffset defined, which is not allowed. Only the first has been returned. Use GetAllFragments() to extract others.");
             return fragments.Select(x => x as IPanelAutoMesh).FirstOrDefault();
         }
 
@@ -60,7 +60,7 @@ namespace BH.Engine.Adapters.SAP2000
         public static IPanelOffset PanelOffset(this Panel panel)
         {
             List<IFragment> fragments = panel?.GetAllFragments(typeof(IPanelOffset));
-            if (fragments.Count > 1) Reflection.Compute.RecordWarning($"the panel {panel.Name} has more than one PanelOffset defined, which is not allowed. Only the first has been returned. Use GetAllFragments() to extract others.");
+            if (fragments.Count > 1) Compute.RecordWarning($"the panel {panel.Name} has more than one PanelOffset defined, which is not allowed. Only the first has been returned. Use GetAllFragments() to extract others.");
             return fragments.Select(x => x as IPanelOffset).FirstOrDefault();
         }
     }
