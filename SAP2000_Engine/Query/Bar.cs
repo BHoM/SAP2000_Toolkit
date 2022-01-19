@@ -30,7 +30,7 @@ using BH.oM.Adapters.SAP2000.Elements;
 using BH.oM.Adapters.SAP2000;
 using BH.Engine.Base;
 using System.ComponentModel;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 
 namespace BH.Engine.Adapters.SAP2000
 {

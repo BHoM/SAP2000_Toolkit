@@ -21,7 +21,7 @@
  */
 using System.ComponentModel;
 using BH.oM.Base;
-using BH.oM.Reflection.Attributes;
+using BH.oM.Base.Attributes;
 
 namespace BH.oM.Adapters.SAP2000.Fragments
 {
