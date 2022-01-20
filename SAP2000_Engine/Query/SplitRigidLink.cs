@@ -36,7 +36,7 @@ namespace BH.Engine.Adapters.SAP2000
 
         public static List<RigidLink> SplitRigidLink(RigidLink link)
         {
-            if (link == null)
+            if (link == null || link.PrimaryNode == null || link.SecondaryNodes == null)
             {
                 Base.Compute.RecordError("Could not split the RigidLink because it is null.");
                 return null;
