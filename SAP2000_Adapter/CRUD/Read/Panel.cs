@@ -72,7 +72,7 @@ namespace BH.Adapter.SAP2000
                         pts.Add(bhomNodes[name].Position);
                     pts.Add(pts[0]);
                     Polyline outline = new Polyline() { ControlPoints = pts };
-                    List<Edge> outEdges = new List<Edge>() { BH.Engine.Structure.Create.Edge(outline, new oM.Structure.Constraints.Constraint4DOF()) };
+                    List<Edge> outEdges = new List<Edge>() { new Edge { Curve = outline, Release = new oM.Structure.Constraints.Constraint4DOF() } };
 
                     bhomPanel.ExternalEdges = outEdges;
                 }

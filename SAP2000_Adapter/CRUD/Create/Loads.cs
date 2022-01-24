@@ -436,12 +436,12 @@ namespace BH.Adapter.SAP2000
             Vector momentA = Engine.Geometry.Create.Vector(bhLoad.MomentA.X, bhLoad.MomentA.Y, bhLoad.MomentA.Z);
             Vector momentB = Engine.Geometry.Create.Vector(bhLoad.MomentB.X, bhLoad.MomentB.Y, bhLoad.MomentB.Z);
 
-            Node startNode = Engine.Structure.Create.Node(bhLoad.Location.Start);
-            Node endNode = Engine.Structure.Create.Node(bhLoad.Location.End);
+            Node startNode = new Node { Position = bhLoad.Location.Start };
+            Node endNode = new Node { Position = bhLoad.Location.End };
             CreateObject(startNode);
             CreateObject(endNode);
 
-            Bar nullBar = Engine.Structure.Create.Bar(startNode, endNode);
+            Bar nullBar = new Bar { StartNode = startNode, EndNode = endNode };
             CreateObject(nullBar);
 
             List<Bar> barsToLoad = new List<Bar>();
