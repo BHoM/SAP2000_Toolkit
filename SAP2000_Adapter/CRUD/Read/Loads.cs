@@ -528,7 +528,7 @@ namespace BH.Adapter.SAP2000
 
                     if (loadType[i] == 1)
                     {
-                        loads.Add(Engine.Structure.Create.BarUniformTemperatureLoad(bhomCases[caseNames[i]], tempChange, new BHoMGroup<Bar> { Elements = { bhomBar } }, LoadAxis.Global, false));
+                        loads.Add(new BarUniformTemperatureLoad { Loadcase = bhomCases[caseNames[i]], TemperatureChange = tempChange, Objects = new BHoMGroup<Bar> { Elements = { bhomBar } }, Axis = LoadAxis.Global, Projected = false });
                     }
                 }
             }
