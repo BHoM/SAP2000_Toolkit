@@ -34,7 +34,7 @@ namespace BH.Engine.Adapters.SAP2000
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static List<RigidLink> SplitRigidLink(RigidLink link)
+        public static List<RigidLink> SplitRigidLink(this RigidLink link)
         {
             if (link == null || link.PrimaryNode == null || link.SecondaryNodes == null)
             {
