@@ -21,7 +21,8 @@
  */
 
 using BH.oM.Structure.Elements;
-using System;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.Constraints;
@@ -34,6 +35,9 @@ namespace BH.Engine.Adapters.SAP2000
         /**** Public Methods                            ****/
         /***************************************************/
 
+        [Description("Splits a RigidLink into one or more RigidLinks, each of which has exactly one SecondaryNode.")]
+        [Input("link", "The RigidLink to be split; generally a link with one PrimaryNode and several SecondaryNodes.")]
+        [Output("SingleLinks", "A list of RigidLinks, each with only one SecondaryNode. The name of each link will have ':::<i>' appended, where i is sequential for the list of links.")]
         public static List<RigidLink> SplitRigidLink(this RigidLink link)
         {
             if (link == null || link.PrimaryNode == null || link.SecondaryNodes == null)
