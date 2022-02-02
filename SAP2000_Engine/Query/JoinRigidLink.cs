@@ -26,6 +26,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.Constraints;
+using BH.oM.Base.Attributes;
+using System.ComponentModel;
 using BH.Engine.Base;
 
 namespace BH.Engine.Adapters.SAP2000
@@ -35,7 +37,9 @@ namespace BH.Engine.Adapters.SAP2000
         /***************************************************/
         /**** Public Methods                            ****/
         /***************************************************/
-
+        [Description("Joins RigidLinks split by SplitRigidLink() into RigidLinks with multiple SecondaryNodes.")]
+        [Input("linkList", "The RigidLinks to be joined; only links containing ':::' will be joined.")]
+        [Output("JoinedLinks", "A list of RigidLinks with one or more SecondaryNodes")]
         public static List<RigidLink> JoinRigidLink(List<RigidLink> linkList)
         {
             Dictionary<string, RigidLink> joinedList = new Dictionary<string, RigidLink>();
