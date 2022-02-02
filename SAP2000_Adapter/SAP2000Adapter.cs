@@ -25,6 +25,8 @@ using System;
 using System.IO;
 using BH.oM.Adapters.SAP2000;
 using BH.oM.Adapter.Commands;
+using System.ComponentModel;
+using BH.oM.Base.Attributes;
 using BH.Engine.Adapter;
 
 namespace BH.Adapter.SAP2000
@@ -41,6 +43,7 @@ namespace BH.Adapter.SAP2000
         /**** Constructors                              ****/
         /***************************************************/
 
+        [Description("Creates an adapter supporting SAP2000v21 and later.")]
         public SAP2000Adapter(string filePath = "", bool active = false)
         {
 
