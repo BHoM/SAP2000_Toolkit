@@ -7,7 +7,7 @@ This toolkit allows interoperability between the BHoM and SAP2000. Enables creat
 [SAP2000 Product Website](https://www.csiamerica.com/products/sap2000)
 
 ### Known Versions of Software Supported
-SAP2000 version 21
+The adapter is intended to support SAP2000 version 21 and all future versions. It is currently tested on version 23 exclusively.
 
 ### Documentation
 For more information about functionality see [Object Relation Table](https://github.com/BHoM/SAP2000_Toolkit/wiki/BHoM-SAP2000-Object-Relations)
