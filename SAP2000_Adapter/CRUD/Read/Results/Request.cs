@@ -20,33 +20,26 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Geometry;
 using System;
 using System.Collections.Generic;
+using BH.oM.Adapters.SAP2000.Requests;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.ComponentModel;
-using BH.oM.Structure.Requests;
-using BH.oM.Adapters.SAP2000;
 
-namespace BH.oM.Adapters.SAP2000.Requests
+namespace BH.Adapter.SAP2000
 {
-    public class BarForceSummationRequest : IStructuralResultRequest
+    public static partial class Convert
     {
         /***************************************************/
-        /**** Properties                                ****/
+        /**** Public Methods                            ****/
         /***************************************************/
-
-        [Description("Defines which cases and/or combinations that results should be extracted for. Can generally be set to either Loadcase or Loadcombination objects, or identifiers matching the software. If nothing is provided, results for all cases will be assumed.")]
-        public virtual List<object> Cases { get; set; } = new List<object>();
-
-        [Description("Defines for which modes results should be extracted. Only applicable for some casetypes. If nothing is provided, results for all modes will be assumed.")]
-        public virtual List<string> Modes { get; set; } = new List<string>();
-
-        [Description("Defines which bars that results should be extracted for. Can generally be set to either pulled bar objects, or identifiers matching the software. If nothing is provided, results for all bars will be assumed.")]
-        public virtual List<object> ObjectIds { get; set; } = new List<object>();
-
-        /***************************************************/
+        public static List<object> NonSeismicCases(this BarForceTimeHistoryRequest request)
+        {
+            return new List<object>() { request.Dead, request.Live, request.TempPlus, request.TempMinus };
+        }
     }
 }
+
 

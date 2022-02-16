@@ -51,6 +51,8 @@ namespace BH.Adapter.SAP2000
 
             m_model.Results.Setup.DeselectAllCasesAndCombosForOutput();
 
+            m_model.Results.Setup.SetOptionDirectHist(2);
+
             for (int loadcase = 0; loadcase < loadcaseIds.Count; loadcase++)
             {
                 SetUpCaseOrCombo(loadcaseIds[loadcase]);

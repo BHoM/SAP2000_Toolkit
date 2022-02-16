@@ -214,6 +214,7 @@
     <Compile Include="CRUD\Read\Node.cs" />
     <Compile Include="CRUD\Read\Panel.cs" />
     <Compile Include="CRUD\Read\LinkConstraint.cs" />
+    <Compile Include="CRUD\Read\Results\Request.cs" />
     <Compile Include="CRUD\Read\Results\BarResults.cs" />
     <Compile Include="CRUD\Read\Results\NodeResults.cs" />
     <Compile Include="CRUD\Read\Results\Result.cs" />

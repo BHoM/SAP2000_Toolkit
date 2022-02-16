@@ -21,6 +21,7 @@
  */
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Structure.Results;
@@ -29,6 +30,7 @@ using BH.oM.Analytical.Results;
 using BH.oM.Structure.Requests;
 using BH.oM.Geometry;
 using BH.oM.Base;
+using BH.Engine.Serialiser;
 using BH.Engine.Base;
 using BH.Engine.Geometry;
 using BH.oM.Adapter;
@@ -45,28 +47,35 @@ namespace BH.Adapter.SAP2000
         /**** Public method - Read override             ****/
         /***************************************************/
 
-        public IEnumerable<IObject> ReadResults(BarForceSummationRequest request,
+        public IEnumerable<IObject> ReadResults(BarForceTimeHistoryRequest request,
                                                 ActionConfig actionConfig = null)
         {
-            CheckAndSetUpCases(request);
             List<string> barIds = CheckGetBarIds(request);
 
-            return ReadBarForceSummation(barIds);
+            BarResultRequest gravityRequest = new BarResultRequest() { Cases = request.GravityCases, Modes = request.Modes, ObjectIds = request.ObjectIds, ResultType = BarResultType.BarForce };
+            CheckAndSetUpCases(gravityRequest);
+            List<BarForce> gravityForces = ReadBarForce(barIds);
+            Dictionary<string, BarForce> gravityDict = Engine.Results.Query.AbsoluteMaxEnvelopeByObject(gravityForces).ToDictionary(x => x.ObjectId.ToString());
+
+            BarResultRequest nonSeismicRequest = new BarResultRequest() { Cases = request.NonSeismicCases(), Modes = request.Modes, ObjectIds = request.ObjectIds, ResultType = BarResultType.BarForce };
+            CheckAndSetUpCases(nonSeismicRequest);
+            IEnumerable<BarForce> nonSeismicForces = ReadBarForce(barIds);
+
+            CheckAndSetUpCases(request);
+            return ReadBarForceTimeHistory(barIds, gravityDict, nonSeismicForces, request.NonSeismicCases());
 
         }
 
         /***************************************************/
         /**** Private method - Extraction methods       ****/
         /***************************************************/
-        private List<BarForce> ReadBarForceSummation(List<string> barIds, int divisions = 0)
+        private List<AISCSteelUtilisation> ReadBarForceTimeHistory(List<string> barIds, Dictionary<string, BarForce> gravityDict, IEnumerable<BarForce> nonSeismicForces, List<object> nonSeismicCases)
         {
-            List<BarForce> barForces = new List<BarForce>();
-            if (divisions != 0)
-            {
-                Engine.Base.Compute.RecordWarning("Forces will only be extracted at SAP2000 calculation nodes." +
-                                                    "'Divisions' parameter will not be considered in result extraction");
-            }
+            //string path = Path.Combine(m_model.GetModelFilepath(), "barForceBhomExport.json");
 
+            List<AISCSteelUtilisation> barForces = new List<AISCSteelUtilisation>();
+
+            int divisions = 0;
             int resultCount = 0;
             string[] loadcaseNames = null;
             string[] objects = null;
@@ -121,9 +130,14 @@ namespace BH.Adapter.SAP2000
                         forceItems.Add(bf);
                     }
 
-                    List<BarForce> processedForces = SumForces(forceItems);
+                    List<AISCSteelUtilisation> processedForces = SumForces(forceItems, gravityDict, nonSeismicForces, nonSeismicCases);
                     barForces.AddRange(processedForces);
-                    RecordForces(processedForces);
+                    
+                    //Output the forces to a file
+                    //using (StreamWriter sw = File.AppendText(path))
+                    //{
+                    //    sw.WriteLine(barForces.ToJson());
+                    //}
                 }
             }
 
@@ -132,28 +146,34 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private static List<BarForce> SumForces(List<BarForce> barForces)
+        private static List<AISCSteelUtilisation> SumForces(List<BarForce> barForces, Dictionary<string, BarForce> gravityDict, IEnumerable<BarForce> nonSeismicForces, List<object> nonSeismicCases)
         {
-            List<BarForce> summedForces = new List<BarForce>();
+            List<AISCSteelUtilisation> result = new List<AISCSteelUtilisation>();
 
             var groupById = barForces.GroupBy(x => x.ObjectId);
 
             foreach (var forceGroup in groupById)
             {
-                var id = forceGroup.FirstOrDefault().ObjectId;
-                string resultCase = "summarized results"; // these are collapsing
+                Dictionary<string, double> barCapacity = new Dictionary<string, double>()
+                {
+                    {"C"  , -1},
+                    {"T"  , 1},
+                    {"Vy" , 1},
+                    {"Vz" , 1},
+                    {"Mx" , 1},
+                    {"My" , 1},
+                    {"Mz" , 1}
+                };
+
+                string id = forceGroup.FirstOrDefault().ObjectId.ToString();
                 int modeNumber = forceGroup.FirstOrDefault().ModeNumber;
-                double timeStep = 0; //ignore timestep information - these are collapsing
                 int divisions = forceGroup.FirstOrDefault().Divisions; //ignore divisions - not relevant
 
                 //These will get assignments after grouping
                 double position = double.NaN;
-                double fx = double.NaN;
-                double fy = double.NaN;
-                double fz = double.NaN;
-                double mx = double.NaN;
-                double my = double.NaN;
-                double mz = double.NaN;
+                AISCSteelUtilisation maxUtilization;
+
+                IEnumerable<BarForce> nonSeismicForceAtBar = nonSeismicForces.Where(x => x.ObjectId.ToString() == id);
 
                 //Group by position (do summation at each end)
                 var groupbyposition = forceGroup.GroupBy(x => x.Position);
@@ -161,30 +181,72 @@ namespace BH.Adapter.SAP2000
                 foreach (var group in groupbyposition)
                 {
                     position = group.First().Position;
-                    fx = group.Sum(x => x.FX);
-                    fy = group.Sum(x => x.FY);
-                    fz = group.Sum(x => x.FZ);
-                    mx = group.Sum(x => x.MX);
-                    my = group.Sum(x => x.MY);
-                    mz = group.Sum(x => x.MZ);
+                    IEnumerable<BarForce> nonSeismicForceAtPosition = nonSeismicForceAtBar.Where(x => x.Position == position);
+
+                    maxUtilization = group.Max(x => CombineResults(x, barCapacity, gravityDict[id], nonSeismicForceAtPosition, nonSeismicCases));
+
+                    result.Add(maxUtilization);
                 }
-
-                BarForce sumForce = new BarForce(id, resultCase, modeNumber, timeStep, position, divisions, fx, fy, fz, mx, my, mz);
-
-                summedForces.Add(sumForce);
             }
 
-            return summedForces;
+            return result;
         }
 
         /***************************************************/
 
-        private static void RecordForces(List<BarForce> barForces)
+        private static AISCSteelUtilisation CombineResults(BarForce timeHistory, Dictionary<string, double> capacity, BarForce gravityDemand, IEnumerable<BarForce> nonSeismicForce, List<object> nonSeismicCases)
         {
-            //Write the current force to a file
+            BarForce dead = nonSeismicForce.Where(x => x.ResultCase.ToString() == nonSeismicCases[0].ToString()).FirstOrDefault();
+            BarForce live = nonSeismicForce.Where(x => x.ResultCase.ToString() == nonSeismicCases[1].ToString()).FirstOrDefault();
+            BarForce tempPlus = nonSeismicForce.Where(x => x.ResultCase.ToString() == nonSeismicCases[2].ToString()).FirstOrDefault();
+            BarForce tempMinus = nonSeismicForce.Where(x => x.ResultCase.ToString() == nonSeismicCases[3].ToString()).FirstOrDefault();
+
+            List<BarForce> combos = new List<BarForce>
+            {
+                Add(Add(Multiply(dead, 1.2), Multiply(Subtract(timeHistory, dead), 1.625)), Add(Multiply(live, 0.2), tempPlus)),
+                Add(Add(Multiply(dead, 1.2), Multiply(Subtract(timeHistory, dead), 1.625)), Add(Multiply(live, 0.2), tempMinus)),
+                Add(Add(Multiply(dead, 0.9), Multiply(Subtract(timeHistory, dead), 1.625)), tempPlus),
+                Add(Add(Multiply(dead, 0.9), Multiply(Subtract(timeHistory, dead), 1.625)), tempPlus)
+            };
+
+            BarForce absMax = Engine.Results.Query.MaxEnvelope(combos);
+            BarForce max = Engine.Results.Query.MinEnvelope(combos);
+            BarForce min = Engine.Results.Query.MinEnvelope(combos);
+
+            double tensionCompressionRatio = Math.Max(max.FX / capacity["T"], min.FX / capacity["P"]);
+            double majorShearRatio = absMax.FZ / capacity["Vz"];
+            double minorShearRatio = absMax.FY / capacity["Vy"];
+            double torsionRatio = absMax.MX / capacity["Mx"];
+            double majorBendingRatio = absMax.MY / capacity["My"];
+            double minorBendingRatio = absMax.MZ / capacity["Mz"];
+
+            double totalRatio = double.NaN;
+
+            return new AISCSteelUtilisation(timeHistory.ObjectId, timeHistory.ResultCase, timeHistory.ModeNumber, timeHistory.TimeStep, timeHistory.Position, timeHistory.Divisions, "AISC15", "NA", "NA", "designType", totalRatio, tensionCompressionRatio, majorShearRatio, minorShearRatio, torsionRatio, majorBendingRatio, minorBendingRatio);
         }
 
         /***************************************************/
+
+        public static BarForce Subtract(BarForce a, BarForce b)
+        {  
+            return new BarForce(a.ObjectId, a.ResultCase, a.ModeNumber, a.TimeStep, a.Position, a.Divisions, a.FX - b.FX, a.FY - b.FY, a.FZ - b.FZ, a.MX - b.MX, a.MY - b.MY, a.MZ - b.MZ);
+        }
+
+        /***************************************************/
+
+        public static BarForce Add(BarForce a, BarForce b)
+        {
+            return new BarForce(a.ObjectId, a.ResultCase, a.ModeNumber, a.TimeStep, a.Position, a.Divisions, a.FX + b.FX, a.FY + b.FY, a.FZ + b.FZ, a.MX + b.MX, a.MY + b.MY, a.MZ + b.MZ);
+        }
+
+
+        public static BarForce Multiply(BarForce a, double b)
+        {
+            return new BarForce(a.ObjectId, a.ResultCase, a.ModeNumber, a.TimeStep, a.Position, a.Divisions, a.FX * b, a.FY * b, a.FZ * b, a.MX * b, a.MY * b, a.MZ * b);
+        }
+
+        /***************************************************/
+
     }
 }
 

@@ -73,7 +73,7 @@
     <Compile Include="Fragments\SAP2000Id.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enums\ShellType.cs" />
-    <Compile Include="Requests\BarForceSummationRequest.cs" />
+    <Compile Include="Requests\BarForceTimeHistoryRequest.cs" />
     <Compile Include="Requests\SteelUtilisationRequest.cs" />
   </ItemGroup>
   <ItemGroup>
