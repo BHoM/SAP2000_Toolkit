@@ -206,7 +206,7 @@ namespace BH.Adapter.SAP2000
                 Add(Add(Multiply(dead, 1.2), Multiply(Subtract(timeHistory, dead), 1.625)), Add(Multiply(live, 0.2), tempPlus)),
                 Add(Add(Multiply(dead, 1.2), Multiply(Subtract(timeHistory, dead), 1.625)), Add(Multiply(live, 0.2), tempMinus)),
                 Add(Add(Multiply(dead, 0.9), Multiply(Subtract(timeHistory, dead), 1.625)), tempPlus),
-                Add(Add(Multiply(dead, 0.9), Multiply(Subtract(timeHistory, dead), 1.625)), tempPlus)
+                Add(Add(Multiply(dead, 0.9), Multiply(Subtract(timeHistory, dead), 1.625)), tempMinus)
             };
 
             BarForce absMax = Engine.Results.Query.MaxEnvelope(combos);
