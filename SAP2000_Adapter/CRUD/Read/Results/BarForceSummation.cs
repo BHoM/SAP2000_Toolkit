@@ -92,7 +92,7 @@ namespace BH.Adapter.SAP2000
             Dictionary<string, Dictionary<string, double>> barCapacities
             )
         {
-            //string path = Path.Combine(m_model.GetModelFilepath(), "barForceBhomExport.json");
+            string path = Path.Combine(m_model.GetModelFilepath(), "barForceBhomExport.json");
 
             List<AISCSteelUtilisation> barForces = new List<AISCSteelUtilisation>();
 
@@ -154,12 +154,12 @@ namespace BH.Adapter.SAP2000
 
                     List<AISCSteelUtilisation> processedForces = SumForces(forceItems, gravityDict, nonSeismicForces, request, barCapacities);
                     barForces.AddRange(processedForces);
-                    
+
                     //Output the forces to a file
-                    //using (StreamWriter sw = File.AppendText(path))
-                    //{
-                    //    sw.WriteLine(barForces.ToJson());
-                    //}
+                    using (StreamWriter sw = File.AppendText(path))
+                    {
+                        sw.WriteLine(barForces.ToJson());
+                    }
                 }
             }
 
@@ -246,7 +246,7 @@ namespace BH.Adapter.SAP2000
             BarForce max = Engine.Results.Query.MinEnvelope(combos);
             BarForce min = Engine.Results.Query.MinEnvelope(combos);
 
-            double tensionCompressionRatio = Math.Max(max.FX / capacity["T"], min.FX / capacity["P"]);
+            double tensionCompressionRatio = Math.Max(max.FX / capacity["T"], min.FX / capacity["C"]);
             double majorShearRatio = absMax.FZ / capacity["Vz"];
             double minorShearRatio = absMax.FY / capacity["Vy"];
             double torsionRatio = absMax.MX / capacity["Mx"];
@@ -261,7 +261,9 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
 
         public static BarForce Subtract(BarForce a, BarForce b)
-        {  
+        {
+            if (a == null || b == null)
+                return null;
             return new BarForce(a.ObjectId, a.ResultCase, a.ModeNumber, a.TimeStep, a.Position, a.Divisions, a.FX - b.FX, a.FY - b.FY, a.FZ - b.FZ, a.MX - b.MX, a.MY - b.MY, a.MZ - b.MZ);
         }
 
@@ -269,12 +271,16 @@ namespace BH.Adapter.SAP2000
 
         public static BarForce Add(BarForce a, BarForce b)
         {
+            if (a == null || b == null)
+                return null;
             return new BarForce(a.ObjectId, a.ResultCase, a.ModeNumber, a.TimeStep, a.Position, a.Divisions, a.FX + b.FX, a.FY + b.FY, a.FZ + b.FZ, a.MX + b.MX, a.MY + b.MY, a.MZ + b.MZ);
         }
 
 
         public static BarForce Multiply(BarForce a, double b)
         {
+            if (a == null)
+                return null;
             return new BarForce(a.ObjectId, a.ResultCase, a.ModeNumber, a.TimeStep, a.Position, a.Divisions, a.FX * b, a.FY * b, a.FZ * b, a.MX * b, a.MY * b, a.MZ * b);
         }
 
