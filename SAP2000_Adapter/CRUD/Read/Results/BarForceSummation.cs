@@ -37,6 +37,10 @@ using BH.oM.Adapter;
 using BH.oM.Adapters.SAP2000.Results;
 using BH.oM.Adapters.SAP2000.Requests;
 using SAP2000v1;
+using BH.Engine.Structure.Design.AISC15;
+using BH.Engine.Spatial;
+using BH.oM.Structure.Elements;
+using BH.oM.Structure.SectionProperties;
 
 
 namespace BH.Adapter.SAP2000
@@ -61,15 +65,32 @@ namespace BH.Adapter.SAP2000
             CheckAndSetUpCases(nonSeismicRequest);
             IEnumerable<BarForce> nonSeismicForces = ReadBarForce(barIds);
 
+            Dictionary<string, Dictionary<string, double>> barCapacities = new Dictionary<string, Dictionary<string, double>>();
+            IEnumerable<Bar> bars = ReadBars(barIds);
+            foreach (Bar bar in bars)
+            {
+                SteelSection sec = bar.SectionProperty as SteelSection;
+                double len = bar.Length();
+                Dictionary<string, double> barCapacity = Engine.Structure.Design.AISC15.Compute.SteelBoxSectionStrength(sec, len);
+                barCapacities.Add(GetAdapterId<string>(bar), barCapacity);
+            }
+
             CheckAndSetUpCases(request);
-            return ReadBarForceTimeHistory(barIds, gravityDict, nonSeismicForces, request.NonSeismicCases());
+            return ReadBarForceTimeHistory(barIds, gravityDict, nonSeismicForces, request, barCapacities);
 
         }
 
         /***************************************************/
         /**** Private method - Extraction methods       ****/
         /***************************************************/
-        private List<AISCSteelUtilisation> ReadBarForceTimeHistory(List<string> barIds, Dictionary<string, BarForce> gravityDict, IEnumerable<BarForce> nonSeismicForces, List<object> nonSeismicCases)
+        private List<AISCSteelUtilisation> ReadBarForceTimeHistory
+            (
+            List<string> barIds,
+            Dictionary<string, BarForce> gravityDict,
+            IEnumerable<BarForce> nonSeismicForces,
+            BarForceTimeHistoryRequest request, 
+            Dictionary<string, Dictionary<string, double>> barCapacities
+            )
         {
             //string path = Path.Combine(m_model.GetModelFilepath(), "barForceBhomExport.json");
 
@@ -116,7 +137,8 @@ namespace BH.Adapter.SAP2000
                                                      ref m2,
                                                      ref m3) != 0)
                 {
-                    Engine.Base.Compute.RecordError($"Could not extract results for an output station in bar {barIds}.");
+                    Engine.Base.Compute.RecordError($"Could not extract results for an output station in bar {barIds}. Stopping further calculations.");
+                    return barForces;
                 }
                 else
                 {
@@ -130,7 +152,7 @@ namespace BH.Adapter.SAP2000
                         forceItems.Add(bf);
                     }
 
-                    List<AISCSteelUtilisation> processedForces = SumForces(forceItems, gravityDict, nonSeismicForces, nonSeismicCases);
+                    List<AISCSteelUtilisation> processedForces = SumForces(forceItems, gravityDict, nonSeismicForces, request, barCapacities);
                     barForces.AddRange(processedForces);
                     
                     //Output the forces to a file
@@ -146,7 +168,8 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private static List<AISCSteelUtilisation> SumForces(List<BarForce> barForces, Dictionary<string, BarForce> gravityDict, IEnumerable<BarForce> nonSeismicForces, List<object> nonSeismicCases)
+        private static List<AISCSteelUtilisation> SumForces(List<BarForce> barForces, Dictionary<string, BarForce> gravityDict, IEnumerable<BarForce> nonSeismicForces, BarForceTimeHistoryRequest request, Dictionary<string, Dictionary<string, double>> barCapacities)
+
         {
             List<AISCSteelUtilisation> result = new List<AISCSteelUtilisation>();
 
@@ -154,16 +177,25 @@ namespace BH.Adapter.SAP2000
 
             foreach (var forceGroup in groupById)
             {
-                Dictionary<string, double> barCapacity = new Dictionary<string, double>()
+
+                Dictionary<string, double> barCapacity = new Dictionary<string, double>();
+
+                if (!barCapacities.TryGetValue(forceGroup.FirstOrDefault().ObjectId.ToString(), out barCapacity))
                 {
-                    {"C"  , -1},
-                    {"T"  , 1},
-                    {"Vy" , 1},
-                    {"Vz" , 1},
-                    {"Mx" , 1},
-                    {"My" , 1},
-                    {"Mz" , 1}
-                };
+                    Engine.Base.Compute.RecordError("Could not find bar capacity, stopping further calculations.");
+                    return result;
+                }
+
+                //Dictionary<string, double> barCapacity = new Dictionary<string, double>()
+                //{
+                //    {"C"  , -1},
+                //    {"T"  , 1},
+                //    {"Vy" , 1},
+                //    {"Vz" , 1},
+                //    {"Mx" , 1},
+                //    {"My" , 1},
+                //    {"Mz" , 1}
+                //};
 
                 string id = forceGroup.FirstOrDefault().ObjectId.ToString();
                 int modeNumber = forceGroup.FirstOrDefault().ModeNumber;
@@ -183,7 +215,7 @@ namespace BH.Adapter.SAP2000
                     position = group.First().Position;
                     IEnumerable<BarForce> nonSeismicForceAtPosition = nonSeismicForceAtBar.Where(x => x.Position == position);
 
-                    maxUtilization = group.Max(x => CombineResults(x, barCapacity, gravityDict[id], nonSeismicForceAtPosition, nonSeismicCases));
+                    maxUtilization = group.Max(x => CombineResults(x, barCapacity, gravityDict[id], nonSeismicForceAtPosition, request));
 
                     result.Add(maxUtilization);
                 }
@@ -194,19 +226,20 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private static AISCSteelUtilisation CombineResults(BarForce timeHistory, Dictionary<string, double> capacity, BarForce gravityDemand, IEnumerable<BarForce> nonSeismicForce, List<object> nonSeismicCases)
+        private static AISCSteelUtilisation CombineResults(BarForce timeHistory, Dictionary<string, double> capacity, BarForce gravityDemand, IEnumerable<BarForce> nonSeismicForce, BarForceTimeHistoryRequest request)
         {
-            BarForce dead = nonSeismicForce.Where(x => x.ResultCase.ToString() == nonSeismicCases[0].ToString()).FirstOrDefault();
-            BarForce live = nonSeismicForce.Where(x => x.ResultCase.ToString() == nonSeismicCases[1].ToString()).FirstOrDefault();
-            BarForce tempPlus = nonSeismicForce.Where(x => x.ResultCase.ToString() == nonSeismicCases[2].ToString()).FirstOrDefault();
-            BarForce tempMinus = nonSeismicForce.Where(x => x.ResultCase.ToString() == nonSeismicCases[3].ToString()).FirstOrDefault();
+            BarForce dead = nonSeismicForce.Where(x => x.ResultCase.ToString() == request.NonSeismicCases()[0].ToString()).FirstOrDefault();
+            BarForce live = nonSeismicForce.Where(x => x.ResultCase.ToString() == request.NonSeismicCases()[1].ToString()).FirstOrDefault();
+            BarForce tempPlus = nonSeismicForce.Where(x => x.ResultCase.ToString() == request.NonSeismicCases()[2].ToString()).FirstOrDefault();
+            BarForce tempMinus = nonSeismicForce.Where(x => x.ResultCase.ToString() == request.NonSeismicCases()[3].ToString()).FirstOrDefault();
 
+            double factor = request.Factor;
             List<BarForce> combos = new List<BarForce>
             {
-                Add(Add(Multiply(dead, 1.2), Multiply(Subtract(timeHistory, dead), 1.625)), Add(Multiply(live, 0.2), tempPlus)),
-                Add(Add(Multiply(dead, 1.2), Multiply(Subtract(timeHistory, dead), 1.625)), Add(Multiply(live, 0.2), tempMinus)),
-                Add(Add(Multiply(dead, 0.9), Multiply(Subtract(timeHistory, dead), 1.625)), tempPlus),
-                Add(Add(Multiply(dead, 0.9), Multiply(Subtract(timeHistory, dead), 1.625)), tempMinus)
+                Add(Add(Multiply(dead, 1.2), Multiply(Subtract(timeHistory, dead), factor)), Add(Multiply(live, 0.2), tempPlus)),
+                Add(Add(Multiply(dead, 1.2), Multiply(Subtract(timeHistory, dead), factor)), Add(Multiply(live, 0.2), tempMinus)),
+                Add(Add(Multiply(dead, 0.9), Multiply(Subtract(timeHistory, dead), factor)), tempPlus),
+                Add(Add(Multiply(dead, 0.9), Multiply(Subtract(timeHistory, dead), factor)), tempMinus)
             };
 
             BarForce absMax = Engine.Results.Query.MaxEnvelope(combos);

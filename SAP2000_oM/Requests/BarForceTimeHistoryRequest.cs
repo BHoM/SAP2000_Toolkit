@@ -56,6 +56,9 @@ namespace BH.oM.Adapters.SAP2000.Requests
         [Description("Defines the temperature - case to be used with the Combinations above.")]
         public virtual object TempMinus { get; set; } = new object();
 
+        [Description("Defines the factor for amplification of Time History loads.")]
+        public virtual double Factor { get; set; } = 1.625;
+
         [Description("Defines for which modes results should be extracted. Only applicable for some casetypes. If nothing is provided, results for all modes will be assumed.")]
         public virtual List<string> Modes { get; set; } = new List<string>();
 
