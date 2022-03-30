@@ -54,6 +54,12 @@ namespace BH.Adapter.SAP2000
         public IEnumerable<IObject> ReadResults(BarForceTimeHistoryRequest request,
                                                 ActionConfig actionConfig = null)
         {
+            // Don't pull all results just because some numbskull forgot to put an input here. This will take a very long time.
+            if (request.ObjectIds == null || request.Cases == null)
+            {
+                return null;
+            }
+
             List<string> barIds = CheckGetBarIds(request);
 
             BarResultRequest gravityRequest = new BarResultRequest() { Cases = request.GravityCases, Modes = request.Modes, ObjectIds = request.ObjectIds, ResultType = BarResultType.BarForce };
@@ -94,7 +100,7 @@ namespace BH.Adapter.SAP2000
         {
             string path = Path.Combine(m_model.GetModelFilepath(), "barForceBhomExport.json");
 
-            List<AISCSteelUtilisation> barForces = new List<AISCSteelUtilisation>();
+            List<AISCSteelUtilisation> barUtilizations = new List<AISCSteelUtilisation>();
 
             int divisions = 0;
             int resultCount = 0;
@@ -138,7 +144,7 @@ namespace BH.Adapter.SAP2000
                                                      ref m3) != 0)
                 {
                     Engine.Base.Compute.RecordError($"Could not extract results for an output station in bar {barIds}. Stopping further calculations.");
-                    return barForces;
+                    return barUtilizations;
                 }
                 else
                 {
@@ -152,18 +158,23 @@ namespace BH.Adapter.SAP2000
                         forceItems.Add(bf);
                     }
 
-                    List<AISCSteelUtilisation> processedForces = SumForces(forceItems, gravityDict, nonSeismicForces, request, barCapacities);
-                    barForces.AddRange(processedForces);
+                    List<AISCSteelUtilisation> thisBarUtilizations = SumForces(forceItems, gravityDict, nonSeismicForces, request, barCapacities);
 
                     //Output the forces to a file
                     using (StreamWriter sw = File.AppendText(path))
                     {
-                        sw.WriteLine(barForces.ToJson());
+                        foreach (AISCSteelUtilisation util in thisBarUtilizations)
+                        {
+                            sw.WriteLine(util.ToJson());
+                        }
                     }
+                    
+                    barUtilizations.AddRange(thisBarUtilizations);
+
                 }
             }
 
-            return barForces;
+            return barUtilizations;
         }
 
         /***************************************************/

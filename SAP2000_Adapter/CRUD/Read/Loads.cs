@@ -28,6 +28,7 @@ using BH.oM.Geometry;
 using BH.oM.Dimensional;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
+using BH.oM.Adapters.SAP2000.Loads;
 using SAP2000v1;
 using System;
 using System.Collections.Generic;
@@ -55,12 +56,38 @@ namespace BH.Adapter.SAP2000
             int nameCount = 0;
             string[] nameArr = null;
 
+            m_model.LoadCases.GetNameList_1(ref nameCount, ref nameArr);
+            ids = FilterIds(ids, nameArr);
+
+            foreach (string id in ids)
+            {
+                Loadcase bhomCase = new Loadcase
+                {
+                    Name = id
+                };
+
+                SetAdapterId(bhomCase, id);
+                loadCases.Add(bhomCase);
+            }
+
+            return loadCases;
+        }
+
+        /***************************************************/
+
+        private List<LoadPattern> ReadLoadPattern(List<string> ids = null)
+        {
+            List<LoadPattern> loadPatterns = new List<LoadPattern>();
+
+            int nameCount = 0;
+            string[] nameArr = null;
+
             m_model.LoadPatterns.GetNameList(ref nameCount, ref nameArr);
             ids = FilterIds(ids, nameArr);
 
             foreach (string id in ids)
             {
-                Loadcase bhomCase = new Loadcase();
+                LoadPattern bhomCase = new LoadPattern();
 
                 eLoadPatternType patternType = eLoadPatternType.Other;
 
@@ -75,10 +102,10 @@ namespace BH.Adapter.SAP2000
                 }
 
                 SetAdapterId(bhomCase, id);
-                loadCases.Add(bhomCase);
+                loadPatterns.Add(bhomCase);
             }
 
-            return loadCases;
+            return loadPatterns;
         }
 
         /***************************************************/
@@ -116,10 +143,16 @@ namespace BH.Adapter.SAP2000
                     if (caseCount > 0)
                     {
                         List<ICase> comboCases = new List<ICase>();
+                        Loadcase bhomCase;
                         for (int j = 0; j < caseCount; j++)
                         {
-                            comboCases.Add(bhomCases[caseNames[j]]);
-                            bhomCombo.LoadCases.Add(new Tuple<double, ICase>(factors[j], comboCases[j]));
+                            if (bhomCases.TryGetValue(caseNames[j], out bhomCase))
+                            {
+                                comboCases.Add(bhomCase);
+                                bhomCombo.LoadCases.Add(new Tuple<double, ICase>(factors[j], comboCases[j]));
+                            }
+                            else
+                                Engine.Base.Compute.RecordError($"Could not extract loadcase {caseNames[j]} from SAP2000.");
                         }
                     }
 

@@ -44,16 +44,16 @@ namespace BH.oM.Adapters.SAP2000.Requests
         [Description("Defines the gravity cases and/or combinations to subtract from the results during post-processing.")]
         public virtual List<object> GravityCases { get; set; } = new List<object>();
 
-        [Description("Defines the dead load case to be used with the Combinations above.")]
+        [Description("Defines the dead load case to be used in combining loads.")]
         public virtual object Dead { get; set; } = new object();
 
-        [Description("Defines the live load case to be used with the Combinations above.")]
+        [Description("Defines the live load case to be used in combining loads.")]
         public virtual object Live { get; set; } = new object();
 
-        [Description("Defines the temperature + load case to be used with the Combinations above.")]
+        [Description("Defines the temperature + load case to be used in combining loads.")]
         public virtual object TempPlus { get; set; } = new object();
 
-        [Description("Defines the temperature - case to be used with the Combinations above.")]
+        [Description("Defines the temperature - case to be used in combining loads.")]
         public virtual object TempMinus { get; set; } = new object();
 
         [Description("Defines the factor for amplification of Time History loads.")]
