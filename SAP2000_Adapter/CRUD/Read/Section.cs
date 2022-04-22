@@ -130,7 +130,6 @@ namespace BH.Adapter.SAP2000
                         bhomProfile = BH.Engine.Spatial.Create.RectangleProfile(t3, t2, 0);
                         break;
                     case eFramePropType.Auto://not member will have this assigned but it still exists in the propertyType list
-                        bhomProfile = BH.Engine.Spatial.Create.CircleProfile(0.2);
                         break;
                     case eFramePropType.Circle:
                     case eFramePropType.SteelRod:
@@ -176,56 +175,53 @@ namespace BH.Adapter.SAP2000
                     case eFramePropType.ConcreteCross:
                     default:                        
                         break;
-                }
-                
-                // Section Material
-
-                IMaterialFragment material = null;
-                if (!bhomMaterials.TryGetValue(materialName, out material))
-                {
-                    Engine.Base.Compute.RecordWarning($"Could not get material for SectionProperty {id}. A generic has been returned.");
                 }                
 
-                if (bhomProfile == null)
+                if (bhomProfile != null)
                 {
-                    Engine.Base.Compute.RecordWarning("Reading sections of type " + propertyType.ToString() + " is not supported. An empty section with a default material has been returned.");
-                    constructor = "explicit";
+                    // Section Material
+
+                    IMaterialFragment material = null;
+                    if (!bhomMaterials.TryGetValue(materialName, out material))
+                    {
+                        Engine.Base.Compute.RecordWarning($"Could not get material for SectionProperty {id}. A generic has been returned.");
+                    }
+
+                    switch (constructor)
+                    {
+                        case "explicit":
+                            bhomProperty = new ExplicitSection()
+                            {
+                                Area = Area,
+                                Asy = As2,
+                                Asz = As3,
+                                Iy = I22,
+                                Iz = I33,
+                                J = Torsion,
+                                Rgy = R22,
+                                Rgz = R33,
+                                Wply = S22,
+                                Wplz = S33,
+                                Wely = Z22,
+                                Welz = Z33,
+                                Material = material,
+                                Name = id
+                            };
+                            break;
+                        case "standard":
+                            bhomProperty = BH.Engine.Structure.Create.SectionPropertyFromProfile(bhomProfile, material, id);
+                            break;
+                    }
+
+                    // Apply Property Modifiers
+                    bhomProperty.Fragments.Add(ReadFrameSectionModifiers(id));
+
+                    // Apply the AdapterId
+                    bhomProperty.SetAdapterId(sap2000id);
+
+                    // Add to the list
+                    propList.Add(bhomProperty);
                 }
-
-                switch (constructor)
-                {
-                    case "explicit":
-                        bhomProperty = new ExplicitSection()
-                        {
-                            Area = Area,
-                            Asy = As2,
-                            Asz = As3,
-                            Iy = I22,
-                            Iz = I33,
-                            J = Torsion,
-                            Rgy = R22,
-                            Rgz = R33,
-                            Wply = S22,
-                            Wplz = S33,
-                            Wely = Z22,
-                            Welz = Z33,
-                            Material = material,
-                            Name = id
-                        };
-                        break;
-                    case "standard":
-                        bhomProperty = BH.Engine.Structure.Create.SectionPropertyFromProfile(bhomProfile, material, id);
-                        break;
-                }
-
-                // Apply Property Modifiers
-                bhomProperty.Fragments.Add(ReadFrameSectionModifiers(id));
-
-                // Apply the AdapterId
-                bhomProperty.SetAdapterId(sap2000id);
-
-                // Add to the list
-                propList.Add(bhomProperty);
             }
 
             //Read any leftover sections (currently only tapered profiles)

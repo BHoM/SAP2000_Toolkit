@@ -55,12 +55,18 @@ namespace BH.Adapter.SAP2000
                                                 ActionConfig actionConfig = null)
         {
             // Don't pull all results just because some numbskull forgot to put an input here. This will take a very long time.
-            if (request.ObjectIds == null || request.Cases == null)
+            if (request.ObjectIds.Count == 0 || request.Cases.Count == 0)
             {
                 return null;
             }
 
             List<string> barIds = CheckGetBarIds(request);
+
+            if (barIds.Count == 0)
+            {
+                Engine.Base.Compute.RecordError("Could not find any of these bars in the model.");
+                return null;
+            }
 
             BarResultRequest gravityRequest = new BarResultRequest() { Cases = request.GravityCases, Modes = request.Modes, ObjectIds = request.ObjectIds, ResultType = BarResultType.BarForce };
             CheckAndSetUpCases(gravityRequest);
@@ -143,7 +149,7 @@ namespace BH.Adapter.SAP2000
                                                      ref m2,
                                                      ref m3) != 0)
                 {
-                    Engine.Base.Compute.RecordError($"Could not extract results for an output station in bar {barIds}. Stopping further calculations.");
+                    Engine.Base.Compute.RecordError($"Could not extract results for an output station in bar {barIds[i]}. Stopping further calculations.");
                     return barUtilizations;
                 }
                 else
@@ -264,8 +270,18 @@ namespace BH.Adapter.SAP2000
             double majorBendingRatio = absMax.MY / capacity["My"];
             double minorBendingRatio = absMax.MZ / capacity["Mz"];
 
-            double totalRatio = double.NaN;
+            double totalRatio;
 
+            if (torsionRatio <= 0.20)
+            {
+                if (tensionCompressionRatio >= 0.20)
+                    totalRatio = tensionCompressionRatio + (8 / 9) * (majorBendingRatio + minorBendingRatio); //H1-1a
+                else
+                    totalRatio = tensionCompressionRatio/2 + (majorBendingRatio + minorBendingRatio); //H1-1b
+            }
+            else
+                totalRatio = tensionCompressionRatio + majorBendingRatio + minorBendingRatio + Math.Pow(majorShearRatio + minorShearRatio + torsionRatio, 2); //H1-1b
+            
             return new AISCSteelUtilisation(timeHistory.ObjectId, timeHistory.ResultCase, timeHistory.ModeNumber, timeHistory.TimeStep, timeHistory.Position, timeHistory.Divisions, "AISC15", "NA", "NA", "designType", totalRatio, tensionCompressionRatio, majorShearRatio, minorShearRatio, torsionRatio, majorBendingRatio, minorBendingRatio);
         }
 
