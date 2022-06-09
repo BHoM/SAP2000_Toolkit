@@ -863,12 +863,12 @@ namespace BH.Adapter.SAP2000
                     {
                         try
                         {
-                            double avgConstTemp = 0.5 * tempForce * bhomPanel.Property.IAverageThickness();
+                            double avgConstTemp = 0.5 * tempForce * bhomPanel.Property.ITotalThickness();
                             tempForce = avgConstTemp;
                         }
                         catch { }
 
-                        Engine.Base.Compute.RecordWarning("Temperature gradient not currently implemented in the BHoM. An attempt has been made to convert SAP2000's gradient to a constant temperature change.");
+                        Engine.Base.Compute.RecordWarning("Temperature gradient not yet implemented. An attempt has been made to convert SAP2000's gradient to a constant temperature change.");
                     }
 
                     loads.Add(new AreaUniformTemperatureLoad()
