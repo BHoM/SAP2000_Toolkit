@@ -54,10 +54,14 @@ namespace BH.Adapter.SAP2000
 
         private bool UpdateObjects(IEnumerable<IBHoMObject> objects)
         {
-            return base.IUpdate(objects, null);
+            string typeName = objects.FirstOrDefault()?.GetType().Name;
+            if (typeName != null)
+                Engine.Base.Compute.RecordError($"Update has not been implemented for objects of type {typeName}.");
+            return false;
         }
 
         /***************************************************/
+
     }
 }
 
