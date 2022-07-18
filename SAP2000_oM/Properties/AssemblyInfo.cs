@@ -25,7 +25,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("SAP2000_oM")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("https://github.com/BHoM/SAP2000_Toolkit")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Buro Happold")]
 [assembly: AssemblyProduct("SAP2000_oM")]
