@@ -429,11 +429,6 @@ namespace BH.Adapter.SAP2000
 
         private bool CreateLoad(GeometricalLineLoad bhLoad)
         {
-            Vector forceA = bhLoad.ForceA;
-            Vector forceB = bhLoad.ForceB;
-            Vector momentA = bhLoad.MomentA;
-            Vector momentB = bhLoad.MomentB;
-
             Node startNode = new Node { Position = bhLoad.Location.Start };
             Node endNode = new Node { Position = bhLoad.Location.End };
             CreateObject(startNode);
@@ -446,11 +441,11 @@ namespace BH.Adapter.SAP2000
                 bhLoad.Loadcase, 
                 new List<Bar> { nullBar }, 
                 0, //start
-                forceA, 
-                momentA,
+                bhLoad.ForceA,
+                bhLoad.MomentA,
                 1, //end
-                forceB, 
-                momentB, 
+                bhLoad.ForceB,
+                bhLoad.MomentB, 
                 false, 
                 bhLoad.Axis, 
                 bhLoad.Projected, 
