@@ -429,12 +429,10 @@ namespace BH.Adapter.SAP2000
 
         private bool CreateLoad(GeometricalLineLoad bhLoad)
         {
-            double distanceFromA = 0.0;
-            double distanceFromB = 0.0;
-            Vector forceA = Engine.Geometry.Create.Vector(bhLoad.ForceA.X, bhLoad.ForceA.Y, bhLoad.ForceA.Z);
-            Vector forceB = Engine.Geometry.Create.Vector(bhLoad.ForceB.X, bhLoad.ForceB.Y, bhLoad.ForceB.Z);
-            Vector momentA = Engine.Geometry.Create.Vector(bhLoad.MomentA.X, bhLoad.MomentA.Y, bhLoad.MomentA.Z);
-            Vector momentB = Engine.Geometry.Create.Vector(bhLoad.MomentB.X, bhLoad.MomentB.Y, bhLoad.MomentB.Z);
+            Vector forceA = bhLoad.ForceA;
+            Vector forceB = bhLoad.ForceB;
+            Vector momentA = bhLoad.MomentA;
+            Vector momentB = bhLoad.MomentB;
 
             Node startNode = new Node { Position = bhLoad.Location.Start };
             Node endNode = new Node { Position = bhLoad.Location.End };
@@ -444,10 +442,21 @@ namespace BH.Adapter.SAP2000
             Bar nullBar = new Bar { StartNode = startNode, EndNode = endNode };
             CreateObject(nullBar);
 
-            List<Bar> barsToLoad = new List<Bar>();
-            barsToLoad.Add(nullBar);
-            BarVaryingDistributedLoad barVaryLoad = Engine.Structure.Create.BarVaryingDistributedLoad(bhLoad.Loadcase, barsToLoad, distanceFromA, forceA, momentA,
-                                                                                                        distanceFromB, forceB, momentB, false, bhLoad.Axis, bhLoad.Projected, bhLoad.Name);
+            BarVaryingDistributedLoad barVaryLoad = Engine.Structure.Create.BarVaryingDistributedLoad(
+                bhLoad.Loadcase, 
+                new List<Bar> { nullBar }, 
+                0, //start
+                forceA, 
+                momentA,
+                1, //end
+                forceB, 
+                momentB, 
+                false, 
+                bhLoad.Axis, 
+                bhLoad.Projected, 
+                bhLoad.Name
+                );
+
             CreateLoad(barVaryLoad);
 
             SetAdapterId(bhLoad, null);
