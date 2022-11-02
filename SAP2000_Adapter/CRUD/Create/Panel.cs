@@ -100,11 +100,14 @@ namespace BH.Adapter.SAP2000
 
             foreach (string gName in bhPanel.Tags)
             {
-                string groupName = gName.ToString();
-                if (m_model.AreaObj.SetGroupAssign(name, groupName) != 0)
+                if (gName != null)
                 {
-                    m_model.GroupDef.SetGroup(groupName);
-                    m_model.AreaObj.SetGroupAssign(name, groupName);
+                    string groupName = gName.ToString();
+                    if (m_model.AreaObj.SetGroupAssign(name, groupName) != 0)
+                    {
+                        m_model.GroupDef.SetGroup(groupName);
+                        m_model.AreaObj.SetGroupAssign(name, groupName);
+                    }
                 }
             }
 
