@@ -32,6 +32,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using BH.oM.Adapter;
+using BH.oM.Data.Requests;
 
 namespace BH.Adapter.SAP2000
 {
@@ -67,6 +68,26 @@ namespace BH.Adapter.SAP2000
                 return DeleteLinkConstraints(idString);
 
             return 0;
+        }
+
+        /***************************************************/
+
+        protected override int Delete(FilterRequest request, ActionConfig actionConfig = null)
+        {
+                // Get object ids
+                List<object> objectIds = new List<object>();
+                object idObject;
+            if (request.Equalities.TryGetValue("ObjectIds", out idObject))
+
+            {
+                objectIds = (List<object>)idObject;
+
+                // Delete 
+                return IDelete(request.Type, objectIds, actionConfig);
+            }
+
+            return 0;
+    
         }
 
         /***************************************************/
