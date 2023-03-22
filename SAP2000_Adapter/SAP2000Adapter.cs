@@ -53,6 +53,7 @@ namespace BH.Adapter.SAP2000
             SetupDependencies();
             AdapterIdFragmentType = typeof(SAP2000Id);
             m_AdapterSettings.DefaultPushType = oM.Adapter.PushType.FullPush;
+            m_AdapterSettings.CacheCRUDobjects = false;
 
             if (active)
             {
