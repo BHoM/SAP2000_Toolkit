@@ -65,8 +65,8 @@ namespace BH.Adapter.SAP2000
                     string endId = "";
                     m_model.FrameObj.GetPoints(id, ref startId, ref endId);
                     
-                    bhomBar.StartNode = bhomNodes[startId];
-                    bhomBar.EndNode = bhomNodes[endId];
+                    bhomBar.Start = bhomNodes[startId];
+                    bhomBar.End = bhomNodes[endId];
 
                     bool[] restraintStart = new bool[6];
                     double[] springStart = new double[6];

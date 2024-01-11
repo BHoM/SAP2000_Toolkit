@@ -434,7 +434,7 @@ namespace BH.Adapter.SAP2000
             CreateObject(startNode);
             CreateObject(endNode);
 
-            Bar nullBar = new Bar { StartNode = startNode, EndNode = endNode };
+            Bar nullBar = new Bar { Start = startNode, End = endNode };
             CreateObject(nullBar);
 
             BarVaryingDistributedLoad barVaryLoad = Engine.Structure.Create.BarVaryingDistributedLoad(
