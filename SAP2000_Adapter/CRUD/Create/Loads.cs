@@ -410,8 +410,7 @@ namespace BH.Adapter.SAP2000
         { 
             double[] loadVals = bhLoad.Force.ToDoubleArray();
 
-            List<Opening> openingsList = new List<Opening>();
-            Panel loadPanel = Engine.Structure.Create.Panel(bhLoad.Contour as ICurve, openingsList);
+            Panel loadPanel = Engine.Structure.Create.Panel(bhLoad.Contour);
             CreateObject(loadPanel);
 
             List<Panel> panelsToLoad = new List<Panel>();
