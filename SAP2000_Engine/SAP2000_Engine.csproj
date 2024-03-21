@@ -141,7 +141,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdapterIdName.cs" />
+    <Compile Include="Objects\AdapterIdName.cs" />
     <Compile Include="Modify\SetBar.cs" />
     <Compile Include="Query\Panel.cs" />
     <Compile Include="Query\Bar.cs" />
