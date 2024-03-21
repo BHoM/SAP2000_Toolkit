@@ -22,7 +22,7 @@
 
 namespace BH.Engine.Adapters.SAP2000
 {
-    public partial class Convert
+    public static partial class Convert
     {
         /***************************************************/
         /**** Public Strings                            ****/
