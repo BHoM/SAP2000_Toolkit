@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -48,14 +48,14 @@ namespace BH.Adapter.SAP2000
             string name = "";
 
             // Check for dealbreaking BHoM validity
-            if (bhBar.StartNode == null || bhBar.EndNode == null)
+            if (bhBar.Start == null || bhBar.End == null)
             {
                 Engine.Base.Compute.RecordError($"Bar {bhBar.Name} failed to push because its nodes are null");
                 return false;
             }
 
-            string startId = GetAdapterId<string>(bhBar.StartNode);
-            string endId = GetAdapterId<string>(bhBar.EndNode);
+            string startId = GetAdapterId<string>(bhBar.Start);
+            string endId = GetAdapterId<string>(bhBar.End);
 
             if (startId == null || endId == null)
             {
@@ -257,6 +257,7 @@ namespace BH.Adapter.SAP2000
         }
     }
 }
+
 
 
 

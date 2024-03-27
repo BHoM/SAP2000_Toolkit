@@ -1,6 +1,6 @@
 /*
  * This file is part of the Buildings and Habitats object Model (BHoM)
- * Copyright (c) 2015 - 2023, the respective contributors. All rights reserved.
+ * Copyright (c) 2015 - 2024, the respective contributors. All rights reserved.
  *
  * Each contributor holds copyright over their respective contributions.
  * The project versioning (Git) records all such contribution source information.
@@ -65,8 +65,8 @@ namespace BH.Adapter.SAP2000
                     string endId = "";
                     m_model.FrameObj.GetPoints(id, ref startId, ref endId);
                     
-                    bhomBar.StartNode = bhomNodes[startId];
-                    bhomBar.EndNode = bhomNodes[endId];
+                    bhomBar.Start = bhomNodes[startId];
+                    bhomBar.End = bhomNodes[endId];
 
                     bool[] restraintStart = new bool[6];
                     double[] springStart = new double[6];
@@ -180,6 +180,7 @@ namespace BH.Adapter.SAP2000
         /***************************************************/
     }
 }
+
 
 
 
