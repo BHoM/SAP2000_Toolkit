@@ -75,7 +75,7 @@ namespace BH.Adapter.SAP2000
                 // Try to attach to an existing instance of SAP2000
                 try
                 {
-                    m_app = (cOAPI)System.Runtime.InteropServices.Marshal.GetActiveObject(progId);
+                    m_app = (cOAPI)Query.GetActiveObject(progId);
                     // Attach to current model
                     m_model = m_app.SapModel;
                     // Continue if filepath provided
