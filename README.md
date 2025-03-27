@@ -11,9 +11,9 @@ The adapter is intended to support SAP2000 version 21 and all future versions. I
 
 ### Net runtime issues
 
-There are currently some internal failures in the ETABS API when called in a NET Core environment. For this reason, running the ETABSAdapter in runtimes above NET4 is disabled.
+There are currently some internal failures in the SAP2000 API when called in a NET Core environment. For this reason, running the ETABSAdapter in runtimes above NET4 is disabled.
 
-If you are using the ETABS Adapter with Grasshopper in Rhino 8 you can change the runtime used by Rhino to framework. To do this, please see this link: https://www.rhino3d.com/en/docs/guides/netcore/#to-change-rhino-to-always-use-net-framework
+If you are using the SAP2000 Adapter with Grasshopper in Rhino 8 you can change the runtime used by Rhino to framework. To do this, please see this link: https://www.rhino3d.com/en/docs/guides/netcore/#to-change-rhino-to-always-use-net-framework
 
 A fix to allow for higher net runtimes is being worked on.
 
