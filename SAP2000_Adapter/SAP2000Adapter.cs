@@ -57,6 +57,12 @@ namespace BH.Adapter.SAP2000
 
             if (active)
             {
+                if(Environment.Version.Major > 4)
+                {
+                    Engine.Base.Compute.RecordError($"The SAP2000Adapter is currently not support in NET runtimes above .NETFramework due to internal errors in the SAP2000 API. A fix for this is being worked on. \n" +
+                        $"If you are running this adapter from Grasshopper in Rhino 8, you can change the runtime being used by Rhino to .NETFramework. To do this please follow the instructions here: https://www.rhino3d.com/en/docs/guides/netcore/");
+                }
+
                 string progId = "CSI.SAP2000.API.SapObject";
                 cHelper helper = new Helper();
 
@@ -75,7 +81,7 @@ namespace BH.Adapter.SAP2000
                 // Try to attach to an existing instance of SAP2000
                 try
                 {
-                    m_app = (cOAPI)System.Runtime.InteropServices.Marshal.GetActiveObject(progId);
+                    m_app = (cOAPI)Query.GetActiveObject(progId);
                     // Attach to current model
                     m_model = m_app.SapModel;
                     // Continue if filepath provided
