@@ -71,6 +71,9 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="CSiAPIv1">
+      <HintPath>..\..\..\..\..\..\Program Files\Computers and Structures\SAP2000 26\NativeAPI\x86\CSiAPIv1.dll</HintPath>
+    </Reference>
     <Reference Include="Data_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
       <Private>False</Private>
@@ -129,7 +132,7 @@
     <Reference Include="Quantities_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Quantities_oM.dll</HintPath>
       <Private>False</Private>
-	  <SpecificVersion>False</SpecificVersion>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Results_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Results_Engine.dll</HintPath>
@@ -137,7 +140,8 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="SAP2000v1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=453d728ef24c6f5e, processorArchitecture=MSIL">
-      <HintPath>..\packages\BHoM.Interop.SAP2000v21.1.0.0\lib\net47\SAP2000v1.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\v26\SAP2000v1.dll</HintPath>
     </Reference>
     <Reference Include="Serialiser_Engine">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Serialiser_Engine.dll</HintPath>
