@@ -71,8 +71,9 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="CSiAPIv1">
-      <HintPath>..\..\..\..\..\..\Program Files\Computers and Structures\SAP2000 26\NativeAPI\x86\CSiAPIv1.dll</HintPath>
+    <Reference Include="CSiAPIv1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=8a93c9e72eabf762, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\v26\CSiAPIv1.dll</HintPath>
     </Reference>
     <Reference Include="Data_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Data_oM.dll</HintPath>
