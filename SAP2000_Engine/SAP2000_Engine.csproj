@@ -116,9 +116,9 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="SAP2000v1, Version=1.0.0.0, Culture=neutral, PublicKeyToken=453d728ef24c6f5e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="SAP2000v1">
       <HintPath>..\libs\v26\SAP2000v1.dll</HintPath>
+	  <Private>False</Private>
     </Reference>
     <Reference Include="Serialiser_Engine">
       <HintPath>$(ProgramData)\BHoM\Assemblies\Serialiser_Engine.dll</HintPath>
