@@ -243,9 +243,6 @@
     <Compile Include="Types\SetupDependencies.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\SAP2000_Engine\SAP2000_Engine.csproj">
       <Project>{4bb31ae9-b7ce-42c8-80a4-484389d23de2}</Project>
       <Name>SAP2000_Engine</Name>
