@@ -116,6 +116,10 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="SAP2000v1">
+      <HintPath>..\libs\v26\SAP2000v1.dll</HintPath>
+	  <Private>False</Private>
+    </Reference>
     <Reference Include="Serialiser_Engine">
       <HintPath>$(ProgramData)\BHoM\Assemblies\Serialiser_Engine.dll</HintPath>
       <Private>False</Private>
@@ -151,9 +155,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Create\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SAP2000_oM\SAP2000_oM.csproj">

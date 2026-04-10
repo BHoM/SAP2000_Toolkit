@@ -51,6 +51,10 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="SAP2000v1">
+      <HintPath>..\libs\v26\SAP2000v1.dll</HintPath>
+	  <Private>False</Private>
+    </Reference>
     <Reference Include="Structure_oM">
       <HintPath>C:\ProgramData\BHoM\Assemblies\Structure_oM.dll</HintPath>
       <Private>False</Private>
