@@ -8,6 +8,7 @@ This toolkit allows interoperability between the BHoM and SAP2000. Enables creat
 
 ### Known Versions of Software Supported
 The adapter is intended to support SAP2000 version 21 and all future versions. It is currently tested on version 23 exclusively.
+SAP2000 v26 is not currently supported.
 
 ### Net runtime issues
 
