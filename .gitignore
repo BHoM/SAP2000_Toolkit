@@ -6,6 +6,7 @@
 *.o
 *.so
 *.dll
+!libs/**/*.dll
 
 # Packages #
 ############
