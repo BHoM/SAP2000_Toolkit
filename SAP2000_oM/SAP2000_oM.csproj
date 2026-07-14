@@ -53,7 +53,7 @@
     </Reference>
     <Reference Include="SAP2000v1">
       <HintPath>..\libs\v26\SAP2000v1.dll</HintPath>
-	  <Private>False</Private>
+	  <Private>True</Private>
     </Reference>
     <Reference Include="Structure_oM">
       <HintPath>$(ProgramData)\BHoM\Assemblies\Structure_oM.dll</HintPath>
