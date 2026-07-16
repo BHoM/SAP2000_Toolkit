@@ -116,10 +116,6 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="SAP2000v1">
-      <HintPath>..\libs\v26\SAP2000v1.dll</HintPath>
-	  <Private>True</Private>
-    </Reference>
     <Reference Include="Serialiser_Engine">
       <HintPath>$(ProgramData)\BHoM\Assemblies\Serialiser_Engine.dll</HintPath>
       <Private>False</Private>
