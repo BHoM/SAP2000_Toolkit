@@ -20,21 +20,22 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapter;
+using BH.oM.Adapters.SAP2000;
+using BH.oM.Analytical;
 using BH.oM.Base;
 using BH.oM.Dimensional;
+using BH.oM.Structure.Constraints;
 using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
-using BH.oM.Structure.Constraints;
+using BH.oM.Structure.MaterialFragments;
 using BH.oM.Structure.SectionProperties;
 using BH.oM.Structure.SurfaceProperties;
-using BH.oM.Structure.MaterialFragments;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using BH.oM.Analytical;
-using BH.oM.Adapter;
-using BH.oM.Adapters.SAP2000;
 
 namespace BH.Adapter.SAP2000
 {
@@ -48,14 +49,20 @@ namespace BH.Adapter.SAP2000
         {
             this.SAPPushConfig = actionConfig as SAP2000PushConfig;
 
+            if (!objects.Any()) //Return if no objects
+                return true;
+
             if (typeof(BH.oM.Base.IBHoMObject).IsAssignableFrom(typeof(T)))
             {
-                return (CreateCollection(objects));
+                success = CreateCollection(objects);
             }
             else
             {
-                return false;
+                success = false;
             }
+
+            m_model.View.RefreshView();
+            return success;
         }
 
         /***************************************************/
