@@ -89,6 +89,50 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
+
+        [Description("Concatenates the the BHoM Object Name and the last 7 characters of the SAP2000 Element GUID to get the Unique Name to assign to the SAP2000 Element.")]
+        private string SetUniqueName(BHoMObject obj, string name)
+        {
+            /* 1. CHECK OBJECT TYPE IS ACCEPTABLE */
+            if (!(obj.GetType() == typeof(Node) ||
+                  obj.GetType() == typeof(Bar) ||
+                  obj.GetType() == typeof(Panel) ||
+                  obj.GetType() == typeof(Opening)))
+            {
+                return null;
+            }
+
+            /* 2. GET THE SAP2000 ELEMENT GUID */
+            int ret01 = 1;
+            int ret02 = 1;
+            string guid = null;
+            string tempObjName = "";
+
+            if (obj.GetType() == typeof(Node)) ret01 = m_model.PointObj.GetGUID(name, ref guid);
+            if (obj.GetType() == typeof(Bar)) ret01 = m_model.FrameObj.GetGUID(name, ref guid);
+            if (obj.GetType() == typeof(Panel) || obj.GetType() == typeof(Opening)) ret01 = m_model.AreaObj.GetGUID(name, ref guid);
+
+            /* 3. CREATE THE NEW UNIQUE NAME */
+            if (obj.Name == "")
+            {
+                tempObjName = guid.Substring(guid.Length - 7);
+            }
+            else
+            {
+                tempObjName = obj.Name + "::" + guid.Substring(guid.Length - 7);
+            }
+
+            /* 4. ASSIGN THE NEW UNIQUE NAME TO THE SAP2000 ELEMENT */
+            if (obj.GetType() == typeof(Node)) ret02 = m_model.PointObj.ChangeName(name, tempObjName);
+            if (obj.GetType() == typeof(Bar)) ret02 = m_model.FrameObj.ChangeName(name, tempObjName);
+            if (obj.GetType() == typeof(Panel) || obj.GetType() == typeof(Opening)) ret02 = m_model.AreaObj.ChangeName(name, tempObjName);
+
+            if (!(ret01 == 0 && ret02 == 0)) return null;
+
+            return tempObjName;
+
+            /***************************************************/
+        }
     }
 }
 
