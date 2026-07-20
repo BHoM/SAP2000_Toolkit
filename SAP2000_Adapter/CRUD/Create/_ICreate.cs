@@ -47,6 +47,8 @@ namespace BH.Adapter.SAP2000
 
         protected override bool ICreate<T>(IEnumerable<T> objects, ActionConfig actionConfig)
         {
+            bool success = true;
+
             this.SAPPushConfig = actionConfig as SAP2000PushConfig;
 
             if (!objects.Any()) //Return if no objects
