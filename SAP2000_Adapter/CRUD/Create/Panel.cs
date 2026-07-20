@@ -67,17 +67,18 @@ namespace BH.Adapter.SAP2000
                 return false;
             }
 
-            // Set AdapterID
-            if (name != bhPanel.Name & bhPanel.Name != "")
-                Engine.Base.Compute.RecordNote($"Panel {bhPanel.Name} was assigned SAP2000_id of {name}.");
+            // Assign the Unique Name to the SAP2000 Element
+            string newName = SetUniqueName(bhPanel, name);
 
+            if (newName == null) return false;
+
+            // Set AdapterID
             string guid = null;
-            m_model.AreaObj.GetGUID(name, ref guid);
-            SAP2000Id sap2000IdFragment = new SAP2000Id{Id = name, PersistentId = guid};
+            m_model.AreaObj.GetGUID(newName, ref guid);
+            SAP2000Id sap2000IdFragment = new SAP2000Id{Id = newName, PersistentId = guid};
             bhPanel.SetAdapterId(sap2000IdFragment);
             // Set Properties
-            SetObject(bhPanel);
-            return true;
+            return SetObject(bhPanel);
         }
 
         /***************************************************/
