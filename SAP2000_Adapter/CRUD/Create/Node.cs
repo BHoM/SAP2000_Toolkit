@@ -77,6 +77,7 @@ namespace BH.Adapter.SAP2000
         {
             string name = GetAdapterId<string>(bhNode);
 
+            // 1. ASSIGN SUPPORT (RESTRAINT/SPRING)
             if (bhNode.Support != null)
             {
                 bool[] restraint = new bool[6];
@@ -96,6 +97,7 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
+            // 2. ASSIGN ORIENTATION
             if (bhNode.Orientation != null)
             {
                 if (bhNode.Orientation.IsEqual(Basis.XY))
@@ -120,6 +122,7 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
+            // 3. ASSIGN GROUP
             foreach (string gName in bhNode.Tags)
             {
                 string groupName = gName.ToString();
