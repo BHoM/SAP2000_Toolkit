@@ -24,6 +24,7 @@ using BH.Engine.Adapter;
 using BH.oM.Adapters.SAP2000;
 using BH.oM.Structure.Elements;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace BH.Adapter.SAP2000
 {
@@ -90,6 +91,47 @@ namespace BH.Adapter.SAP2000
             bhLink.SetAdapterId(sap2000id);
 
             return true;
+        }
+
+        /***************************************************/
+
+        [Description("Concatenates the last 7 characters of the SAP2000 Element GUID and the Link Name to get the Unique Name to assign to the SAP2000 Element.")]
+        private List<string> SetUniqueName(RigidLink bhLink, List<string> names)
+        {
+
+            int ret01, ret02;
+            string guid = null;
+            string tempLinkName = "";
+            List<string> newLinkNames = new List<string>();
+
+            foreach (string name in names)
+            {
+
+                /* 1. GET THE SAP2000 ELEMENT GUID */
+                tempLinkName = "";
+                ret01 = m_model.LinkObj.GetGUID(name, ref guid);
+
+                /* 2. CREATE THE NEW UNIQUE NAME */
+                if (bhLink.Name == "")
+                {
+                    tempLinkName = guid.Substring(guid.Length - 7);
+                }
+                else
+                {
+                    tempLinkName = bhLink.Name + "::" + guid.Substring(guid.Length - 7);
+                }
+
+                /* 3. ASSIGN THE NEW UNIQUE NAME TO THE SAP2000 ELEMENT */
+                ret02 = m_model.LinkObj.ChangeName(name, tempLinkName);
+
+                /* 4. ADD THE NEW NAME TO THE LIST */
+                newLinkNames.Add(tempLinkName);
+
+                if (!(ret01 == 0 && ret02 == 0)) return null;
+
+            }
+
+            return newLinkNames;
         }
 
         /***************************************************/
