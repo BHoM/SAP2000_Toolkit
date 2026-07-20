@@ -40,9 +40,13 @@ namespace BH.Adapter.SAP2000
 
             foreach (Node bhNode in nodes)
             {
+                // Update the node object and its unique name
+                SetObject(bhNode);
+                UpdateUniqueName(bhNode);
+
+                // Retrieve node's updated unique name
                 string name = GetAdapterId<string>(bhNode);
 
-                SetObject(bhNode);
 
                 double x = 0;
                 double y = 0;
