@@ -29,6 +29,7 @@ using BH.oM.Analytical.Results;
 using BH.oM.Structure.Requests;
 using BH.oM.Adapter;
 using SAP2000v1;
+using BH.oM.Structure.Elements;
 
 
 namespace BH.Adapter.SAP2000
@@ -52,7 +53,9 @@ namespace BH.Adapter.SAP2000
                 case NodeResultType.NodeDisplacement:
                     return ReadNodeDisplacement(nodeIds);
                 case NodeResultType.NodeAcceleration:
+                    return ReadNodeAcceleration(nodeIds);
                 case NodeResultType.NodeVelocity:
+                    return ReadNodeVelocity(nodeIds);
                 default:
                     Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
                     return new List<IResult>();
@@ -63,14 +66,46 @@ namespace BH.Adapter.SAP2000
         /**** Private method - Extraction methods       ****/
         /***************************************************/
 
-        private List<NodeResult> ReadNodeAcceleration(IList ids = null,
-                                                      IList cases = null)
+        private List<NodeAcceleration> ReadNodeAcceleration(List<string> nodeIds)
         {
-            throw new NotImplementedException("Node Acceleration results is not supported yet!");
 
+            List<NodeAcceleration> nodeAccelerations = new List<NodeAcceleration>();
+
+            int resultCount = 0;
+            string[] loadcaseNames = null;
+            string[] objects = null;
+            string[] elm = null;
+            string[] stepType = null;
+            double[] stepNum = null;
+            double[] ux = null;
+            double[] uy = null;
+            double[] uz = null;
+            double[] rx = null;
+            double[] ry = null;
+            double[] rz = null;
+
+            for (int i = 0; i < nodeIds.Count; i++)
+            {
+                int ret = m_model.Results.JointAccAbs(nodeIds[i].ToString(), eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref elm, ref loadcaseNames,
+                                                      ref stepType, ref stepNum, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz);
+                if (ret == 0)
+                {
+                    for (int j = 0; j < resultCount; j++)
+                    {
+                        int mode;
+                        double timeStep;
+                        GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
+                        NodeAcceleration na = new NodeAcceleration(nodeIds[i], loadcaseNames[j], mode, timeStep, oM.Geometry.Basis.XY, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
+                        nodeAccelerations.Add(na);
+                    }
+                }
+            }
+
+            return nodeAccelerations;
         }
 
         /***************************************************/
+
         private List<NodeDisplacement> ReadNodeDisplacement(List<string> nodeIds)
         {
 
@@ -169,17 +204,63 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        
-        private List<NodeResult> ReadNodeVelocity(IList ids = null,
-                                                  IList cases = null)
+        private List<NodeVelocity> ReadNodeVelocity(List<string> nodeIds)
         {
-            throw new NotImplementedException("Node velocity results are not supported yet!");
+            List<NodeVelocity> nodeVelocities = new List<NodeVelocity>();
 
+            int resultCount = 0;
+            string[] loadcaseNames = null;
+            string[] objects = null;
+            string[] elm = null;
+            string[] stepType = null;
+            double[] stepNum = null;
+            double[] ux = null;
+            double[] uy = null;
+            double[] uz = null;
+            double[] rx = null;
+            double[] ry = null;
+            double[] rz = null;
+
+            for (int i = 0; i < nodeIds.Count; i++)
+            {
+                int ret = m_model.Results.JointVelAbs(nodeIds[i], eItemTypeElm.ObjectElm, ref resultCount, ref objects, ref elm,
+                                                      ref loadcaseNames, ref stepType, ref stepNum, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz);
+                if (ret == 0)
+                {
+                    for (int j = 0; j < resultCount; j++)
+                    {
+                        int mode;
+                        double timeStep;
+                        GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
+                        NodeVelocity nv = new NodeVelocity(nodeIds[i], loadcaseNames[j], mode, timeStep, oM.Geometry.Basis.XY, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
+                        nodeVelocities.Add(nv);
+                    }
+                }
+            }
+
+            return nodeVelocities;
         }
+
         /***************************************************/
         /**** Private method - Support methods          ****/
         /***************************************************/
 
+        private List<string> CheckGetNodeIds(NodeResultRequest request)
+        {
+            List<string> nodeIds = CheckAndGetIds<Node>(request.ObjectIds);
+
+            if (nodeIds == null || nodeIds.Count == 0)
+            {
+                int nodes = 0;
+                string[] names = null;
+                m_model.PointObj.GetNameList(ref nodes, ref names);
+                nodeIds = names.ToList();
+            }
+
+            return nodeIds;
+        }
+
+        /***************************************************/
 
     }
 }
