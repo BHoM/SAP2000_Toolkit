@@ -248,6 +248,22 @@ namespace BH.Adapter.SAP2000
         /**** Private method - Extraction methods       ****/
         /***************************************************/
 
+        private List<string> CheckGetBarIds(IStructuralResultRequest request)
+        {
+            List<string> barIds = CheckAndGetIds<Bar>(request.ObjectIds);
+
+            if (barIds == null || barIds.Count == 0)
+            {
+                int bars = 0;
+                string[] names = null;
+                m_model.FrameObj.GetNameList(ref bars, ref names);
+                barIds = names.ToList();
+            }
+            return barIds;
+        }
+
+        /***************************************************/
+
         private double GetBarLength(string barId, Dictionary<string, Point> pts)
         {
             string p1Id = "";
