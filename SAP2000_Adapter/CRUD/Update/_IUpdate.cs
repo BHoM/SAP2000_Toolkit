@@ -77,7 +77,7 @@ namespace BH.Adapter.SAP2000
             if (obj.GetType() == typeof(Panel) || obj.GetType() == typeof(Opening)) ret01 = m_model.AreaObj.GetGUID(uniqueName, ref guid);
 
             /* 2. CREATE THE NEW UNIQUE NAME */
-            if (obj.Name == "")
+            if (obj.Name == "" || obj.Name == guid.Substring(guid.Length - 7))
             {
                 tempObjName = guid.Substring(guid.Length - 7);
             }
