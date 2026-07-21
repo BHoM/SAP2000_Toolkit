@@ -128,14 +128,33 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private List<string> CheckGetNodeIds(NodeResultRequest request)
+        private List<string> CheckAndGetIds<T>(IEnumerable ids) where T : IBHoMObject
         {
-            int sapNodeCount = 0;
-            string[] sapNodeIds = null;
-            m_model.PointObj.GetNameList(ref sapNodeCount, ref sapNodeIds);
-
-            return FilterIds(request.ObjectIds.Select(x => x.ToString()), sapNodeIds);
+            if (ids == null)
+            {
+                return null;
+            }
+            else
+            {
+                List<string> idsOut = new List<string>();
+                foreach (object o in ids)
+                {
+                    if (o is string)
+                        idsOut.Add((string)o);
+                    else if (o is int || o is double)
+                        idsOut.Add(o.ToString());
+                    else if (o is T)
+                    {
+                        string id = GetAdapterId<string>((T)o);
+                        if (id != null)
+                            idsOut.Add(id);
+                    }
+                }
+                return idsOut;
+            }
         }
+
+        /***************************************************/
     }
 }
 
