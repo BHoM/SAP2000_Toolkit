@@ -87,7 +87,12 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
-            sap2000id.Id = linkIds;
+            // Assign the Unique Name to the SAP2000 Element
+            List<string> newLinkNames = SetUniqueName(bhLink, linkIds);
+
+            if (newLinkNames == null) return false;
+
+            sap2000id.Id = newLinkNames;
             bhLink.SetAdapterId(sap2000id);
 
             return true;
