@@ -63,7 +63,9 @@ namespace BH.Adapter.SAP2000
                 success = false;
             }
 
-            m_model.View.RefreshView();
+            // Refresh the view to ensure that the newly created objects are displayed correctly
+            m_model.View.RefreshView(0, false);
+
             return success;
         }
 
