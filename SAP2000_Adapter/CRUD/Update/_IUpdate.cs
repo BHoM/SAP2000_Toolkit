@@ -50,7 +50,7 @@ namespace BH.Adapter.SAP2000
             {
                 success = UpdateObjects(objects as dynamic);
 
-                // Refresh Model View to show updated
+                // Refresh Model View to show the updated model
                 m_model.View.RefreshView();
 
                 return success;
