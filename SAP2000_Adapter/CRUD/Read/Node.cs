@@ -52,7 +52,10 @@ namespace BH.Adapter.SAP2000
 
             foreach (string id in ids)
             {
-                Node bhNode = new Node();
+                string bhomName = GetBhomNameFromSAP2000Id(id);
+
+                Node bhNode = new Node { Name = bhomName};
+
                 string guid = null;
                 SAP2000Id sap2000id = new SAP2000Id();
                 sap2000id.Id = id;
