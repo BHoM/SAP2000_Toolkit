@@ -20,15 +20,16 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapter;
+using BH.oM.Analytical.Results;
+using BH.oM.Base;
+using BH.oM.Data.Requests;
+using BH.oM.Structure.Loads;
+using BH.oM.Structure.Requests;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BH.oM.Analytical.Results;
-using BH.oM.Structure.Loads;
-using BH.oM.Data.Requests;
-using BH.oM.Structure.Requests;
-using BH.oM.Adapter;
 
 namespace BH.Adapter.SAP2000
 {
@@ -108,15 +109,21 @@ namespace BH.Adapter.SAP2000
             return true;
         }
 
-        /***************************************************/
-        private List<string> CheckGetBarIds(IStructuralResultRequest request)
-        {
-            int sapBarCount = 0;
-            string[] sapBarIds = null;
-            m_model.FrameObj.GetNameList(ref sapBarCount, ref sapBarIds);
 
-            //Get the bar ids which are valid
-            return FilterIds(request.ObjectIds.Select(x => x.ToString()), sapBarIds);
+        /***************************************************/
+
+        private void GetStepAndMode(string stepType, double stepNum, out double timeStep, out int mode)
+        {
+            if (stepType == "Mode")
+            {
+                mode = (int)stepNum;
+                timeStep = 0;
+            }
+            else
+            {
+                timeStep = stepNum;
+                mode = 0;
+            }
         }
 
         /***************************************************/
