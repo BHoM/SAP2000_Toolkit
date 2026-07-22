@@ -110,21 +110,12 @@ namespace BH.Adapter.SAP2000
             int ret01 = 1;
             int ret02 = 1;
             string guid = null;
-            string tempObjName = "";
 
             if (obj.GetType() == typeof(Node)) ret01 = m_model.PointObj.GetGUID(name, ref guid);
             if (obj.GetType() == typeof(Bar)) ret01 = m_model.FrameObj.GetGUID(name, ref guid);
             if (obj.GetType() == typeof(Panel) || obj.GetType() == typeof(Opening)) ret01 = m_model.AreaObj.GetGUID(name, ref guid);
 
-            /* 3. CREATE THE NEW UNIQUE NAME */
-            if (obj.Name == "")
-            {
-                tempObjName = guid.Substring(guid.Length - 7);
-            }
-            else
-            {
-                tempObjName = obj.Name + "::" + guid.Substring(guid.Length - 7);
-            }
+            string tempObjName = obj.Name == "" ? guid.Substring(guid.Length - 7) : obj.Name + "::" + guid.Substring(guid.Length - 7);
 
             /* 4. ASSIGN THE NEW UNIQUE NAME TO THE SAP2000 ELEMENT */
             if (obj.GetType() == typeof(Node)) ret02 = m_model.PointObj.ChangeName(name, tempObjName);
