@@ -122,7 +122,7 @@ namespace BH.Adapter.SAP2000
             if (obj.GetType() == typeof(Bar)) ret02 = m_model.FrameObj.ChangeName(name, tempObjName);
             if (obj.GetType() == typeof(Panel) || obj.GetType() == typeof(Opening)) ret02 = m_model.AreaObj.ChangeName(name, tempObjName);
 
-            if (!(ret01 == 0 && ret02 == 0)) return null;
+            if (!(ret01 == 0 && ret02 == 0)) return "";
 
             return tempObjName;
 
