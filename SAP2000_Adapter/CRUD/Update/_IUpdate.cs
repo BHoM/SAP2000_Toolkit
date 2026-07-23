@@ -40,14 +40,22 @@ namespace BH.Adapter.SAP2000
         {
             this.SAPPushConfig = actionConfig as SAP2000PushConfig;
 
+            bool success = false;
+
             if (SAPPushConfig != null && SAPPushConfig.UpdateOnlyBarPropAssigns) // Only update bar assigns
             {
                 return UpdateBarPropAssigns(objects.OfType<Bar>());
             }
             else
             {
-                return UpdateObjects(objects as dynamic);
+                success = UpdateObjects(objects as dynamic);
+
+                // Refresh Model View to show the updated model
+                m_model.View.RefreshView();
+
+                return success;
             }
+
         }
 
         /***************************************************/
