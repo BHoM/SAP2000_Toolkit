@@ -161,6 +161,16 @@ namespace BH.Adapter.SAP2000
         private cSapModel m_model;
 
         /***************************************************/
+        /**** Private Methods                           ****/
+        /***************************************************/
+
+        private bool ForceRefresh()
+        {
+            int ret0, ret1;
+            ret0 = m_model.View.RefreshView(0,false);
+            ret1 = m_model.View.RefreshWindow(0);
+            return (ret0==1 && ret1==1);
+        }
     }
 }
 

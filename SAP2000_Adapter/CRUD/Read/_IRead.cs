@@ -166,6 +166,19 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
+
+        [Description("Extracts the String Name of the BHoM object from the corresponding SAP2000 Unique Name.")]
+        public string GetBhomNameFromSAP2000Id(string id)
+        {
+            if (id.Contains("::"))
+            {
+                string[] splitName = id.Split(new string[] { "::" }, StringSplitOptions.None);
+                return splitName[0];
+            }
+            return id;
+        }
+
+        /***************************************************/
     }
 }
 
