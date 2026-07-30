@@ -31,8 +31,8 @@ namespace BH.Adapter.SAP2000
             {
                 FEMesh mesh = new FEMesh();
 
-                SAP2000Id etabsid = new SAP2000Id();
-                etabsid.Id = id;
+                SAP2000Id sap2000id = new SAP2000Id();
+                sap2000id.Id = id;
 
                 List<string> meshNodeIds = new List<string>();
 
@@ -65,7 +65,7 @@ namespace BH.Adapter.SAP2000
                             nodes[ptsNames[k]] = node;
                         }
 
-                        //Check if nodealready has been added to the mesh
+                        //Check if node already has been added to the mesh
                         if (!meshNodeIds.Contains(nodeId))
                             meshNodeIds.Add(nodeId);
 
@@ -105,9 +105,9 @@ namespace BH.Adapter.SAP2000
                     // Get guid
                     string guid = null;
                     m_model.AreaObj.GetGUID(id, ref guid);
-                    etabsid.PersistentId = guid;
+                    sap2000id.PersistentId = guid;
 
-                    SetAdapterId(mesh, etabsid);
+                    SetAdapterId(mesh, sap2000id);
                     meshes.Add(mesh);
                 }
                 else
