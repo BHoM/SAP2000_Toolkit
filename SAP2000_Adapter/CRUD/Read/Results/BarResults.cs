@@ -46,7 +46,7 @@ namespace BH.Adapter.SAP2000
         {
             CheckAndSetUpCases(request);
 
-            List<string> barIds = CheckGetBarIds(request);
+            List<string> barIds = CheckAndGetIds<Bar>(request);
 
             switch (request.ResultType)
             {

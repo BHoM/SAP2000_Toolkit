@@ -44,7 +44,7 @@ namespace BH.Adapter.SAP2000
                                                 ActionConfig actionConfig = null)
         {
             CheckAndSetUpCases(request);
-            List<string> nodeIds = CheckGetNodeIds(request);
+            List<string> nodeIds = CheckAndGetIds<Node>(request);
 
             switch (request.ResultType)
             {

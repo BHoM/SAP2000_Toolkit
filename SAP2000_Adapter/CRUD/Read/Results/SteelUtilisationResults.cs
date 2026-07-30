@@ -35,6 +35,7 @@ using BH.oM.Adapter;
 using BH.oM.Adapters.SAP2000.Results;
 using BH.oM.Adapters.SAP2000.Requests;
 using SAP2000v1;
+using BH.oM.Structure.Elements;
 
 
 namespace BH.Adapter.SAP2000
@@ -49,7 +50,7 @@ namespace BH.Adapter.SAP2000
                                                 ActionConfig actionConfig = null)
         {
             CheckAndSetUpCases(request);
-            List<string> barIds = CheckGetBarIds(request);
+            List<string> barIds = CheckAndGetIds<Bar>(request);
 
             switch (request.Code)
             {
