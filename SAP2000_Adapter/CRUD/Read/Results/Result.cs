@@ -114,6 +114,14 @@ namespace BH.Adapter.SAP2000
 
         private void GetStepAndMode(string stepType, double stepNum, out double timeStep, out int mode)
         {
+            /* Based on ETABS API outputs data structure, depending on the value of stepType, the stepNum parameter
+             * has a different meaning. 
+             * If stepType = "Mode", stepNum is assigned with the number of the corresponding Mode, otherwise it is 
+             * assigned with the value of the timeStep.
+             * Hence, the output parameters timeStep and mode are assigned with values based on a different logic
+             * as in the below if statement.
+             */
+            
             if (stepType == "Mode")
             {
                 mode = (int)stepNum;
