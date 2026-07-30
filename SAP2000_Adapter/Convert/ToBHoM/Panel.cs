@@ -41,7 +41,7 @@ namespace BH.Adapter.SAP2000
         {
             Vector locYref;
 
-            if (axisCSI.IsSAPVertical())
+            if (Query.IsParallel(axisCSI, Vector.ZAxis)!=0)
             {
                 //Vector is paralell to z-axis
                 locYref = Vector.YAxis;
@@ -59,12 +59,6 @@ namespace BH.Adapter.SAP2000
 
         /***************************************************/
 
-        private static bool IsSAPVertical(this Vector vector)
-        {
-            return Math.Sin(vector.Angle(Vector.ZAxis)) < 1e-3;
-        }
-
-        /***************************************************/
     }
 }
 
