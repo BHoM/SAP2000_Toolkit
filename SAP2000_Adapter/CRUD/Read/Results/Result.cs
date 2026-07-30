@@ -24,9 +24,11 @@ using BH.oM.Adapter;
 using BH.oM.Analytical.Results;
 using BH.oM.Base;
 using BH.oM.Data.Requests;
+using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using BH.oM.Structure.Requests;
 using System;
+using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -163,6 +165,51 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
+
+        private List<string> CheckAndGetIds<T>(IResultRequest request) where T : IBHoMObject
+        {
+            List<string> ids = new List<string>();
+
+            if (request.ObjectIds == null)
+            {
+                return null;
+            }
+            else
+            {
+                foreach (object o in request.ObjectIds)
+                {
+                    if (o is string)
+                        ids.Add((string)o);
+                    else if (o is int || o is double)
+                        ids.Add(o.ToString());
+                    else if (o is T)
+                    {
+                        string id = GetAdapterId<string>((T)o);
+                        if (id != null)
+                            ids.Add(id);
+                    }
+                }
+            }
+
+            string[] names = null;
+
+            switch (typeof(T))
+            {
+                case Type t when t == typeof(Node):
+                    int nodes = 0;
+                    m_model.PointObj.GetNameList(ref nodes, ref names);
+                    break;
+                case Type t when t == typeof(Bar):
+                    int bars = 0;
+                    m_model.FrameObj.GetNameList(ref bars, ref names);
+                    break;
+                default:
+                    names = new string[] { };
+                    break;
+            }
+
+            return names.ToList();
+        }
     }
 }
 
