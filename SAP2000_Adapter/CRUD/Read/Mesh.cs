@@ -115,7 +115,7 @@ namespace BH.Adapter.SAP2000
                     BH.Engine.Base.Compute.RecordWarning("Mesh " + id.ToString() + " could not be pulled, because it contains no nodes");
                 }
             }
-
+            BH.Engine.Base.Compute.RecordWarning("Meshes - Only one face normal vector is pulled from every mesh and it is applied to all the faces of the mesh.");
             return meshes;
         }
 
