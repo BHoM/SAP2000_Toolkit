@@ -17,7 +17,6 @@ namespace BH.Adapter.SAP2000
 
         private List<FEMesh> ReadMesh(List<string> ids = null)
         {
-            List<Panel> panelList = new List<Panel>();
             int nameCount = 0;
             string[] nameArr = { };
             m_model.AreaObj.GetNameList(ref nameCount, ref nameArr);
