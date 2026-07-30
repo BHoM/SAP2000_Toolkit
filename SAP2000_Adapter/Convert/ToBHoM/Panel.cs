@@ -37,11 +37,11 @@ namespace BH.Adapter.SAP2000
         /**** Public Methods                            ****/
         /***************************************************/
 
-        public static Vector PanelLocalAxisToBHoM(Vector axisCSI, double orientationAngle)
+        public static Vector ToPanelLocalXAxis(Vector normal, double orientationAngle)
         {
             Vector locYref;
 
-            if (Query.IsParallel(axisCSI, Vector.ZAxis)!=0)
+            if (Query.IsParallel(normal, Vector.ZAxis)!=0)
             {
                 //Vector is paralell to z-axis
                 locYref = Vector.YAxis;
@@ -49,12 +49,12 @@ namespace BH.Adapter.SAP2000
             else
             {
                 //Vector is not paralell to z-axis
-                locYref = Vector.ZAxis.Project(new Plane { Normal = axisCSI });
+                locYref = Vector.ZAxis.Project(new Plane { Normal = normal });
             }
 
-            Vector localXref = locYref.CrossProduct(axisCSI);
+            Vector localXref = locYref.CrossProduct(normal);
 
-            return localXref.Rotate(orientationAngle / 180 * Math.PI, axisCSI);
+            return localXref.Rotate(orientationAngle / 180 * Math.PI, normal);
         }
 
         /***************************************************/

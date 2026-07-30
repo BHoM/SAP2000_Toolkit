@@ -99,7 +99,7 @@ namespace BH.Adapter.SAP2000
                     m_model.AreaObj.GetLocalAxes(id, ref orientation, ref advanced);
 
                     Vector normal = mesh.Faces.First().Normal(mesh);    //Assuming flat mesh, all normals equal
-                    Vector localX = Convert.PanelLocalAxisToBHoM(normal, orientation);
+                    Vector localX = Convert.ToPanelLocalXAxis(normal, orientation);
                     mesh = mesh.SetLocalOrientations(localX);
 
                     // Get guid
