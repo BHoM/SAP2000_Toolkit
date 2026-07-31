@@ -22,6 +22,7 @@
 
 using BH.Engine;
 using BH.Engine.Geometry;
+using BH.Engine.Units;
 using BH.oM.Geometry;
 using System;
 using System.Collections.Generic;
@@ -54,7 +55,7 @@ namespace BH.Adapter.SAP2000
 
             Vector localXref = locYref.CrossProduct(normal);
 
-            return localXref.Rotate(orientationAngle / 180 * Math.PI, normal);
+            return localXref.Rotate(BH.Engine.Units.Convert.FromDegree(orientationAngle), normal);
         }
 
         /***************************************************/
