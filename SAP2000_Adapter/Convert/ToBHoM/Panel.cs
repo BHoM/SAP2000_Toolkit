@@ -22,7 +22,6 @@
 
 using BH.Engine;
 using BH.Engine.Geometry;
-using BH.Engine.Units;
 using BH.oM.Geometry;
 using System;
 using System.Collections.Generic;
