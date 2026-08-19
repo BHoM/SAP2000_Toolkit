@@ -57,6 +57,7 @@ namespace BH.Adapter.SAP2000
                 case MeshResultType.Forces:
                     return ReadMeshForce(panelIds, request.Smoothing);
                 case MeshResultType.Displacements:
+                    return ReadMeshDisplacement(panelIds, request.Smoothing);
                 case MeshResultType.Stresses:
                     return ReadMeshStress(panelIds, cases, request.Smoothing, request.Layer);
                 case MeshResultType.VonMises:
@@ -433,6 +434,17 @@ namespace BH.Adapter.SAP2000
             return results;
         }
 
+        /***************************************************/
+
+        private List<MeshResult> ReadMeshDisplacement(List<string> panelIds, MeshResultSmoothingType smoothing)
+        {
+
+            int resultCount = 0;
+            string[] obj = null;
+            string[] elm = null;
+            string[] loadCase = null;
+            string[] stepType = null;
+            double[] stepNum = null;
             double[] ux = null;
             double[] uy = null;
             double[] uz = null;
@@ -445,20 +457,19 @@ namespace BH.Adapter.SAP2000
             for (int i = 0; i < panelIds.Count; i++)
             {
                 List<MeshDisplacement> displacements = new List<MeshDisplacement>();
-
                 HashSet<string> ptNbs = new HashSet<string>();
-
-                int nbElem = 0;
+                int nbELem = 0;
                 string[] elemNames = new string[0];
-                m_model.AreaObj.GetElm(panelIds[i], ref nbElem, ref elemNames);
+                m_model.AreaObj.GetElm(panelIds[i], ref nbELem, ref elemNames);
 
-                for (int j = 0; j < nbElem; j++)
+                for (int j = 0; j < nbELem; j++)
                 {
+                    //Get out the name of the points for each face
                     int nbPts = 0;
                     string[] ptsNames = new string[0];
                     m_model.AreaElm.GetPoints(elemNames[j], ref nbPts, ref ptsNames);
 
-                    foreach (string ptId in ptsNames);
+                    foreach (string ptId in ptsNames)
                     {
                         ptNbs.Add(ptId);
                     }
@@ -466,43 +477,21 @@ namespace BH.Adapter.SAP2000
 
                 foreach (string ptId in ptNbs)
                 {
-                    int ret = m_model.Results.JointDispl(ptId,
-                                                         eItemTypeElm.Element,
-                                                         ref resultCount,
-                                                         ref obj,
-                                                         ref elm,
-                                                         ref loadCase,
-                                                         ref stepType,
-                                                         ref stepNum,
-                                                         ref ux,
-                                                         ref uy,
-                                                         ref uz,
-                                                         ref rx,
-                                                         ref ry,
-                                                         ref fz);
+                    int ret = m_model.Results.JointDispl(ptId, eItemTypeElm.Element, ref resultCount, ref obj, ref elm, ref loadCase, ref stepType, ref stepNum, ref ux, ref uy, ref uz, ref rx, ref ry, ref rz);
 
                     for (int j = 0; j < resultCount; j++)
                     {
-                        MeshDisplacement disp = new MeshDisplacement(panelIds[i],
-                                                                     ptId,
-                                                                     "",
-                                                                     loadCase[j],
-                                                                     stepNum[j],
-                                                                     MeshResultLayer.Middle,
-                                                                     0,
-                                                                     MeshResultSmoothingType.Global,
-                                                                     Basis.Xy,
-                                                                     ux[j],
-                                                                     uy[j],
-                                                                     uz[j],
-                                                                     rx[j],
-                                                                     ry[j],
-                                                                     rz[j]);
+                        int mode;
+                        double timeStep;
+                        GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
+                        MeshDisplacement disp = new MeshDisplacement(panelIds[i], ptId, "", loadCase[j], mode, timeStep, MeshResultLayer.Middle, 0, MeshResultSmoothingType.Global, Basis.XY, ux[j], uy[j], uz[j], rx[j], ry[j], rz[j]);
+                        displacements.Add(disp);
                     }
                 }
                 results.AddRange(GroupMeshResults(displacements));
             }
-            return results
+
+            return results;
         }
 
         /***************************************************/
