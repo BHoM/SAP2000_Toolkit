@@ -24,6 +24,7 @@ using BH.oM.Adapter;
 using BH.oM.Analytical.Results;
 using BH.oM.Base;
 using BH.oM.Data.Requests;
+using BH.oM.Structure.Elements;
 using BH.oM.Structure.Loads;
 using BH.oM.Structure.Requests;
 using System;
@@ -192,6 +193,10 @@ namespace BH.Adapter.SAP2000
                 case Type t when t == typeof(Bar):
                     int bars = 0;
                     m_model.FrameObj.GetNameList(ref bars, ref names);
+                    break;
+                case Type t when t == typeof(Panel):
+                    int panels = 0;
+                    m_model.AreaObj.GetNameList(ref panels, ref names);
                     break;
                 default:
                     names = new string[] { };

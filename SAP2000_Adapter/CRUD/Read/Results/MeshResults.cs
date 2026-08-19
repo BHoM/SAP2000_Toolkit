@@ -50,7 +50,7 @@ namespace BH.Adapter.SAP2000
         {
             List<string> cases = GetAllCases(request.Cases);
             CheckAndSetUpCases(request);
-            List<string> panelIds = CheckGetPanelIds(request);
+            List<string> panelIds = CheckAndGetIds <IAreaElement> (request);
 
             switch (request.ResultType)
             {
@@ -508,23 +508,6 @@ namespace BH.Adapter.SAP2000
             }
 
             return results;
-        }
-
-        /***************************************************/
-
-        private List<string> CheckGetPanelIds(MeshResultRequest request)
-        {
-            List<string> panelIds = CheckAndGetIds<IAreaElement>(request.ObjectIds);
-
-            if (panelIds == null || panelIds.Count == 0)
-            {
-                int panels = 0;
-                string[] names = null;
-                m_model.AreaObj.GetNameList(ref panels, ref names);
-                panelIds = names.ToList();
-            }
-
-            return panelIds;
         }
 
         /***************************************************/
