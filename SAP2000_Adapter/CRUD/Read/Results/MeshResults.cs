@@ -58,6 +58,7 @@ namespace BH.Adapter.SAP2000
                     return ReadMeshForce(panelIds, request.Smoothing);
                 case MeshResultType.Displacements:
                 case MeshResultType.Stresses:
+                    return ReadMeshStress(panelIds, cases, request.Smoothing, request.Layer);
                 case MeshResultType.VonMises:
                 default:
                     Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
@@ -149,6 +150,106 @@ namespace BH.Adapter.SAP2000
             return results;
         }
 
+        /***************************************************/
+
+        private List<MeshResult> ReadMeshStress(List<string> panelIds, List<string> cases, MeshResultSmoothingType smoothing, MeshResultLayer layer)
+        {
+            switch (smoothing)
+            {
+                case MeshResultSmoothingType.BySelection:
+                case MeshResultSmoothingType.Global:
+                case MeshResultSmoothingType.ByFiniteElementCentres:
+                    Engine.Base.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted");
+                    return new List<MeshResult>();
+            }
+
+            if (layer == MeshResultLayer.Upper || layer == MeshResultLayer.Lower)
+            {
+                Engine.Base.Compute.RecordWarning("Results for both bot and top layers will be extracted at the same time");
+            }
+            else
+            {
+                Engine.Base.Compute.RecordWarning("Stress extraction is currently only possible at bot and top layers. Please update the MeshResultLayer parameter");
+                return new List<MeshResult>();
+            }
+
+            eItemTypeElm itemTypeElm = eItemTypeElm.ObjectElm;
+            int resultCount = 0;
+            string[] obj = null;
+            string[] elm = null;
+            string[] pointElm = null;
+            string[] loadCase = null;
+            string[] stepType = null;
+            double[] stepNum = null;
+            double[] s11Top = null;
+            double[] s22Top = null;
+            double[] s12Top = null;
+            double[] sMaxTop = null;
+            double[] sMinTop = null;
+            double[] sAngTop = null;
+            double[] svmTop = null;
+            double[] s11Bot = null;
+            double[] s22Bot = null;
+            double[] s12Bot = null;
+            double[] sMaxBot = null;
+            double[] sMinBot = null;
+            double[] sAngBot = null;
+            double[] svmBot = null;
+            double[] s13Avg = null;
+            double[] s23Avg = null;
+            double[] sMaxAvg = null;
+            double[] sAngAvg = null;
+
+            List<MeshResult> results = new List<MeshResult>();
+
+            if (smoothing == MeshResultSmoothingType.ByPanel)
+                Engine.Base.Compute.RecordWarning("Stress values have been smoothed outside the API by averaging all force values in each node.");
+
+            foreach (string caseName in cases)
+            {
+                m_model.Results.Setup.DeselectAllCasesAndCombosForOutput();
+                if (!SetUpCaseOrCombo(caseName))
+                    continue;
+
+                for (int i = 0; i < panelIds.Count; i++)
+                {
+                    List<MeshStress> stressTop = new List<MeshStress>();
+                    List<MeshStress> stressBot = new List<MeshStress>();
+                    int ret = m_model.Results.AreaStressShell(panelIds[i], itemTypeElm, ref resultCount, ref obj, ref elm, ref pointElm, ref loadCase, ref stepType, ref stepNum, ref s11Top, ref s22Top, ref s12Top, ref sMaxTop, ref sMinTop, ref sAngTop, ref svmTop, ref s11Bot, ref s22Bot, ref s12Bot, ref sMaxBot, ref sMinBot, ref sAngBot, ref svmBot, ref s13Avg, ref s23Avg, ref sMaxAvg, ref sAngAvg);
+
+                    if (ret == 0)
+                    {
+                        for (int j = 0; j < resultCount; j++)
+                        {
+                            int mode;
+                            double timeStep;
+                            GetStepAndMode(stepType[j], stepNum[j], out timeStep, out mode);
+                            MeshStress mStressTop = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, MeshResultLayer.Upper, 1, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Top[j], s22Top[j], s12Top[j], s13Avg[j], s23Avg[j], sMaxTop[j], sMinTop[j], double.NaN);
+                            MeshStress mStressBot = new MeshStress(panelIds[i], pointElm[j], elm[j], loadCase[j], mode, timeStep, MeshResultLayer.Lower, 0, MeshResultSmoothingType.None, oM.Geometry.Basis.XY, s11Bot[j], s22Bot[j], s12Bot[j], s13Avg[j], s23Avg[j], sMaxBot[j], sMinBot[j], double.NaN);
+
+                            stressBot.Add(mStressBot);
+                            stressTop.Add(mStressTop);
+                        }
+
+                        if (smoothing == MeshResultSmoothingType.ByPanel)
+                        {
+                            stressTop = SmoothenStresses(stressTop);
+                            stressBot = SmoothenStresses(stressBot);
+                        }
+
+                        results.AddRange(GroupMeshResults(stressBot));
+                        results.AddRange(GroupMeshResults(stressTop));
+
+                    }
+                    else
+                    {
+                        Engine.Base.Compute.RecordWarning("Failed to extract results for element " + panelIds[i] + " for case " + caseName);
+                    }
+                }
+            }
+            return results;
+        }
+
 
         /***************************************************/
 
@@ -236,16 +337,38 @@ namespace BH.Adapter.SAP2000
         }
 
         /***************************************************/
-        /*
-        private List<MeshResults> ReadMeshStress(List<string> panelIds, List<string> cases,
-                                                 MeshResultSmoothingType smoothing, MeshResultLayer layer)
+        /**** Private method - Support methods          ****/
+        /***************************************************/
+
+        private List<MeshResult> GroupMeshResults(IEnumerable<MeshElementResult> meshElementResults)
         {
-            return results
+            List<MeshResult> results = new List<MeshResult>();
+            foreach (IEnumerable<MeshElementResult> group in meshElementResults.GroupBy(x => new { x.ResultCase, x.TimeStep, x.ModeNumber }))
+            {
+                MeshElementResult first = group.First();
+                results.Add(new MeshResult(first.ObjectId, first.ResultCase, first.ModeNumber, first.TimeStep, first.MeshResultLayer, first.LayerPosition, first.Smoothing, new System.Collections.ObjectModel.ReadOnlyCollection<MeshElementResult>(group.ToList())));
+            }
+
+            return results;
         }
 
-       
         /***************************************************/
-        /**** Private methods - Support methods         ****/
+
+        private List<string> CheckGetPanelIds(MeshResultRequest request)
+        {
+            List<string> panelIds = CheckAndGetIds<IAreaElement>(request.ObjectIds);
+
+            if (panelIds == null || panelIds.Count == 0)
+            {
+                int panels = 0;
+                string[] names = null;
+                m_model.AreaObj.GetNameList(ref panels, ref names);
+                panelIds = names.ToList();
+            }
+
+            return panelIds;
+        }
+
         /***************************************************/
 
         private List<MeshForce> SmoothenForces(List<MeshForce> forces)
@@ -273,6 +396,34 @@ namespace BH.Adapter.SAP2000
             return smoothenedForces;
         }
 
+        /***************************************************/
+
+        private List<MeshStress> SmoothenStresses(List<MeshStress> forces)
+        {
+            List<MeshStress> smoothenedForces = new List<MeshStress>();
+
+            foreach (IEnumerable<MeshStress> group in forces.GroupBy(x => new { x.ResultCase, x.TimeStep, x.NodeId }))
+            {
+                MeshStress first = group.First();
+
+                double sxx = group.Average(x => x.SXX);
+                double syy = group.Average(x => x.SYY);
+                double sxy = group.Average(x => x.SXY);
+
+                double txx = group.Average(x => x.TXX);
+                double tyy = group.Average(x => x.TYY);
+
+                double pr1 = group.Average(x => x.Principal_1);
+                double pr2 = group.Average(x => x.Principal_2);
+                double pr1_2 = group.Average(x => x.Principal_1_2);
+
+                smoothenedForces.Add(new MeshStress(first.ObjectId, first.NodeId, "", first.ResultCase, first.ModeNumber, first.TimeStep, first.MeshResultLayer, first.LayerPosition, MeshResultSmoothingType.ByPanel, first.Orientation, sxx, syy, sxy, txx, tyy, pr1, pr2, pr1_2));
+            }
+
+            return smoothenedForces;
+        }
+
+        /***************************************************/
 
 
 
