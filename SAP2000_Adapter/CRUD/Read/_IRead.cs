@@ -63,6 +63,8 @@ namespace BH.Adapter.SAP2000
                 return ReadMaterial(listIds);
             else if (type == typeof(Panel))
                 return ReadPanel(listIds);
+            else if (type == typeof(FEMesh))
+                return ReadMesh(listIds);
             else if (type == typeof(ISurfaceProperty) || type.GetInterfaces().Contains(typeof(ISurfaceProperty)))
                 return ReadSurfaceProperty(listIds);
             else if (type == typeof(LoadCombination))

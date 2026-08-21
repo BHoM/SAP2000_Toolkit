@@ -20,15 +20,18 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
+using BH.oM.Adapter;
+using BH.oM.Analytical.Results;
+using BH.oM.Base;
+using BH.oM.Data.Requests;
+using BH.oM.Structure.Elements;
+using BH.oM.Structure.Loads;
+using BH.oM.Structure.Requests;
 using System;
+using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using BH.oM.Analytical.Results;
-using BH.oM.Structure.Loads;
-using BH.oM.Data.Requests;
-using BH.oM.Structure.Requests;
-using BH.oM.Adapter;
 
 namespace BH.Adapter.SAP2000
 {
@@ -108,26 +111,104 @@ namespace BH.Adapter.SAP2000
             return true;
         }
 
-        /***************************************************/
-        private List<string> CheckGetBarIds(IStructuralResultRequest request)
-        {
-            int sapBarCount = 0;
-            string[] sapBarIds = null;
-            m_model.FrameObj.GetNameList(ref sapBarCount, ref sapBarIds);
 
-            //Get the bar ids which are valid
-            return FilterIds(request.ObjectIds.Select(x => x.ToString()), sapBarIds);
+        /***************************************************/
+
+        private void GetStepAndMode(string stepType, double stepNum, out double timeStep, out int mode)
+        {
+            /* Based on ETABS API outputs data structure, depending on the value of stepType, the stepNum parameter
+             * has a different meaning. 
+             * If stepType = "Mode", stepNum is assigned with the number of the corresponding Mode, otherwise it is 
+             * assigned with the value of the timeStep.
+             * Hence, the output parameters timeStep and mode are assigned with values based on a different logic
+             * as in the below if statement.
+             */
+            
+            if (stepType == "Mode")
+            {
+                mode = (int)stepNum;
+                timeStep = 0;
+            }
+            else
+            {
+                timeStep = stepNum;
+                mode = 0;
+            }
         }
 
         /***************************************************/
 
-        private List<string> CheckGetNodeIds(NodeResultRequest request)
+        private List<string> CheckAndGetIds<T>(IEnumerable ids) where T : IBHoMObject
         {
-            int sapNodeCount = 0;
-            string[] sapNodeIds = null;
-            m_model.PointObj.GetNameList(ref sapNodeCount, ref sapNodeIds);
+            if (ids == null)
+            {
+                return null;
+            }
+            else
+            {
+                List<string> idsOut = new List<string>();
+                foreach (object o in ids)
+                {
+                    if (o is string)
+                        idsOut.Add((string)o);
+                    else if (o is int || o is double)
+                        idsOut.Add(o.ToString());
+                    else if (o is T)
+                    {
+                        string id = GetAdapterId<string>((T)o);
+                        if (id != null)
+                            idsOut.Add(id);
+                    }
+                }
+                return idsOut;
+            }
+        }
 
-            return FilterIds(request.ObjectIds.Select(x => x.ToString()), sapNodeIds);
+        /***************************************************/
+
+        private List<string> CheckAndGetIds<T>(IResultRequest request) where T : IBHoMObject
+        {
+            List<string> ids = new List<string>();
+
+            if (request.ObjectIds == null)
+            {
+                return null;
+            }
+            else
+            {
+                foreach (object o in request.ObjectIds)
+                {
+                    if (o is string)
+                        ids.Add((string)o);
+                    else if (o is int || o is double)
+                        ids.Add(o.ToString());
+                    else if (o is T)
+                    {
+                        string id = GetAdapterId<string>((T)o);
+                        if (id != null)
+                            ids.Add(id);
+                    }
+                }
+            }
+
+            string[] names = null;
+
+            switch (typeof(T))
+            {
+                case Type t when t == typeof(Node):
+                    int nodes = 0;
+                    m_model.PointObj.GetNameList(ref nodes, ref names);
+                    break;
+                case Type t when t == typeof(Bar):
+                    int bars = 0;
+                    m_model.FrameObj.GetNameList(ref bars, ref names);
+                    break;
+                default:
+                    names = new string[] { };
+                    break;
+            }
+
+            return names.ToList();
         }
     }
 }
