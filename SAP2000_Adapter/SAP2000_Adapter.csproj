@@ -159,6 +159,9 @@
       <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Units_Engine">
+      <HintPath>$(ProgramData)\BHoM\Assemblies\Units_Engine.dll</HintPath>
+    </Reference>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
