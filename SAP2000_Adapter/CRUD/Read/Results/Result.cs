@@ -198,6 +198,10 @@ namespace BH.Adapter.SAP2000
                     int panels = 0;
                     m_model.AreaObj.GetNameList(ref panels, ref names);
                     break;
+                case Type t when t == typeof(FEMesh):
+                    int feMeshes = 0;
+                    m_model.AreaObj.GetNameList(ref feMeshes, ref names);
+                    break;
                 default:
                     names = new string[] { };
                     break;
