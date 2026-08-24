@@ -182,6 +182,10 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
+            if (ids != null && ids.Count != 0) {
+                return ids;
+            }
+
             string[] names = null;
 
             switch (typeof(T))
