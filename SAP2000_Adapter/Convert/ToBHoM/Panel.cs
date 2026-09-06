@@ -42,7 +42,7 @@ namespace BH.Adapter.SAP2000
         {
             Vector locYref;
 
-            if (Query.IsParallel(normal, Vector.ZAxis)!=0)
+            if (BH.Engine.Geometry.Query.IsParallel(normal, Vector.ZAxis)!=0)
             {
                 //Vector is paralell to z-axis
                 locYref = Vector.YAxis;
