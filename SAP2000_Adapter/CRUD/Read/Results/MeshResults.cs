@@ -63,7 +63,7 @@ namespace BH.Adapter.SAP2000
                 case MeshResultType.VonMises:
                     return ReadMeshVonMises(panelIds, cases, request.Smoothing, request.Layer);
                 default:
-                    Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported");
+                    Engine.Base.Compute.RecordError("Result extraction of type " + request.ResultType + " is not yet supported.");
                     return new List<IResult>();
             }
 
