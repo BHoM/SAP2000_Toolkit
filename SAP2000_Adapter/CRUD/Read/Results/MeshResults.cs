@@ -346,7 +346,7 @@ namespace BH.Adapter.SAP2000
                     }
                     else
                     {
-                        Engine.Base.Compute.RecordWarning("Failed to extract results for element " + panelIds[i] + " for case " + caseName);
+                        Engine.Base.Compute.RecordWarning("Failed to extract results for element " + panelIds[i] + " for case " + caseName + ".");
                     }
                 }
             }
