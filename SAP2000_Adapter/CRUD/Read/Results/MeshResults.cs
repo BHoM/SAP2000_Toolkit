@@ -395,7 +395,7 @@ namespace BH.Adapter.SAP2000
             List<MeshResult> results = new List<MeshResult>();
 
             if (smoothing == MeshResultSmoothingType.ByPanel)
-                Engine.Base.Compute.RecordWarning("Stress values have been smoothened outside the API by averaging all force values in each node");
+                Engine.Base.Compute.RecordWarning("Stress values have been smoothened outside the API by averaging all force values in each node.");
 
             foreach (string caseName in cases)
             {
