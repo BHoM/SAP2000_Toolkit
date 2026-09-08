@@ -114,7 +114,7 @@ namespace BH.Adapter.SAP2000
             List<MeshResult> results = new List<MeshResult>();
 
             if (smoothing == MeshResultSmoothingType.ByPanel)
-                Engine.Base.Compute.RecordWarning("Force values have been smoothed outside the API by averaging all force values in each node");
+                Engine.Base.Compute.RecordWarning("Force values have been smoothed outside the API by averaging all force values in each node.");
 
             for (int i = 0; i < panelIds.Count; i++)
             {
