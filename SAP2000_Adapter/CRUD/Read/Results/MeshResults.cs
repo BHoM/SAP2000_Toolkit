@@ -76,13 +76,10 @@ namespace BH.Adapter.SAP2000
 
         private List<MeshResult> ReadMeshForce(List<string> panelIds, MeshResultSmoothingType smoothing)
         {
-            switch (smoothing)
+            if (smoothing != MeshResultSmoothingType.None && smoothing != MeshResultSmoothingType.ByPanel)
             {
-                case MeshResultSmoothingType.BySelection:
-                case MeshResultSmoothingType.Global:
-                case MeshResultSmoothingType.ByFiniteElementCentres:
-                    Engine.Base.Compute.RecordWarning("Smoothing type not supported for MeshForce. No results extracted.");
-                    return new List<MeshResult>();
+                Engine.Base.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted.");
+                return new List<MeshResult>();
             }
 
             eItemTypeElm itemTypeElm = eItemTypeElm.ObjectElm;
@@ -156,11 +153,7 @@ namespace BH.Adapter.SAP2000
 
         private List<MeshResult> ReadMeshStress(List<string> panelIds, List<string> cases, MeshResultSmoothingType smoothing, MeshResultLayer layer)
         {
-            switch (smoothing)
-            {
-                case MeshResultSmoothingType.BySelection:
-                case MeshResultSmoothingType.Global:
-                case MeshResultSmoothingType.ByFiniteElementCentres:
+            if (smoothing!= MeshResultSmoothingType.None && smoothing != MeshResultSmoothingType.ByPanel) {
                     Engine.Base.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted.");
                     return new List<MeshResult>();
             }
@@ -256,13 +249,10 @@ namespace BH.Adapter.SAP2000
 
         private List<MeshResult> ReadMeshVonMises(List<string> panelIds, List<string> cases, MeshResultSmoothingType smoothing, MeshResultLayer layer)
         {
-            switch (smoothing)
+            if (smoothing != MeshResultSmoothingType.None && smoothing != MeshResultSmoothingType.ByPanel)
             {
-                case MeshResultSmoothingType.BySelection:
-                case MeshResultSmoothingType.Global:
-                case MeshResultSmoothingType.ByFiniteElementCentres:
-                    Engine.Base.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted");
-                    return new List<MeshResult>();
+                Engine.Base.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted.");
+                return new List<MeshResult>();
             }
 
             if (layer == MeshResultLayer.Upper || layer == MeshResultLayer.Lower)
@@ -360,13 +350,10 @@ namespace BH.Adapter.SAP2000
         //Keeping for further reference. Method is not called from anywhere
         private List<MeshResult> ReadMeshStressLayered(List<string> panelIds, MeshResultSmoothingType smoothing, List<string> cases)
         {
-            switch (smoothing)
+            if (smoothing != MeshResultSmoothingType.None && smoothing != MeshResultSmoothingType.ByPanel)
             {
-                case MeshResultSmoothingType.BySelection:
-                case MeshResultSmoothingType.Global:
-                case MeshResultSmoothingType.ByFiniteElementCentres:
-                    Engine.Base.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted.");
-                    return new List<MeshResult>();
+                Engine.Base.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted.");
+                return new List<MeshResult>();
             }
 
             eItemTypeElm itemTypeElm = eItemTypeElm.ObjectElm;
