@@ -161,7 +161,7 @@ namespace BH.Adapter.SAP2000
                 case MeshResultSmoothingType.BySelection:
                 case MeshResultSmoothingType.Global:
                 case MeshResultSmoothingType.ByFiniteElementCentres:
-                    Engine.Base.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted");
+                    Engine.Base.Compute.RecordWarning("Smoothing type not supported for MeshStress. No results extracted.");
                     return new List<MeshResult>();
             }
 
