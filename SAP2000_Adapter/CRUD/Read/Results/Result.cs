@@ -111,19 +111,10 @@ namespace BH.Adapter.SAP2000
             return true;
         }
 
-
         /***************************************************/
 
         private void GetStepAndMode(string stepType, double stepNum, out double timeStep, out int mode)
         {
-            /* Based on ETABS API outputs data structure, depending on the value of stepType, the stepNum parameter
-             * has a different meaning. 
-             * If stepType = "Mode", stepNum is assigned with the number of the corresponding Mode, otherwise it is 
-             * assigned with the value of the timeStep.
-             * Hence, the output parameters timeStep and mode are assigned with values based on a different logic
-             * as in the below if statement.
-             */
-            
             if (stepType == "Mode")
             {
                 mode = (int)stepNum;
@@ -191,6 +182,10 @@ namespace BH.Adapter.SAP2000
                 }
             }
 
+            if (ids != null && ids.Count != 0) {
+                return ids;
+            }
+
             string[] names = null;
 
             switch (typeof(T))
@@ -202,6 +197,14 @@ namespace BH.Adapter.SAP2000
                 case Type t when t == typeof(Bar):
                     int bars = 0;
                     m_model.FrameObj.GetNameList(ref bars, ref names);
+                    break;
+                case Type t when t == typeof(Panel):
+                    int panels = 0;
+                    m_model.AreaObj.GetNameList(ref panels, ref names);
+                    break;
+                case Type t when t == typeof(FEMesh):
+                    int feMeshes = 0;
+                    m_model.AreaObj.GetNameList(ref feMeshes, ref names);
                     break;
                 default:
                     names = new string[] { };
