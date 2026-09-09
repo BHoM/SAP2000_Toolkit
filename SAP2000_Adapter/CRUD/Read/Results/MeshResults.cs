@@ -160,7 +160,7 @@ namespace BH.Adapter.SAP2000
 
             if (layer == MeshResultLayer.Upper || layer == MeshResultLayer.Lower)
             {
-                Engine.Base.Compute.RecordWarning("Results for both bot and top layers will be extracted at the same time");
+                Engine.Base.Compute.RecordWarning("Results for both bottom and top layers will be extracted at the same time.");
             }
             else
             {
