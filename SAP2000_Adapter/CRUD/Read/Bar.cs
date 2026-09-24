@@ -60,7 +60,11 @@ namespace BH.Adapter.SAP2000
 
                 try
                 {
-                    Bar bhomBar = new Bar();
+
+                    string bhomName = GetBhomNameFromSAP2000Id(id);
+
+                    Bar bhomBar = new Bar() { Name = bhomName };
+
                     string startId = "";
                     string endId = "";
                     m_model.FrameObj.GetPoints(id, ref startId, ref endId);

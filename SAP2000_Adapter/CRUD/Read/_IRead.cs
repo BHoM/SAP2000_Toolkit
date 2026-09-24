@@ -63,6 +63,8 @@ namespace BH.Adapter.SAP2000
                 return ReadMaterial(listIds);
             else if (type == typeof(Panel))
                 return ReadPanel(listIds);
+            else if (type == typeof(FEMesh))
+                return ReadMesh(listIds);
             else if (type == typeof(ISurfaceProperty) || type.GetInterfaces().Contains(typeof(ISurfaceProperty)))
                 return ReadSurfaceProperty(listIds);
             else if (type == typeof(LoadCombination))
@@ -163,6 +165,19 @@ namespace BH.Adapter.SAP2000
                     Engine.Base.Compute.RecordWarning("Some requested SAP2000 ids were not present in the model.");
                 return result;
             }
+        }
+
+        /***************************************************/
+
+        [Description("Extracts the String Name of the BHoM object from the corresponding SAP2000 Unique Name.")]
+        public string GetBhomNameFromSAP2000Id(string id)
+        {
+            if (id.Contains("::"))
+            {
+                string[] splitName = id.Split(new string[] { "::" }, StringSplitOptions.None);
+                return splitName[0];
+            }
+            return id;
         }
 
         /***************************************************/

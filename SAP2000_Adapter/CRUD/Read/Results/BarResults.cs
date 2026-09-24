@@ -46,7 +46,7 @@ namespace BH.Adapter.SAP2000
         {
             CheckAndSetUpCases(request);
 
-            List<string> barIds = CheckGetBarIds(request);
+            List<string> barIds = CheckAndGetIds<Bar>(request);
 
             switch (request.ResultType)
             {
@@ -73,7 +73,7 @@ namespace BH.Adapter.SAP2000
         private List<BarDisplacement> ReadBarDisplacements(List<string> barIds = null,
                                                            int divisions = 0)
         {
-            List<BarDisplacement> displacements  = new List<BarDisplacement>();
+            List<BarDisplacement> displacements = new List<BarDisplacement>();
             if (divisions != 0)
             {
                 Engine.Base.Compute.RecordWarning("Displacements will only be extracted at SAP2000 calculation nodes." +

@@ -39,81 +39,126 @@ namespace BH.Adapter.SAP2000
         private List<RigidLink> ReadRigidLink(List<string> ids = null)
         {
             List<RigidLink> linkList = new List<RigidLink>();
-            Dictionary<string, Node> bhomNodes = ReadNodes().ToDictionary(x => GetAdapterId<string>(x));
-            Dictionary<string, LinkConstraint> bhomLinkConstraints = ReadLinkConstraints().ToDictionary(x => GetAdapterId<string>(x));
 
-
-            //Read all links, filter by id at end, so that we can join multi-links.
             int nameCount = 0;
-            string[] nameArr = { };
-            m_model.LinkObj.GetNameList(ref nameCount, ref nameArr);
+            string[] names = { };
+            m_model.LinkObj.GetNameList(ref nameCount, ref names);
 
+            ids = FilterIds(ids, names);
 
+            //read primary-multiSecondary nodes if these were initially created from (non-etabs)BHoM side
+            Dictionary<string, List<string>> idDict = new Dictionary<string, List<string>>();
+            string[] primarySecondaryId;
 
-            foreach (string id in nameArr)
+            foreach (string id in ids)
             {
-                RigidLink newLink = new RigidLink();
-                SAP2000Id sap2000id = new SAP2000Id();
-                string guid = null;
-
-                sap2000id.Id = id;
-
-                try
+                primarySecondaryId = id.Split(new[] { ":::" }, StringSplitOptions.None);
+                if (primarySecondaryId.Count() > 1)
                 {
-                    string primaryId = "";
-                    string secondaryId = "";
-                    string propName = "";
-                    m_model.LinkObj.GetPoints(id, ref primaryId, ref secondaryId);
-                    newLink.PrimaryNode = bhomNodes[primaryId];
-                    newLink.SecondaryNodes = new List<Node> { bhomNodes[secondaryId] };
-
-                    if (m_model.LinkObj.GetProperty(id, ref propName) == 0)
-                    {
-                        LinkConstraint bhProp = new LinkConstraint();
-                        bhomLinkConstraints.TryGetValue(propName, out bhProp);
-                        newLink.Constraint = bhProp; m_model.LinkObj.GetProperty(id, ref propName);
-                    }
+                    //has plural secondaries
+                    if (idDict.ContainsKey(primarySecondaryId[0]))
+                        idDict[primarySecondaryId[0]].Add(primarySecondaryId[1]);
                     else
-                    {
-                        Engine.Base.Compute.RecordWarning("Could not get link property for RigidLink " + id + ".");
-                    }
-                    
-                    // Get the groups the link is assigned to
-                    int numGroups = 0;
-                    string[] groupNames = new string[0];
-                    if (m_model.LinkObj.GetGroupAssign(id, ref numGroups, ref groupNames) == 0)
-                    {
-                        foreach (string grpName in groupNames)
-                            newLink.Tags.Add(grpName);
-                    }
-
-                    if (m_model.LinkObj.GetGUID(id, ref guid) == 0)
-                        sap2000id.PersistentId = guid;
-
-                    newLink.SetAdapterId(sap2000id);
-                    linkList.Add(newLink);
+                        idDict.Add(primarySecondaryId[0], new List<string>() { primarySecondaryId[1] });
                 }
-
-                catch
+                else
                 {
-                    ReadElementError("RigidLink", id.ToString());
+                    //normal single link
+                    idDict.Add(id, null);
                 }
             }
 
-            Dictionary<string, RigidLink> joinedLinks = BH.Engine.Adapters.SAP2000.Query.JoinRigidLink(linkList).ToDictionary(x => x.Name);
 
-            ids = FilterIds(ids, joinedLinks.Keys);
+            foreach (KeyValuePair<string, List<string>> kvp in idDict)
+            {
+                string bhomName = GetBhomNameFromSAP2000Id(kvp.Key);
 
-            if (ids != null)
-            {
-                return joinedLinks
-                     .Where(x => ids.Contains(x.Key))
-                     .Select(x => x.Value).ToList();
+                RigidLink bhLink = new RigidLink() { Name = bhomName };
+
+                SetAdapterId(bhLink, kvp.Key);
+
+                if (kvp.Value == null)
+                {
+                    string startId = "";
+                    string endId = "";
+                    m_model.LinkObj.GetPoints(kvp.Key, ref startId, ref endId);
+
+                    //Dummy nodes with correct Id
+                    bhLink.PrimaryNode = new Node { Name = startId };
+                    bhLink.SecondaryNodes = new List<Node>() { new Node { Name = endId } };
+                }
+                else
+                {
+                    string startId = "";
+                    string endId = "";
+                    string multiLinkId = kvp.Key + ":::0";
+
+
+                    m_model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
+                    bhLink.PrimaryNode = new Node { Name = startId };   //Dummy startnode with correct Id
+
+                    List<string> endIds = new List<string>();
+                    for (int i = 1; i < kvp.Value.Count(); i++)
+                    {
+                        multiLinkId = kvp.Key + ":::" + i;
+                        m_model.LinkObj.GetPoints(multiLinkId, ref startId, ref endId);
+                        endIds.Add(endId);
+                    }
+
+                    bhLink.SecondaryNodes = endIds.Select(x => new Node { Name = x }).ToList(); //Dummy endnodes with correct Id
+                }
+                string propName = "";
+                m_model.LinkObj.GetProperty(kvp.Key, ref propName);
+
+                bhLink.Constraint = new LinkConstraint { Name = propName }; //Dummy constraint to be populated in later loop
+
+                /* Get the ETABS name of the Rigid Link */
+                string name = GetAdapterId<string>(bhLink);
+
+
+                // Get the groups the link is assigned to
+                int numGroups = 0;
+                string[] groupNames = new string[0];
+                if (m_model.LinkObj.GetGroupAssign(name, ref numGroups, ref groupNames) == 0)
+                {
+                    foreach (string grpName in groupNames)
+                        bhLink.Tags.Add(grpName);
+                }
+
+                linkList.Add(bhLink);
             }
-            else
+
+            if (linkList.Count == 0)
+                return linkList;
+
+            //Get ids of primary and secondary nodes
+            List<string> nodeIds = linkList.SelectMany(x => x.SecondaryNodes.Select(s => s.Name).Concat(new List<string> { x.PrimaryNode.Name })).Distinct().ToList();
+            Dictionary<string, Node> nodes = GetCachedOrReadAsDictionary<string, Node>(nodeIds);
+
+            List<string> contstrainIds = linkList.Select(x => x.Constraint.Name).Distinct().ToList();
+            //Get cached or read out all constraints used by Links
+            Dictionary<string, LinkConstraint> constraints = contstrainIds.Any() ? new Dictionary<string, LinkConstraint>() : GetCachedOrReadAsDictionary<string, LinkConstraint>(contstrainIds);
+
+            foreach (RigidLink link in linkList)
             {
-                return joinedLinks.Values.ToList();
+                LinkConstraint constraint;  //Reasign cached/read contraint
+                if (constraints.TryGetValue(link.Constraint.Name, out constraint))
+                    link.Constraint = constraint;
+
+                Node stNode;
+                if (nodes.TryGetValue(link.PrimaryNode.Name, out stNode))
+                    link.PrimaryNode = stNode;
+
+                for (int i = 0; i < link.SecondaryNodes.Count; i++)
+                {
+                    Node secNode;
+                    if (nodes.TryGetValue(link.SecondaryNodes[i].Name, out secNode))
+                        link.SecondaryNodes[i] = secNode;
+                }
             }
+
+
+            return linkList;
         }
 
         /***************************************************/

@@ -84,6 +84,7 @@ namespace BH.Adapter.SAP2000
 
                 // Set Properties
                 SetObject(bhBar);
+                UpdateUniqueName(bhBar);
 
             }
             return success;

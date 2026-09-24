@@ -20,58 +20,45 @@
  * along with this code. If not, see <https://www.gnu.org/licenses/lgpl-3.0.html>.      
  */
 
-using BH.oM.Structure.Elements;
+using BH.Engine;
+using BH.Engine.Geometry;
+using BH.Engine.Units;
+using BH.oM.Geometry;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BH.Adapter.SAP2000
 {
-    public partial class SAP2000Adapter : BHoMAdapter
-    {
+    public static partial class Convert
+    {   
         /***************************************************/
-        /**** Update Node                               ****/
+        /**** Public Methods                            ****/
         /***************************************************/
 
-        private bool UpdateObjects(IEnumerable<Node> nodes)
+        public static Vector ToPanelLocalXAxis(Vector normal, double orientationAngle)
         {
-            bool success = true;
-            m_model.SelectObj.ClearSelection();
+            Vector locYref;
 
-            Engine.Structure.NodeDistanceComparer comparer = AdapterComparers[typeof(Node)] as Engine.Structure.NodeDistanceComparer;
-
-            foreach (Node bhNode in nodes)
+            if (BH.Engine.Geometry.Query.IsParallel(normal, Vector.ZAxis)!=0)
             {
-                // Update the node object and its unique name
-                SetObject(bhNode);
-                UpdateUniqueName(bhNode);
-
-                // Retrieve node's updated unique name
-                string name = GetAdapterId<string>(bhNode);
-
-
-                double x = 0;
-                double y = 0;
-                double z = 0;
-
-                if (m_model.PointObj.GetCoordCartesian(name, ref x, ref y, ref z) == 0)
-                {
-                    oM.Geometry.Point p = new oM.Geometry.Point() { X = x, Y = y, Z = z };
-
-                    if (!comparer.Equals(bhNode, (Node)p))
-                    {
-                        x = bhNode.Position.X - x;
-                        y = bhNode.Position.Y - y;
-                        z = bhNode.Position.Z - z;
-
-                        m_model.PointObj.SetSelected(name, true);
-                        m_model.EditGeneral.Move(x, y, z);
-                        m_model.PointObj.SetSelected(name, false);
-                    }
-                }
+                //Vector is paralell to z-axis
+                locYref = Vector.YAxis;
+            }
+            else
+            {
+                //Vector is not paralell to z-axis
+                locYref = Vector.ZAxis.Project(new Plane { Normal = normal });
             }
 
-            return success;
+            Vector localXref = locYref.CrossProduct(normal);
 
+            return localXref.Rotate(Engine.Units.Convert.FromDegree(orientationAngle), normal);
         }
+
+        /***************************************************/
 
     }
 }

@@ -1,16 +1,16 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAP2000_Adapter", "SAP2000_Adapter\SAP2000_Adapter.csproj", "{04E7E3BC-BD2F-47A4-B4F0-A9675F702CED}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAP2000_Adapter", "SAP2000_Adapter\SAP2000_Adapter.csproj", "{04E7E3BC-BD2F-47A4-B4F0-A9675F702CED}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4BB31AE9-B7CE-42C8-80A4-484389D23DE2} = {4BB31AE9-B7CE-42C8-80A4-484389D23DE2}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAP2000_Engine", "SAP2000_Engine\SAP2000_Engine.csproj", "{4BB31AE9-B7CE-42C8-80A4-484389D23DE2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAP2000_Engine", "SAP2000_Engine\SAP2000_Engine.csproj", "{4BB31AE9-B7CE-42C8-80A4-484389D23DE2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SAP2000_oM", "SAP2000_oM\SAP2000_oM.csproj", "{BC975B64-E35E-4155-A067-7A88505E61C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SAP2000_oM", "SAP2000_oM\SAP2000_oM.csproj", "{BC975B64-E35E-4155-A067-7A88505E61C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

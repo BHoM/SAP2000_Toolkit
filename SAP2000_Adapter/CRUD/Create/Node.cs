@@ -55,20 +55,20 @@ namespace BH.Adapter.SAP2000
                 return false;
             }
 
+            // Assign the Unique Name to the SAP2000 Element
+            string newName = SetUniqueName(bhNode, name);
+
+            if (newName == null) return false;
+
             // Set Adapter ID
-            if (name != bhNode.Name & bhNode.Name != "")
-                Engine.Base.Compute.RecordNote($"Node {bhNode.Name} was assigned SAP2000_id of {name}");
-
             string guid = null;
-            m_model.PointObj.GetGUID(name, ref guid);
+            m_model.PointObj.GetGUID(newName, ref guid);
 
-            SAP2000Id sap2000IdFragment = new SAP2000Id { Id = name, PersistentId = guid };
+            SAP2000Id sap2000IdFragment = new SAP2000Id { Id = newName, PersistentId = guid };
             bhNode.SetAdapterId(sap2000IdFragment);
 
             // Set Properties
-            SetObject(bhNode);            
-
-            return true;            
+            return SetObject(bhNode);                      
         }
 
         /***************************************************/

@@ -52,7 +52,9 @@ namespace BH.Adapter.SAP2000
             ids = FilterIds(ids, nameArr);
             foreach (string id in ids)
             {
-                Panel bhomPanel = new Panel();
+                string bhomName = GetBhomNameFromSAP2000Id(id);
+                Panel bhomPanel = new Panel() { Name = bhomName };
+
                 SAP2000Id sap2000id = new SAP2000Id();
                 string guid = null;
                 //Set the Adapter ID
