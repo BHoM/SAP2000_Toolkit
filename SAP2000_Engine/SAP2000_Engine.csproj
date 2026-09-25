@@ -8,9 +8,9 @@
     <Description>https://github.com/BHoM/SAP2000_Toolkit</Description>
     <Company>Buro Happold</Company>
     <Product>SAP2000_Engine</Product>
-    <Copyright>Copyright © https://github.com/BHoM</Copyright>
-    <AssemblyVersion>9.0.0.0</AssemblyVersion>
-    <FileVersion>9.3.0.0</FileVersion>
+    <Copyright>Copyright ï¿½ https://github.com/BHoM</Copyright>
+    <AssemblyVersion>10.0.0.0</AssemblyVersion>
+    <FileVersion>10.0.0.0</FileVersion>
   </PropertyGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy &quot;$(TargetDir)$(TargetFileName)&quot;  &quot;C:\ProgramData\BHoM\Assemblies&quot; /Y" />
