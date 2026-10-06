@@ -56,3 +56,45 @@ namespace BH.Adapter.SAP2000
                     return new List<IResult>();
             }
         }
+
+        /***************************************************/
+        /**** Private method - Extraction methods       ****/
+        /***************************************************/
+
+        private List<GlobalReactions> GetGlobalReactions()
+        {
+            List<GlobalReactions> globalReactions = new List<GlobalReactions>();
+
+            int resultCount = 0;
+            string[] loadcaseNames = null;
+            string[] stepType = null; double[] stepNum = null;
+            double[] fx = null; double[] fy = null; double[] fz = null;
+            double[] mx = null; double[] my = null; double[] mz = null;
+            double gx = 0; double gy = 0; double gz = 0;
+
+            m_model.Results.BaseReact(ref resultCount, ref loadcaseNames, ref stepType, ref stepNum, ref fx, ref fy, ref fz, ref mx, ref my, ref mz, ref gx, ref gy, ref gz);
+
+            for (int i = 0; i < resultCount; i++)
+            {
+                int mode;
+                double timeStep;
+                GetStepAndMode(stepType[i], stepNum[i], out timeStep, out mode);
+
+                GlobalReactions g = new GlobalReactions("", loadcaseNames[i], mode, timeStep, fx[i], fy[i], fz[i], mx[i], my[i], mz[i]);
+
+                globalReactions.Add(g);
+            }
+
+            return globalReactions;
+        }
+
+        /***************************************************/
+
+    }
+}
+
+
+
+
+
+
